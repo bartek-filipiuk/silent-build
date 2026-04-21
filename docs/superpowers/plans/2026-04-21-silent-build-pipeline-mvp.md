@@ -102,7 +102,7 @@ silent-build/
 - Create: `tsconfig.base.json`
 - Create: `vitest.workspace.ts`
 - Create: `output/README.md`
-- Modify: `.gitignore` (dopisujemy `pnpm-debug.log`, `coverage/`)
+- Modify: `.gitignore` (dopisujemy `pnpm-lock.yaml.backup`, `coverage/`, `*.tsbuildinfo`)
 
 - [ ] **Step 1: Create root `package.json`**
 
@@ -118,15 +118,16 @@ Create `/home/bartek/video-projects/silent-build/package.json`:
     "node": ">=22.0.0",
     "pnpm": ">=9.0.0"
   },
+  "packageManager": "pnpm@10.24.0",
   "scripts": {
     "build": "pnpm -r build",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "pnpm -r typecheck",
-    "mark": "pnpm --filter markers run mark",
-    "harvest": "pnpm --filter harvester run harvest",
-    "render": "pnpm --filter overlay run render",
-    "studio": "pnpm --filter overlay run studio"
+    "mark": "pnpm --filter @silent-build/markers run mark",
+    "harvest": "pnpm --filter @silent-build/harvester run harvest",
+    "render": "pnpm --filter @silent-build/overlay run render",
+    "studio": "pnpm --filter @silent-build/overlay run studio"
   },
   "devDependencies": {
     "typescript": "^5.5.4",
@@ -196,7 +197,6 @@ Gitignore wyklucza media, ale zostawia `timeline.json` i `manual_markers.json` j
 Dopisz do istniejącego `.gitignore`:
 
 ```
-pnpm-debug.log
 pnpm-lock.yaml.backup
 coverage/
 *.tsbuildinfo
