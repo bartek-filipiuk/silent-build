@@ -1,0 +1,22 @@
+{
+  "name": "@silent-build/markers",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "mark": "./dist/cli.js"
+  },
+  "scripts": {
+    "mark": "tsx src/cli.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@silent-build/shared": "workspace:*",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
