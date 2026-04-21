@@ -14,7 +14,8 @@ program
   .requiredOption('-p, --project <dir>', 'project output dir (contains timeline.json)')
   .option('--format <format>', 'mov | png | both', 'both')
   .option('--fps <n>', 'frames per second', '60')
-  .action(async (opts: { project: string; format: 'mov' | 'png' | 'both'; fps: string }) => {
+  .option('--max-frames <n>', 'cap render to at most N frames (useful for smoke tests)')
+  .action(async (opts: { project: string; format: 'mov' | 'png' | 'both'; fps: string; maxFrames?: string }) => {
     const projectDir = resolve(opts.project)
     const timelinePath = join(projectDir, 'timeline.json')
     if (!existsSync(timelinePath)) {
@@ -25,10 +26,23 @@ program
     const fps = parseInt(opts.fps, 10)
     const durationSec = Math.ceil((timeline.project.endTs - timeline.project.startTs) / 1000)
     const durationFrames = Math.max(fps, durationSec * fps)
+    const maxFrames = opts.maxFrames ? parseInt(opts.maxFrames, 10) : durationFrames
+    const effectiveFrames = Math.min(durationFrames, maxFrames)
 
     const entry = join(import.meta.dirname, 'Root.tsx')
     console.log(`Bundling Remotion project from ${entry}`)
-    const bundleLocation = await bundle({ entryPoint: entry })
+    const bundleLocation = await bundle({
+      entryPoint: entry,
+      webpackOverride: (config) => ({
+        ...config,
+        resolve: {
+          ...config.resolve,
+          extensionAlias: {
+            '.js': ['.tsx', '.ts', '.js']
+          }
+        }
+      })
+    })
 
     const composition = await selectComposition({
       serveUrl: bundleLocation,
@@ -36,7 +50,7 @@ program
       inputProps: { timeline }
     })
 
-    composition.durationInFrames = durationFrames
+    composition.durationInFrames = effectiveFrames
     composition.fps = fps
 
     if (opts.format === 'mov' || opts.format === 'both') {
@@ -64,10 +78,10 @@ program
         inputProps: { timeline },
         imageFormat: 'png',
         outputDir: pngDir,
-        frameRange: [0, durationFrames - 1],
+        frameRange: [0, effectiveFrames - 1],
         onStart: () => undefined,
         onFrameUpdate: (done, _frameIndex, _timeMs) => {
-          if (done % 60 === 0) console.log(`  ${done}/${durationFrames} frames`)
+          if (done % 60 === 0) console.log(`  ${done}/${effectiveFrames} frames`)
         },
         concurrency: 4
       })

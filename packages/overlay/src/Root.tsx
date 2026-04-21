@@ -1,5 +1,5 @@
 import type React from 'react'
-import { Composition } from 'remotion'
+import { Composition, registerRoot } from 'remotion'
 import { Dashboard, type DashboardProps } from './Dashboard.js'
 import mockTimeline from './fixtures/mock-timeline.json'
 import { SessionTimelineSchema } from '@silent-build/shared'
@@ -26,3 +26,5 @@ export const RemotionRoot: React.FC = () => (
 
 // Re-export the props type to keep the DashboardProps import used
 export type { DashboardProps }
+
+registerRoot(RemotionRoot)
