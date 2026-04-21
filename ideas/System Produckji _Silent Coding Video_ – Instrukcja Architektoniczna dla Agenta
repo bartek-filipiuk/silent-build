@@ -1,0 +1,58 @@
+# System Produckji "Silent Coding Video" – Instrukcja Architektoniczna dla Agenta
+
+## 1. Wizja i Cel Projektu
+**Cel:** Zbudowanie zautomatyzowanego pipeline'u (systemu) do masowej produkcji wiralowych filmów wideo typu "silent coding". Format ten opiera się na braku komentarza głosowego, wysokiej estetyce wizualnej (dark mode, monospace) i dźwiękowej (Tech-ASMR), oraz dynamicznym, analitycznym Dashboardzie czasu rzeczywistego, który utrzymuje uwagę widza.
+
+**Kluczowe założenie:** Proces tworzenia samej aplikacji (w Claude Code / Claude Design) jest nagrywany, ale to **nasz system poboczny** zbiera dane z tej sesji i generuje nakładkę (Overlay/Dashboard), która "tłumaczy" widzowi co się dzieje, budując napięcie i satysfakcję z procesu ("Build in Public" w pigułce).
+
+**Podejście:** "Architect First". Skupiamy się na zaprojektowaniu niezawodnego przepływu danych i architektury komponentów. Implementacja szczegółów będzie realizowana iteracyjnie przez AI, z założeniem ciągłej rewizji pod kątem maksymalizacji automatyzacji.
+
+## 2. Architektura Systemu (Data Flow)
+System składa się z trzech głównych modułów, które przetwarzają dane z sesji programistycznej na gotowy element wideo.
+
+| Moduł | Odpowiedzialność | Technologie / Narzędzia (Propozycja) |
+| :--- | :--- | :--- |
+| **1. Data Harvester (Zbieracz)** | Nasłuchiwanie i parsowanie logów z Claude Code (`.jsonl`), eksportów z Claude Design oraz wyników ze skanera bezpieczeństwa (Security Skill). | Node.js / Python (Watchdog na plikach logów) |
+| **2. State Aggregator (Mózg)** | Agregacja zebranych surowych danych w spójną oś czasu (Timeline). Wyliczanie metryk (zużyte tokeny, czas, liczba plików, aktualny prompt, błędy OWASP). | Baza in-memory (Redis/SQLite) + REST API |
+| **3. Overlay Renderer (Generator)** | Pobieranie stanu z API i renderowanie dynamicznego Dashboardu jako sekwencji klatek (PNG) lub gotowego wideo z kanałem alfa (przezroczystość), gotowego do nałożenia w montażu. | Python (np. z biblioteką Pygame/Pillow) lub Headless Browser (Puppeteer + HTML/CSS) |
+
+### 2.1 Przepływ Danych (Krok po Kroku)
+1. **Nagrywanie (Manualne/Pół-manualne):** Twórca uruchamia OBS Studio i zaczyna sesję w Claude Code. Równolegle uruchamiany jest *Data Harvester*.
+2. **Parsowanie (Automatyczne):** Harvester czyta na żywo logi Claude'a. Ekstrahuje treść promptu, ilość wygenerowanych linii kodu i czas.
+3. **Zdarzenia Specjalne (Automatyczne):** Gdy twórca uruchamia "Security Skill", skrypt generuje plik `vulnerabilities.json`. Harvester to wyłapuje i wysyła flagę "CRITICAL" do Aggregatora.
+4. **Generowanie Nakładki (Automatyczne):** Po zakończeniu sesji, *Overlay Renderer* czyta pełną oś czasu z Aggregatora i renderuje plik wideo `dashboard_overlay.mov` (z kanałem alfa), idealnie zsynchronizowany z czasem trwania surowego nagrania z OBS.
+
+## 3. Specyfikacja Layoutu Wideo (UX/UI)
+Film końcowy musi zachować ścisłe proporcje, aby Dashboard był czytelny, ale nie przytłaczał kodu.
+
+*   **Lewa strona (70% szerokości):** Surowe nagranie z OBS (Terminal Claude Code lub podgląd UI z Claude Design).
+*   **Prawa strona (30% szerokości):** Wygenerowany *Dashboard Overlay*. Musi zawierać:
+    *   **Global Timer:** Czas trwania projektu (np. `02:14:33`).
+    *   **Current Prompt:** Aktualnie przetwarzane polecenie (np. `Generowanie logiki JWT...`).
+    *   **Token Counter:** Pasek postępu i liczby (np. `127k / 200k`).
+    *   **Security Panel:** Dynamiczny panel. Domyślnie szary/zielony. Podczas skanowania zmienia kolor na czerwony, wyświetla błędy (np. `SQL Injection Found`), a po chwili (gdy AI naprawi kod) zmienia je na zielone ticki `✅`.
+    *   **AI Thoughts:** Rotujące, krótkie "myśli" systemu (np. `Optymalizuję zapytanie DB... -20ms latency`).
+*   **Paski dolny/górny:** Nazwa projektu (góra) i pasek postępu faz projektu (dół).
+
+## 4. Poziomy Automatyzacji i Miejsca na Rewizję
+
+Głównym celem jest sprowadzenie pracy twórcy do dwóch kroków: 1) Nagranie sesji, 2) Wrzuceenie plików do programu montażowego. Poniżej rozpisano, co automatyzujemy od razu, a co zostawiamy do rewizji.
+
+### 4.1 Co Automatyzujemy (Priorytet P1)
+*   **Parsowanie logów:** Skrypt musi bezbłędnie czytać `.jsonl` lub pliki tekstowe wyrzucane przez Claude Code w czasie rzeczywistym.
+*   **Integracja Security Skilla:** Zautomatyzowane wypluwanie wyników skanowania do pliku JSON w ustandaryzowanym formacie.
+*   **Renderowanie Dashboardu:** Stworzenie skryptu (np. w Pythonie), który na podstawie zebranego JSON-a generuje wideo nakładki. Twórca nie może ręcznie animować cyferek w After Effects – to musi robić kod.
+
+### 4.2 Co Pozostaje Pół-Manualne (Miejsca na Rewizję - P2)
+Te elementy zaimplementujemy w pierwszej wersji jako manualne, ale będziemy je rewidować pod kątem automatyzacji, gdy system zacznie działać:
+*   **Synchronizacja czasu:** Obecnie zakładamy, że twórca uruchamia nagrywanie w OBS i skrypt zbierający dane w tym samym momencie. **Rewizja:** W przyszłości skrypt może sterować OBS-em przez WebSocket API, aby startować nagrywanie i zbieranie danych co do milisekundy.
+*   **Zarządzanie Tempem (Pacing):** W pierwszej iteracji twórca ręcznie przyspiesza "nudne" fragmenty kodu w programie montażowym (DaVinci/CapCut). **Rewizja:** Aggregator może tagować w JSON-ie fragmenty "nudne" (np. długie generowanie boilerplate'u) i "ciekawe" (Security Check), generując plik EDL/XML dla programu montażowego, który automatycznie potnie i przyspieszy materiał.
+*   **Dźwięk (Tech-ASMR):** Obecnie twórca podkłada ścieżkę dźwiękową ręcznie w montażu. **Rewizja:** Renderer może automatycznie generować ścieżkę audio (dźwięki klawiatury dopasowane do momentów wpisywania promptów w logach).
+
+## 5. Wytyczne dla Agenta Kodującego (Next Steps)
+Podczas implementacji tego systemu, Agent musi przestrzegać następujących zasad:
+1.  **Modułowość:** *Data Harvester* i *Overlay Renderer* muszą być całkowicie odseparowane. Komunikują się wyłącznie przez plik JSON (np. `session_timeline.json`). Dzięki temu możemy zmienić silnik renderujący bez ruszania logiki zbierania danych.
+2.  **Odporność na błędy (Fault Tolerance):** Jeśli Claude Code wypluje uszkodzony log, *Harvester* nie może się zawiesić. Musi zignorować błędną linię i czytać dalej. Wideo nie może przestać się renderować przez jeden błąd parsowania.
+3.  **Mockowanie Danych:** Zanim podepniemy system pod prawdziwą sesję Claude Code, Agent ma za zadanie napisać generator "Mock Data", który stworzy sztuczny plik `session_timeline.json` (symulujący 2-godzinną sesję). Pozwoli to na niezależne testowanie i stylowanie *Overlay Renderera*.
+
+Ten dokument stanowi "Single Source of Truth" dla architektury systemu. Wszelkie zmiany w podejściu do automatyzacji lub flow danych muszą być najpierw zaktualizowane w tej specyfikacji, zanim zostaną zaimplementowane w kodzie.

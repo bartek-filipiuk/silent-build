@@ -1,0 +1,89 @@
+# Plan Tematyczny: 8 Wiralowych Filmów Miesięcznie (Silent Coding)
+
+Poniższy dokument przedstawia strategię contentową opartą na 8 filmach miesięcznie (2 filmy tygodniowo). Tematy zostały dobrane na podstawie analizy trendów na YouTube i Reddit, skupiając się na formatach, które historycznie generują miliony wyświetleń [1] [2].
+
+Zamiast budować nudne aplikacje typu "to-do list", skupiamy się na trzech filarach wiralności: **Rozwiązywanie Powszechnej Frustracji (Fixing Pain)**, **Klonowanie Gigantów (David vs Goliath)** oraz **Budowanie Niemożliwego (Sci-Fi Tech)**.
+
+## Filar 1: Fixing Pain (Naprawianie tego, co zepsute)
+
+Ludzie uwielbiają narzekać na źle zaprojektowane aplikacje, z których muszą korzystać codziennie [3] [4]. Ten format polega na wzięciu powszechnie znienawidzonego interfejsu lub funkcji i zbudowaniu jej "tak, jak powinna wyglądać".
+
+### Wideo 1: "I fixed Netflix's UI (and built it from scratch)"
+*   **Problem:** Użytkownicy nienawidzą autoplayujących się zwiastunów, ukrywania listy "Kontynuuj oglądanie" i ogólnego przeładowania interfejsu Netflixa [5] [6].
+*   **Co budujemy:** Klon Netflixa (tylko UI + mock data), ale z czystym, minimalistycznym designem (tzw. "Liquid Glass" lub Dark Mode bez rozpraszaczy).
+*   **Hook/Thumbnail:** Przekreślony obecny interfejs Netflixa vs czysty, neonowy kod na Dashboardzie. Tytuł: *I fixed Netflix in 3 hours (Silent Coding).*
+
+### Wideo 2: "Rebuilding the worst app in the world (Workday)"
+*   **Problem:** Workday (system HR używany przez korporacje) to jeden z najbardziej znienawidzonych interfejsów na Reddicie [3].
+*   **Co budujemy:** Czysty, błyskawicznie działający panel do zarządzania urlopami i paskami płac.
+*   **Hook/Thumbnail:** Tytuł: *Vibe Coding a better Workday in 4 hours.* Widzowie z korporacji klikną to natychmiast z czystej frustracji.
+
+## Filar 2: David vs Goliath (Klony i Redesigny)
+
+Ten format opiera się na pokazaniu, że to, co korporacjom zajmuje lata i miliony dolarów, jeden programista z AI może odtworzyć w kilka godzin [7] [8]. To budzi podziw i szokuje.
+
+### Wideo 3: "I cloned Spotify's algorithm in silence"
+*   **Problem:** Algorytmy Spotify stają się coraz bardziej komercyjne, promując opłaconych artystów zamiast tego, co użytkownik naprawdę lubi [9].
+*   **Co budujemy:** Prosty odtwarzacz muzyki (łączący się z YouTube API lub lokalnymi plikami), który posiada "czysty" algorytm rekomendacji oparty na tagach.
+*   **Hook/Thumbnail:** Tytuł: *I built a better Spotify in 214 minutes.* Na miniaturce Dashboard z napisem "Bypassing ads...".
+
+### Wideo 4: "Apple's 'Liquid Glass' iOS 26 - Built before release"
+*   **Problem:** Apple ogłosiło nowy język designu ("Liquid Glass"), ale jeszcze go nie wydało [10] [11].
+*   **Co budujemy:** Przebudowa podstawowych aplikacji (Kalkulator, Pogoda) używając Claude Design do wygenerowania interfejsów w nowym, nieistniejącym jeszcze stylu Apple.
+*   **Hook/Thumbnail:** Tytuł: *I coded iOS 26 before Apple did.* Miniaturka: Szklany, półprzezroczysty interfejs i czarny terminal.
+
+## Filar 3: "I wish this existed" (Budowanie marzeń z Reddita)
+
+Ten filar to kopalnia złota. Bierzemy najbardziej plusowane pomysły z wątków typu "Jakiej aplikacji brakuje Ci na rynku?" i po prostu je budujemy [12] [13].
+
+### Wideo 5: "Building the 'Anti-Doomscroll' App"
+*   **Problem:** Ludzie są zmęczeni algorytmami TikToka i Instagrama, które kradną ich czas [12].
+*   **Co budujemy:** Aplikacja, która blokuje inne aplikacje, ale zamiast nudnego ekranu blokady, wyświetla generowane przez AI mikro-kursy z dziedziny, którą użytkownik chce zgłębić.
+*   **Hook/Thumbnail:** Tytuł: *I built an app to cure my TikTok addiction.*
+
+### Wideo 6: "The 'Meeting Destroyer' AI Agent"
+*   **Problem:** Korporacyjne spotkania, które mogłyby być mailem [14].
+*   **Co budujemy:** Narzędzie, które przyjmuje nagranie audio, transkrybuje je, wyciąga kto ma co zrobić (Action Items) i automatycznie wysyła maile do zespołu.
+*   **Hook/Thumbnail:** Tytuł: *This 2-hour app just replaced my manager.*
+
+## Filar 4: Tech-Trend Surfing (Podpinanie się pod hype)
+
+Wykorzystujemy aktualne, najgorętsze słowa kluczowe (buzzwords) w branży tech, aby algorytm sam podchwycił nasze wideo [15].
+
+### Wideo 7: "Vibe Coding a $10,000 SaaS Idea"
+*   **Problem:** Termin "Vibe Coding" (kodowanie bez pisania kodu, używając tylko promptów do AI) to największy trend 2025/2026 roku [15].
+*   **Co budujemy:** Kompletny SaaS (np. narzędzie do fakturowania dla freelancerów) z podpiętym Stripe'em i bazą danych. Wszystko wygenerowane wyłącznie przez AI.
+*   **Hook/Thumbnail:** Tytuł: *Vibe Coding a SaaS from scratch (No typing).* Miniaturka pokazująca tylko wykresy z Dashboardu i zero linii kodu wpisanych ręcznie.
+
+### Wideo 8: "The AI Clone Automation (My digital twin)"
+*   **Problem:** Twórcy chcą tworzyć więcej contentu, ale brakuje im czasu [16].
+*   **Co budujemy:** Skrypt w Pythonie łączący kilka API (LLM + generator wideo + auto-poster), który tworzy i publikuje posty na Twitterze/X całkowicie autonomicznie.
+*   **Hook/Thumbnail:** Tytuł: *I coded an AI clone to run my business.*
+
+## Podsumowanie i Strategia Dystrybucji
+
+Powyższy plan na 8 filmów gwarantuje różnorodność. Jeśli "Redesign Netflixa" nie chwyci, "Anti-Doomscroll App" może stać się viralem ze względu na emocjonalny ładunek.
+
+**Klucz do sukcesu:**
+1.  **Nie obiecujemy gruszek na wierzbie.** Jeśli budujemy klon Spotify, jasno pokazujemy na Dashboardzie, że to *Proof of Concept* (PoC), a nie gotowy produkt dla milionów użytkowników. Widzowie cenią transparentność.
+2.  **Dashboard opowiada historię.** Wideo o klonowaniu algorytmu Spotify (Wideo 3) musi mieć moment w *Security Phase*, gdzie Dashboard wyrzuca błąd "Rate Limit Exceeded", a AI automatycznie pisze kod omijający ten limit. To buduje dramaturgię.
+3.  **Cykl publikacji:** Wtorek (Filar 1 lub 2 - mocne marki) i Piątek (Filar 3 lub 4 - trendy i narzędzia).
+
+## References
+
+[1] "From Zero To $1M From Content – My 2025 Strategy (Pat Flynn)." Nathan Barry, https://nathanbarry.com/from-zero-to-1m-from-content-my-2025-strategy-pat-flynn-090/
+[2] "How I Code Apps SOLO That Actually Make Money." YouTube, https://www.youtube.com/watch?v=_tLJR5OaiCw
+[3] "What's the most popular poorly designed software/app out there?" Reddit, https://www.reddit.com/r/UXDesign/comments/1egqwze/whats_the_most_popular_poorly_designed/
+[4] "12 Bad UX Examples: Learn from Criticized Apps." Eleken, https://www.eleken.co/blog-posts/bad-ux-examples
+[5] "If Netflix rolled the new layout for you - report it, don't just take that crap." Reddit, https://www.reddit.com/r/netflix/comments/1kzfb3h/if_netflix_rolled_the_new_layout_for_you_report/
+[6] "Netflix's UI Overhaul Traps You Into Binging Forever." Gizmodo, https://gizmodo.com/netflixs-ui-overhaul-traps-you-into-binging-forever-2000598850
+[7] "I Built A $6.5 Billion App Called Duolingo." YouTube, https://www.youtube.com/watch?v=1mnzosdtDjQ
+[8] "How I Coded ANOTHER Profitable App SOLO." YouTube, https://www.youtube.com/watch?v=1mnzosdtDjQ
+[9] "Spotify and Youtube made many of us give up our music collections." Reddit, https://www.reddit.com/r/audiophile/comments/1g85pdh/spotify_and_youtube_made_many_of_us_give_up_our/
+[10] "Ex-Apple Designer Reveals 'Living Glass' iOS 26 Concepts." MacRumors, https://www.macrumors.com/2025/06/04/ex-apple-designer-living-glass-ios-concepts/
+[11] "Apple introduces a delightful and elegant new software design." Apple, https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/
+[12] "what apps do you actually wish existed in 2026?" Reddit, https://www.reddit.com/r/appdev/comments/1rc8pqf/what_apps_do_you_actually_wish_existed_in_2026/
+[13] "10 startup ideas Reddit obsessed over that no one's built yet." Medium, https://medium.com/@dev_tips/10-startup-ideas-reddit-obsessed-over-that-no-ones-built-yet-63b9fc4de679
+[14] "5 app ideas people are literally asking for on Reddit right now." Reddit, https://www.reddit.com/r/AppIdeas/comments/1r4k7t4/5_app_ideas_people_are_literally_asking_for_on/
+[15] "Vibe Coding Is The WORST IDEA Of 2025." YouTube, https://www.youtube.com/watch?v=1A6uPztchXk
+[16] "Built an AI Clone That Creates Content Daily." Reddit, https://www.reddit.com/r/AI_Agents/comments/1riqdnd/built_an_ai_clone_that_creates_content_daily/

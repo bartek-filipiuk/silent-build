@@ -1,0 +1,84 @@
+# Cele, Długość Wideo i Szacunki Przychodów
+
+## Format Wideo — Cele Techniczne
+
+| Parametr | Wartość Docelowa | Uzasadnienie |
+| :--- | :--- | :--- |
+| **Długość wideo** | 10–12 minut | Minimalna długość do mid-roll ads to 8 min. Powyżej 15 min spada retencja bez silnej narracji. 10–12 min to optimum dla formatu silent build. |
+| **Liczba mid-roll ads** | 2 | Przy 10–12 min wstawiamy 2 przerwy reklamowe (ok. 4 min i 8 min). Więcej zaburza flow i niszczy retencję. |
+| **Tempo montażu** | 8x (fundamenty), 3x (UI), 1x (security + finał) | Realna sesja 2–4h → po montażu naturalnie wychodzi 10–14 min. |
+| **Format eksportu** | 4K 30fps lub 1080p 60fps | 4K podnosi RPM (YouTube premiuje jakość). 1080p 60fps jako fallback. |
+| **Thumbnail CTR (cel)** | ≥ 6% | Benchmark dla kanałów tech/coding. Poniżej 4% wymaga zmiany thumbnailów. |
+| **Average View Duration** | ≥ 50% długości wideo | Przy 12 min oznacza 6 min. Algorytm YouTube aktywnie promuje wideo z AVD ≥ 50%. |
+
+---
+
+## Monetyzacja — Model Przychodów
+
+### RPM (Revenue Per Mille) — Szacunki dla Niszy Tech/AI/Coding
+
+RPM to przychód na 1000 wyświetleń po odliczeniu 45% prowizji YouTube.
+
+| Scenariusz | RPM | Kiedy |
+| :--- | :--- | :--- |
+| Konserwatywny | $6 | Nowy kanał, mała widownia, brak historii |
+| Realistyczny | $8–$10 | Kanał z 5k+ subskrybentów, ustabilizowana nisza |
+| Optymistyczny | $12–$15 | Viral hit, widownia globalna (USA/UK dominuje), sezon Q4 |
+
+> **Uwaga:** RPM jest znacznie wyższy w Q4 (październik–grudzień) ze względu na budżety reklamowe. W Q1 spada nawet o 30–40%. Warto to uwzględnić w prognozach rocznych.
+
+### Przychód z Reklam — Tabela Wyświetleń
+
+Poniżej przy założeniu RPM = $8 (scenariusz realistyczny).
+
+| Wyświetlenia | Przychód (reklamy) | Realność |
+| :--- | :--- | :--- |
+| 10 000 | ~$80 | Typowy wynik nowego wideo w pierwszych 30 dniach |
+| 50 000 | ~$400 | Dobry wynik dla kanału < 10k subskrybentów |
+| 100 000 | ~$800 | Cel na "standardowe" wideo po zbudowaniu kanału |
+| 500 000 | ~$4 000 | Jeden viral hit — realny przy trafieniu w algorytm |
+| 1 000 000 | ~$8 000 | Duży hit — możliwy przy odpowiednim tytule i thumbnailcie |
+| 5 000 000 | ~$40 000 | Outlier — jeden taki film buduje kanał na lata |
+
+---
+
+## Dodatkowe Strumienie Przychodów
+
+Reklamy YouTube to fundament i dowód zasięgu, ale nie główny biznes w tej niszy. Poniżej kolejność wdrażania.
+
+| Strumień | Kiedy Wdrożyć | Szacowany Przychód |
+| :--- | :--- | :--- |
+| **YouTube Ads (mid-roll)** | Od razu po monetyzacji (1k sub + 4k h) | $80–$8 000 / film (zależnie od views) |
+| **Affiliate (Claude, narzędzia dev)** | Od pierwszego wideo | $50–$500 / miesiąc pasywnie |
+| **Sponsoring (SaaS, narzędzia)** | Po osiągnięciu 10k–20k subskrybentów | $500–$5 000 / placement |
+| **Własny produkt (kurs, template, narzędzie)** | Po 20k–50k subskrybentów | Potencjalnie 5–10x więcej niż reklamy |
+
+---
+
+## Progi Wzrostu — Kamienie Milowe
+
+| Próg | Co się zmienia |
+| :--- | :--- |
+| **500 subskrybentów** | Możliwość aplikowania do YPP (YouTube Partner Program) |
+| **1 000 sub + 4 000 h** | Aktywacja monetyzacji reklam |
+| **10 000 subskrybentów** | Pierwsze oferty sponsorskie, wyższy RPM |
+| **50 000 subskrybentów** | Kanał traktowany poważnie przez reklamodawców, Silver Play Button |
+| **100 000 subskrybentów** | Pełna dywersyfikacja przychodów, własny produkt uzasadniony |
+
+---
+
+## Benchmarki Retencji i Algorytmu
+
+Poniższe wartości służą jako punkt odniesienia przy analizie wyników poszczególnych filmów.
+
+| Metryka | Cel Minimalny | Cel Optymalny |
+| :--- | :--- | :--- |
+| CTR (Click-Through Rate) | 4% | ≥ 6% |
+| Average View Duration | 40% długości | ≥ 55% długości |
+| Likes / Views ratio | 3% | ≥ 5% |
+| Comments / Views ratio | 0.3% | ≥ 0.5% |
+| Shares (dla viralu) | — | Wysoki udział Shorts jako "trailer" |
+
+---
+
+> **Nota do rewizji:** Wszystkie szacunki przychodów opierają się na RPM $8 jako wartości bazowej. Po opublikowaniu pierwszych 3–5 filmów należy zaktualizować tę wartość na podstawie rzeczywistego RPM z YouTube Studio Analytics. Sezonowość (Q4 vs Q1) może zmieniać RPM o ±40%.

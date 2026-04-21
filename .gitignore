@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+output/*/screen.mp4
+output/*/dashboard_frames/
+output/*/dashboard.mov
+*.log
+.DS_Store
+.vscode/
+.idea/
