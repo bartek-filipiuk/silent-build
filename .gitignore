@@ -9,3 +9,7 @@ output/*/dashboard.mov
 .DS_Store
 .vscode/
 .idea/
+pnpm-debug.log
+pnpm-lock.yaml.backup
+coverage/
+*.tsbuildinfo
