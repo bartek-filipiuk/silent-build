@@ -46,6 +46,9 @@ importers:
 
   packages/overlay:
     dependencies:
+      '@remotion/bundler':
+        specifier: ^4.0.200
+        version: 4.0.449(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@remotion/cli':
         specifier: ^4.0.200
         version: 4.0.450(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
