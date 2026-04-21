@@ -1,0 +1,16 @@
+{
+  "project": { "name": "FocusFeed (mock)", "startTs": 1700000000000, "endTs": 1700010000000 },
+  "phases": [
+    { "index": 1, "label": "Architecture", "startTs": 1700000000000, "endTs": 1700002500000, "source": "manual-marker" },
+    { "index": 2, "label": "Backend", "startTs": 1700002500000, "endTs": 1700005500000, "source": "manual-marker" },
+    { "index": 3, "label": "Frontend (Claude Design)", "startTs": 1700005500000, "endTs": 1700008500000, "source": "manual-marker" },
+    { "index": 4, "label": "Security", "startTs": 1700008500000, "endTs": 1700010000000, "source": "manual-marker" }
+  ],
+  "events": [
+    { "ts": 1700000000000, "type": "prompt", "data": { "text": "Setup Next.js 15 with App Router", "tokensIn": 12 } },
+    { "ts": 1700000120000, "type": "file_write", "data": { "path": "app/page.tsx", "linesAdded": 45 } },
+    { "ts": 1700000300000, "type": "tool_call", "data": { "name": "Bash", "args": { "command": "pnpm install" } } },
+    { "ts": 1700000500000, "type": "tokens_delta", "data": { "input": 1250, "output": 890 } }
+  ],
+  "metrics": { "totalTokens": 45000, "filesTouched": 14, "promptsCount": 23, "toolCallsCount": 89 }
+}

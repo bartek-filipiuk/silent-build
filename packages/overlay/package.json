@@ -1,0 +1,26 @@
+{
+  "name": "@silent-build/overlay",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/Root.tsx",
+    "render": "tsx src/render-cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@silent-build/shared": "workspace:*",
+    "@remotion/cli": "^4.0.200",
+    "@remotion/renderer": "^4.0.200",
+    "commander": "^12.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.200"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "tsx": "^4.19.0"
+  }
+}
