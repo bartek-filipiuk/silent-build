@@ -54,3 +54,55 @@ function truncate(s: string, max: number): string {
   if (s.length <= max) return s
   return s.slice(0, max) + '...'
 }
+
+const FILE_TOOLS = new Set(['Write', 'Edit'])
+
+export function extractToolCalls(events: ParsedEvent[]): Extract<TimelineEvent, { type: 'tool_call' }>[] {
+  const out: Extract<TimelineEvent, { type: 'tool_call' }>[] = []
+  for (const ev of events) {
+    if (ev.type !== 'assistant') continue
+    for (const part of ev.message.content) {
+      if (part.type !== 'tool_use') continue
+      if (!part.name) continue
+      if (FILE_TOOLS.has(part.name)) continue
+      out.push({
+        ts: new Date(ev.timestamp).getTime(),
+        type: 'tool_call',
+        data: { name: part.name, args: part.input }
+      })
+    }
+  }
+  return out
+}
+
+export function extractFileOps(
+  events: ParsedEvent[]
+): Array<Extract<TimelineEvent, { type: 'file_write' }> | Extract<TimelineEvent, { type: 'file_edit' }>> {
+  const out: Array<Extract<TimelineEvent, { type: 'file_write' }> | Extract<TimelineEvent, { type: 'file_edit' }>> = []
+  for (const ev of events) {
+    if (ev.type !== 'assistant') continue
+    for (const part of ev.message.content) {
+      if (part.type !== 'tool_use' || !part.name) continue
+      if (!FILE_TOOLS.has(part.name)) continue
+      const input = (part.input ?? {}) as Record<string, unknown>
+      const path = typeof input.file_path === 'string' ? input.file_path : undefined
+      if (!path) continue
+      const ts = new Date(ev.timestamp).getTime()
+
+      if (part.name === 'Write') {
+        const content = typeof input.content === 'string' ? input.content : ''
+        const linesAdded = content === '' ? 0 : content.split('\n').length
+        out.push({ ts, type: 'file_write', data: { path, linesAdded } })
+      } else {
+        const oldLines = typeof input.old_string === 'string' ? input.old_string.split('\n').length : 0
+        const newLines = typeof input.new_string === 'string' ? input.new_string.split('\n').length : 0
+        out.push({
+          ts,
+          type: 'file_edit',
+          data: { path, linesChanged: Math.max(oldLines, newLines) }
+        })
+      }
+    }
+  }
+  return out
+}

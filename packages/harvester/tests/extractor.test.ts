@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { extractPrompts, extractTokens, computeTimerBounds } from '../src/extractor.js'
+import { extractPrompts, extractTokens, computeTimerBounds, extractToolCalls, extractFileOps } from '../src/extractor.js'
 import type { ParsedEvent } from '../src/parser.js'
 
 const userPrompt = (uuid: string, ts: string, text: string): ParsedEvent => ({
@@ -101,5 +101,86 @@ describe('computeTimerBounds', () => {
 
   it('throws on empty events', () => {
     expect(() => computeTimerBounds([])).toThrow(/no events/i)
+  })
+})
+
+const assistantWithToolUse = (
+  uuid: string,
+  ts: string,
+  toolName: string,
+  input: unknown
+): ParsedEvent => ({
+  type: 'assistant',
+  uuid,
+  parentUuid: null,
+  timestamp: ts,
+  message: {
+    role: 'assistant',
+    content: [{ type: 'tool_use', id: `t_${uuid}`, name: toolName, input }]
+  }
+})
+
+describe('extractToolCalls', () => {
+  it('emits tool_call per tool_use in assistant content', () => {
+    const events = [
+      assistantWithToolUse('a1', '2026-04-21T10:00:00.000Z', 'Bash', { command: 'ls' }),
+      assistantWithToolUse('a2', '2026-04-21T10:00:05.000Z', 'Grep', { pattern: 'foo' })
+    ]
+    const calls = extractToolCalls(events)
+    expect(calls).toHaveLength(2)
+    expect(calls[0]!.data.name).toBe('Bash')
+    expect(calls[1]!.data.name).toBe('Grep')
+  })
+
+  it('excludes Write and Edit (handled by extractFileOps)', () => {
+    const events = [
+      assistantWithToolUse('a1', '2026-04-21T10:00:00.000Z', 'Write', { file_path: '/tmp/x', content: 'hi' }),
+      assistantWithToolUse('a2', '2026-04-21T10:00:01.000Z', 'Bash', { command: 'ls' })
+    ]
+    const calls = extractToolCalls(events)
+    expect(calls).toHaveLength(1)
+    expect(calls[0]!.data.name).toBe('Bash')
+  })
+})
+
+describe('extractFileOps', () => {
+  it('emits file_write for Write tool_use', () => {
+    const events = [
+      assistantWithToolUse('a1', '2026-04-21T10:00:00.000Z', 'Write', {
+        file_path: '/home/u/app.ts',
+        content: 'line1\nline2\nline3'
+      })
+    ]
+    const ops = extractFileOps(events)
+    expect(ops).toHaveLength(1)
+    expect(ops[0]).toEqual({
+      ts: new Date('2026-04-21T10:00:00.000Z').getTime(),
+      type: 'file_write',
+      data: { path: '/home/u/app.ts', linesAdded: 3 }
+    })
+  })
+
+  it('emits file_edit for Edit tool_use', () => {
+    const events = [
+      assistantWithToolUse('a1', '2026-04-21T10:00:00.000Z', 'Edit', {
+        file_path: '/home/u/app.ts',
+        old_string: 'a\nb',
+        new_string: 'a\nb\nc\nd'
+      })
+    ]
+    const ops = extractFileOps(events)
+    expect(ops).toHaveLength(1)
+    expect(ops[0]!.type).toBe('file_edit')
+    if (ops[0]!.type === 'file_edit') {
+      expect(ops[0]!.data.path).toBe('/home/u/app.ts')
+      expect(ops[0]!.data.linesChanged).toBe(4)
+    }
+  })
+
+  it('ignores tool_use without file_path', () => {
+    const events = [
+      assistantWithToolUse('a1', '2026-04-21T10:00:00.000Z', 'Write', { content: 'no path' })
+    ]
+    expect(extractFileOps(events)).toHaveLength(0)
   })
 })
