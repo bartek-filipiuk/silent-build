@@ -1,0 +1,22 @@
+{
+  "name": "@silent-build/harvester",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "harvest": "./dist/cli.js"
+  },
+  "scripts": {
+    "harvest": "tsx src/cli.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@silent-build/shared": "workspace:*",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
