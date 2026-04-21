@@ -2,11 +2,13 @@
 import { Command } from 'commander'
 import { bundle } from '@remotion/bundler'
 import { renderMedia, selectComposition, renderFrames } from '@remotion/renderer'
-import { join, resolve } from 'node:path'
+import { join, resolve, isAbsolute } from 'node:path'
 import { existsSync, mkdirSync } from 'node:fs'
 import { loadTimeline } from './lib/timeline-loader.js'
 
 const program = new Command()
+
+const USER_CWD = process.env['INIT_CWD'] ?? process.cwd()
 
 program
   .name('render')
@@ -16,7 +18,7 @@ program
   .option('--fps <n>', 'frames per second', '60')
   .option('--max-frames <n>', 'cap render to at most N frames (useful for smoke tests)')
   .action(async (opts: { project: string; format: 'mov' | 'png' | 'both'; fps: string; maxFrames?: string }) => {
-    const projectDir = resolve(opts.project)
+    const projectDir = isAbsolute(opts.project) ? opts.project : resolve(USER_CWD, opts.project)
     const timelinePath = join(projectDir, 'timeline.json')
     if (!existsSync(timelinePath)) {
       throw new Error(`timeline.json not found in ${projectDir}`)
