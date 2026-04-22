@@ -1,6 +1,14 @@
 # silent-build
 
-Post-processing pipeline dla wiralowych filmow silent-coding. Zamienia sesje Claude Code (`.jsonl`) w PNG/MOV overlay, ktory wklejamy obok OBS recording w CapCut.
+**Post-processing pipeline for viral "silent coding" YouTube videos.** Parses Claude Code `.jsonl` sessions into a mission-control style Dashboard PNG sequence, rendered via Remotion, ready to drop next to OBS screen recording in CapCut.
+
+> Repo: https://github.com/bartek-filipiuk/silent-build
+> License: [MIT](./LICENSE)
+> Status: **MVP pipeline working · visual redesign in progress** (NASA mission-control style, see `docs/design-brief.md`)
+
+![Current dashboard render](./docs/reference-frames/current-dashboard.png)
+
+*(render z sesji security-audit Drupala — 7 widgetów, dark mode, real data z `.jsonl`. Aktualny "before state" przed Claude Design redesignem.)*
 
 ## Architektura
 
@@ -86,3 +94,22 @@ scripts/
 - `pnpm test` — Vitest we wszystkich paczkach
 - `pnpm typecheck` — TS check we wszystkich paczkach
 - `./scripts/smoke-e2e.sh` — pelen pipeline na biezacej sesji CC (renderuje 60 klatek dla szybkiej weryfikacji)
+
+## Visual redesign (in progress)
+
+Dashboard aktualnie wygląda funkcjonalnie ale surowo (inline styles, brak ikon, brak animacji). Trwa redesign do stylu **NASA mission control** (amber/green indicators, grid lines, monospace typography hierarchy).
+
+Plan faz:
+1. **Foundation** — public repo, design brief, reference frames ← *you are here*
+2. **Design tokens** — refactor hex'ów do `theme/tokens.ts` (zero visual change)
+3. **Dashboard redesign** — brief → Claude Design → adapt → Remotion 60fps
+4. **New compositions** — IntroCard, OutroCard, PhaseTransition, Thumbnail generator
+5. **Logo + polish** — brand mark, wordmark, usage docs
+
+Design brief dla Claude Design: `docs/design-brief.md`
+
+## Linki
+
+- Design spec: `docs/superpowers/specs/2026-04-21-silent-build-design.md`
+- Implementation plan: `docs/superpowers/plans/2026-04-21-silent-build-pipeline-mvp.md`
+- Visual redesign plan: `docs/design-brief.md`
