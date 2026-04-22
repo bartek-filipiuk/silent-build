@@ -3,6 +3,7 @@ import type React from 'react'
 import { useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion'
 import type { SessionTimeline } from '@silent-build/shared'
 import { tokens } from '../theme/tokens.js'
+import { Logo } from '../brand/Logo.js'
 
 export interface OutroCardProps {
   projectName: string
@@ -43,16 +44,6 @@ const CornerBracket: React.FC<{
     </svg>
   )
 }
-
-const LogoPlaceholder: React.FC<{ size: number }> = ({ size }) => (
-  <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
-    <circle cx="24" cy="24" r="20" stroke={tokens.colors.amberDim} strokeWidth="1.5" />
-    <circle cx="24" cy="24" r="13" stroke={tokens.colors.amber} strokeWidth="1.5" />
-    <circle cx="24" cy="24" r="3"  fill={tokens.colors.amber} />
-    <path d="M24 2 V8 M24 40 V46 M2 24 H8 M40 24 H46"
-          stroke={tokens.colors.amber} strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-)
 
 // Animated check (stroke "draws" in via dashoffset interpolation).
 const MissionCheck: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
@@ -187,7 +178,7 @@ export const OutroCard: React.FC<OutroCardProps> = ({
           letterSpacing: '0.42em',
           color: tokens.colors.textPrimary
         }}>S I L E N T - B U I L D</div>
-        <LogoPlaceholder size={48} />
+        <Logo size={48} variant="amber" />
       </div>
       <div style={{
         position: 'absolute', top: 122, left: 96, right: 96, height: 1,

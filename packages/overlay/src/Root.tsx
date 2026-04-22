@@ -4,6 +4,7 @@ import { Dashboard, type DashboardProps } from './Dashboard.js'
 import { IntroCard, type IntroCardProps } from './compositions/IntroCard.js'
 import { OutroCard, type OutroCardProps } from './compositions/OutroCard.js'
 import { PhaseTransition, type PhaseTransitionProps } from './compositions/PhaseTransition.js'
+import { Thumbnail, type ThumbnailProps } from './compositions/Thumbnail.js'
 import mockTimeline from './fixtures/mock-timeline.json'
 import { SessionTimelineSchema } from '@silent-build/shared'
 import { loadFonts } from './theme/fonts.js'
@@ -72,10 +73,23 @@ export const RemotionRoot: React.FC = () => (
         phaseNumber: 2
       } as unknown as Record<string, unknown>}
     />
+    <Composition
+      id="Thumbnail"
+      component={cast<ThumbnailProps>(Thumbnail)}
+      durationInFrames={1}
+      fps={FPS}
+      width={1280}
+      height={720}
+      defaultProps={{
+        title: 'I built an AI to replace my TikTok in 3 hours',
+        projectName: parsed.project.name,
+        episode: 1
+      } as unknown as Record<string, unknown>}
+    />
   </>
 )
 
 // Re-export prop types for downstream tooling (render-cli uses them).
-export type { DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps }
+export type { DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ThumbnailProps }
 
 registerRoot(RemotionRoot)

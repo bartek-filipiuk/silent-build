@@ -20,6 +20,7 @@
     "render:intro": "pnpm --filter @silent-build/overlay run render:intro",
     "render:outro": "pnpm --filter @silent-build/overlay run render:outro",
     "render:phase": "pnpm --filter @silent-build/overlay run render:phase",
+    "render:thumb": "pnpm --filter @silent-build/overlay run render:thumb",
     "studio": "pnpm --filter @silent-build/overlay run studio"
   },
   "devDependencies": {

@@ -10,8 +10,8 @@ const program = new Command()
 
 const USER_CWD = process.env['INIT_CWD'] ?? process.cwd()
 
-type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition'
-const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition']
+type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail'
+const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail']
 
 const outputStem = (comp: CompId): string => {
   switch (comp) {
@@ -19,6 +19,7 @@ const outputStem = (comp: CompId): string => {
     case 'Intro': return 'intro'
     case 'Outro': return 'outro'
     case 'PhaseTransition': return 'phase-transition'
+    case 'Thumbnail': return 'thumbnail'
   }
 }
 
@@ -32,6 +33,8 @@ program
   .option('--max-frames <n>', 'cap render to at most N frames (useful for smoke tests)')
   .option('--start-frame <n>', 'start rendering from frame N', '0')
   .option('--phase <n>', 'phase number 1-4 (for PhaseTransition)', '2')
+  .option('--title <text>', 'title (for Thumbnail)', 'I built it in silence')
+  .option('--episode <n>', 'episode number (for Thumbnail)')
   .action(async (opts: {
     project: string
     composition: string
@@ -40,6 +43,8 @@ program
     maxFrames?: string
     startFrame: string
     phase: string
+    title: string
+    episode?: string
   }) => {
     const compId = opts.composition as CompId
     if (!ALL_COMPS.includes(compId)) {
@@ -81,6 +86,14 @@ program
           const phase = timeline.phases[n - 1]
           if (!phase) throw new Error(`phase ${n} not found in timeline`)
           return { phase, phaseNumber: n }
+        }
+        case 'Thumbnail': {
+          const props: Record<string, unknown> = {
+            title: opts.title,
+            projectName: timeline.project.name
+          }
+          if (opts.episode) props['episode'] = parseInt(opts.episode, 10)
+          return props
         }
       }
     })()

@@ -2,7 +2,6 @@
 import type React from 'react'
 import { useCurrentFrame, useVideoConfig, interpolate, spring, Sequence } from 'remotion'
 import { tokens } from '../theme/tokens.js'
-import { Logo } from '../brand/Logo.js'
 
 export interface IntroCardProps {
   projectName: string
@@ -38,6 +37,19 @@ const CornerBracket: React.FC<{
   )
 }
 
+// Placeholder logo — real Logo component lands in Phase 2.3.
+// Concentric amber ring with 4 ticks ("instrument dial").
+const LogoPlaceholder: React.FC<{ size: number }> = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+    <circle cx="24" cy="24" r="20" stroke={tokens.colors.amberDim} strokeWidth="1.5" />
+    <circle cx="24" cy="24" r="13" stroke={tokens.colors.amber} strokeWidth="1.5" />
+    <circle cx="24" cy="24" r="3"  fill={tokens.colors.amber} />
+    <path
+      d="M24 2 V8 M24 40 V46 M2 24 H8 M40 24 H46"
+      stroke={tokens.colors.amber} strokeWidth="1.5" strokeLinecap="round"
+    />
+  </svg>
+)
 
 const formatUTC = (d: Date): string => {
   const pad = (n: number) => n.toString().padStart(2, '0')
@@ -191,7 +203,7 @@ export const IntroCard: React.FC<IntroCardProps> = ({
         }}>
           S I L E N T - B U I L D
         </div>
-        <Logo size={48} variant="amber" />
+        <LogoPlaceholder size={48} />
       </div>
 
       {/* Hairline divider under header */}
