@@ -3,6 +3,10 @@ import { Composition, registerRoot } from 'remotion'
 import { Dashboard, type DashboardProps } from './Dashboard.js'
 import mockTimeline from './fixtures/mock-timeline.json'
 import { SessionTimelineSchema } from '@silent-build/shared'
+import { loadFonts } from './theme/fonts.js'
+
+// Kick off font loading as soon as the composition bundle is evaluated.
+loadFonts()
 
 const parsed = SessionTimelineSchema.parse(mockTimeline)
 const durationMs = parsed.project.endTs - parsed.project.startTs

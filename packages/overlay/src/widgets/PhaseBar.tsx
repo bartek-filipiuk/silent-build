@@ -1,31 +1,139 @@
+// packages/overlay/src/widgets/PhaseBar.tsx
 import type React from 'react'
+import { useCurrentFrame, interpolate } from 'remotion'
 import type { SessionTimeline } from '@silent-build/shared'
 import { tokens } from '../theme/tokens.js'
 
-export const PhaseBar: React.FC<{ timeline: SessionTimeline; currentMs: number }> = ({ timeline, currentMs }) => {
+export interface PhaseBarProps {
+  timeline: SessionTimeline
+  currentMs: number
+}
+
+export const PhaseBar: React.FC<PhaseBarProps> = ({
+  timeline,
+  currentMs
+}) => {
+  const frame = useCurrentFrame()
+  // 1.5s pulse at 30fps = 45 frames; spec uses 90-frame cycle → use that.
+  const pulseOpacity = interpolate(
+    frame % 90,
+    [0, 45, 90],
+    [1, 0.6, 1]
+  )
+
   const absTs = timeline.project.startTs + currentMs
-  const active = timeline.phases.find(p => absTs >= p.startTs && absTs < p.endTs) ?? timeline.phases[timeline.phases.length - 1]!
-  const sessionDur = timeline.project.endTs - timeline.project.startTs
-  const pct = Math.min(100, (currentMs / sessionDur) * 100)
+  const phases = timeline.phases
+  const totalDur =
+    timeline.project.endTs - timeline.project.startTs || 1
+
+  // Find active phase
+  const activeIdx = phases.findIndex(
+    (p) => absTs >= p.startTs && absTs < p.endTs
+  )
+  const lastPhase = phases[phases.length - 1]
+  const resolvedActive =
+    activeIdx === -1
+      ? lastPhase && absTs >= lastPhase.endTs
+        ? phases.length // all completed
+        : 0
+      : activeIdx
+
+  const active = phases[resolvedActive]
 
   return (
-    <div style={{ padding: 16, borderTop: tokens.borders.hairline }}>
-      <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
-        {timeline.phases.map(p => {
-          const phaseStartPct = ((p.startTs - timeline.project.startTs) / sessionDur) * 100
-          const phaseEndPct = ((p.endTs - timeline.project.startTs) / sessionDur) * 100
-          const filled = Math.max(0, Math.min(phaseEndPct, pct) - phaseStartPct)
-          const width = phaseEndPct - phaseStartPct
+    <div
+      style={{
+        height: 80,
+        padding: `${tokens.spacing.sm}px ${tokens.spacing.xl}px`,
+        borderTop: tokens.borders.hairline,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        gap: tokens.spacing.xs,
+        background: tokens.colors.bg
+      }}
+    >
+      {/* Blocks row */}
+      <div style={{ display: 'flex', gap: 4, height: 18 }}>
+        {phases.map((p, i) => {
+          const widthPct = ((p.endTs - p.startTs) / totalDur) * 100
+          const isCompleted = i < resolvedActive
+          const isActive = i === resolvedActive
+
+          const phaseElapsed = Math.max(
+            0,
+            Math.min(absTs, p.endTs) - p.startTs
+          )
+          const phaseTotal = p.endTs - p.startTs || 1
+          const fillPct = (phaseElapsed / phaseTotal) * 100
+
+          let background: string = tokens.colors.panel
+          let borderColor: string = tokens.colors.grid
+          let fillStyle: React.CSSProperties = {}
+
+          if (isCompleted) {
+            background = tokens.colors.amberDim
+            borderColor = tokens.colors.amberDim
+          } else if (isActive) {
+            borderColor = tokens.colors.amberBright
+            fillStyle = {
+              background: `linear-gradient(90deg, ${tokens.colors.amberDim} 0%, ${tokens.colors.amberBright} 100%)`,
+              width: `${fillPct}%`,
+              height: '100%'
+            }
+          }
+
           return (
-            <div key={p.index} style={{ flex: width, background: tokens.colors.grid, height: 6, position: 'relative' }}>
-              <div style={{ width: `${(filled / width) * 100}%`, height: '100%', background: p.index === active.index ? tokens.colors.amber : tokens.colors.textDim }} />
+            <div
+              key={i}
+              style={{
+                flex: `${widthPct} 0 0`,
+                minWidth: 0,
+                height: '100%',
+                background,
+                border: `1px solid ${borderColor}`,
+                opacity: isActive ? pulseOpacity : 1,
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {isActive && <div style={fillStyle} />}
             </div>
           )
         })}
       </div>
-      <div style={{ fontSize: 14, display: 'flex', justifyContent: 'space-between' }}>
-        <span>Phase {active.index}/4</span>
-        <span style={{ fontWeight: 600 }}>{active.label}</span>
+
+      {/* Phase label */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'baseline',
+          gap: tokens.spacing.sm,
+          fontFamily: tokens.typography.fontMono,
+          fontSize: 12
+        }}
+      >
+        <span
+          style={{
+            color: tokens.colors.textDim,
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em'
+          }}
+        >
+          Phase {resolvedActive + 1} / {phases.length}
+        </span>
+        <span style={{ color: tokens.colors.textMuted }}>·</span>
+        <span
+          style={{
+            color: tokens.colors.amberBright,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em'
+          }}
+        >
+          {active?.label ?? 'Complete'}
+        </span>
       </div>
     </div>
   )
