@@ -17,7 +17,8 @@ program
   .option('--format <format>', 'mov | png | both', 'both')
   .option('--fps <n>', 'frames per second', '60')
   .option('--max-frames <n>', 'cap render to at most N frames (useful for smoke tests)')
-  .action(async (opts: { project: string; format: 'mov' | 'png' | 'both'; fps: string; maxFrames?: string }) => {
+  .option('--start-frame <n>', 'start rendering from frame N (useful to preview later parts of session)', '0')
+  .action(async (opts: { project: string; format: 'mov' | 'png' | 'both'; fps: string; maxFrames?: string; startFrame: string }) => {
     const projectDir = isAbsolute(opts.project) ? opts.project : resolve(USER_CWD, opts.project)
     const timelinePath = join(projectDir, 'timeline.json')
     if (!existsSync(timelinePath)) {
@@ -28,8 +29,10 @@ program
     const fps = parseInt(opts.fps, 10)
     const durationSec = Math.ceil((timeline.project.endTs - timeline.project.startTs) / 1000)
     const durationFrames = Math.max(fps, durationSec * fps)
+    const startFrame = parseInt(opts.startFrame, 10)
     const maxFrames = opts.maxFrames ? parseInt(opts.maxFrames, 10) : durationFrames
-    const effectiveFrames = Math.min(durationFrames, maxFrames)
+    const lastFrame = Math.min(durationFrames - 1, startFrame + maxFrames - 1)
+    const effectiveFrames = durationFrames
 
     const entry = join(import.meta.dirname, 'Root.tsx')
     console.log(`Bundling Remotion project from ${entry}`)
@@ -80,10 +83,11 @@ program
         inputProps: { timeline },
         imageFormat: 'png',
         outputDir: pngDir,
-        frameRange: [0, effectiveFrames - 1],
+        frameRange: [startFrame, lastFrame],
         onStart: () => undefined,
         onFrameUpdate: (done, _frameIndex, _timeMs) => {
-          if (done % 60 === 0) console.log(`  ${done}/${effectiveFrames} frames`)
+          const total = lastFrame - startFrame + 1
+          if (done % 20 === 0) console.log(`  ${done}/${total} frames (frame ${startFrame + done}/${durationFrames})`)
         },
         concurrency: 4
       })
