@@ -1,5 +1,6 @@
 import type React from 'react'
 import type { SessionTimeline } from '@silent-build/shared'
+import { tokens } from '../theme/tokens.js'
 
 export const PhaseBar: React.FC<{ timeline: SessionTimeline; currentMs: number }> = ({ timeline, currentMs }) => {
   const absTs = timeline.project.startTs + currentMs
@@ -8,7 +9,7 @@ export const PhaseBar: React.FC<{ timeline: SessionTimeline; currentMs: number }
   const pct = Math.min(100, (currentMs / sessionDur) * 100)
 
   return (
-    <div style={{ padding: 16, borderTop: '1px solid #1a1a1a' }}>
+    <div style={{ padding: 16, borderTop: tokens.borders.hairline }}>
       <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
         {timeline.phases.map(p => {
           const phaseStartPct = ((p.startTs - timeline.project.startTs) / sessionDur) * 100
@@ -16,8 +17,8 @@ export const PhaseBar: React.FC<{ timeline: SessionTimeline; currentMs: number }
           const filled = Math.max(0, Math.min(phaseEndPct, pct) - phaseStartPct)
           const width = phaseEndPct - phaseStartPct
           return (
-            <div key={p.index} style={{ flex: width, background: '#1a1a1a', height: 6, position: 'relative' }}>
-              <div style={{ width: `${(filled / width) * 100}%`, height: '100%', background: p.index === active.index ? '#4ade80' : '#64748b' }} />
+            <div key={p.index} style={{ flex: width, background: tokens.colors.grid, height: 6, position: 'relative' }}>
+              <div style={{ width: `${(filled / width) * 100}%`, height: '100%', background: p.index === active.index ? tokens.colors.amber : tokens.colors.textDim }} />
             </div>
           )
         })}

@@ -1,6 +1,7 @@
 import type React from 'react'
 import type { SessionTimeline } from '@silent-build/shared'
 import { formatDuration } from '../lib/format-duration.js'
+import { tokens } from '../theme/tokens.js'
 
 const MAX_ENTRIES = 8
 
@@ -27,10 +28,10 @@ export const ActivityLog: React.FC<{ timeline: SessionTimeline; currentMs: numbe
 
   const latest = entries.slice(-MAX_ENTRIES)
   return (
-    <div style={{ marginTop: 24, border: '1px solid #1a1a1a', padding: 12 }}>
+    <div style={{ marginTop: 24, border: tokens.borders.hairline, padding: 12 }}>
       <div style={{ fontSize: 12, opacity: 0.6, textTransform: 'uppercase', marginBottom: 8 }}>Activity log</div>
       {latest.map((e, i) => (
-        <div key={i} style={{ fontSize: 13, display: 'flex', gap: 8, color: e.isSubagent ? '#94a3b8' : '#e5e5e5', marginTop: 2 }}>
+        <div key={i} style={{ fontSize: 13, display: 'flex', gap: 8, color: e.isSubagent ? tokens.colors.textMuted : tokens.colors.textPrimary, marginTop: 2 }}>
           <span style={{ opacity: 0.5, width: 56 }}>{formatDuration(e.ts - timeline.project.startTs)}</span>
           <span style={{ width: 18 }}>{e.icon}</span>
           <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.text}</span>
