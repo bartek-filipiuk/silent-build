@@ -6,6 +6,10 @@
   "scripts": {
     "studio": "remotion studio src/Root.tsx",
     "render": "tsx src/render-cli.ts",
+    "render:dashboard": "tsx src/render-cli.ts --composition Dashboard",
+    "render:intro": "tsx src/render-cli.ts --composition Intro",
+    "render:outro": "tsx src/render-cli.ts --composition Outro",
+    "render:phase": "tsx src/render-cli.ts --composition PhaseTransition",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

@@ -16,6 +16,10 @@
     "mark": "pnpm --filter @silent-build/markers run mark",
     "harvest": "pnpm --filter @silent-build/harvester run harvest",
     "render": "pnpm --filter @silent-build/overlay run render",
+    "render:dashboard": "pnpm --filter @silent-build/overlay run render:dashboard",
+    "render:intro": "pnpm --filter @silent-build/overlay run render:intro",
+    "render:outro": "pnpm --filter @silent-build/overlay run render:outro",
+    "render:phase": "pnpm --filter @silent-build/overlay run render:phase",
     "studio": "pnpm --filter @silent-build/overlay run studio"
   },
   "devDependencies": {
