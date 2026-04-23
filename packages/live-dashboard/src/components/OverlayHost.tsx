@@ -1,15 +1,27 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type ReactNode } from 'react'
 import {
   IntroCard, OutroCard, PhaseTransition
 } from '@silent-build/ui'
 import type { Phase, SessionTimeline } from '@silent-build/shared'
 import { store, useOverlay, useTimeline } from '../lib/store.js'
+import { LiveAnimationProvider } from '../lib/animation.js'
 
 const DURATIONS_MS: Record<string, number> = {
   Intro: 4000,
   Outro: 7000,
   PhaseTransition: 2500
 }
+
+/**
+ * Each overlay scene gets its own LiveAnimationProvider anchored at the
+ * moment the trigger fired (overlay.startedAt). That way frame=0 aligns with
+ * the fade-in regardless of how long the underlying session has been running.
+ */
+const SceneAnimationWrap = ({ startedAt, children }: { startedAt: number; children: ReactNode }) => (
+  <LiveAnimationProvider sessionStartTs={startedAt} pulseFps={60}>
+    {children}
+  </LiveAnimationProvider>
+)
 
 export const OverlayHost = () => {
   const overlay = useOverlay()
@@ -31,23 +43,31 @@ export const OverlayHost = () => {
 
   if (overlay.scene === 'Intro') {
     return (
-      <IntroCard
-        projectName={timeline?.project.name ?? 'Session'}
-        targetDescription={derivedObjective(timeline)}
-        startingAt={startingAt}
-      />
+      <SceneAnimationWrap startedAt={overlay.startedAt}>
+        <IntroCard
+          projectName={timeline?.project.name ?? 'Session'}
+          targetDescription={derivedObjective(timeline)}
+          startingAt={startingAt}
+          durationInFrames={Math.round((DURATIONS_MS.Intro! / 1000) * 60)}
+        />
+      </SceneAnimationWrap>
     )
   }
 
   if (overlay.scene === 'Outro') {
     const metrics = timeline?.metrics ?? { totalTokens: 0, filesTouched: 0, promptsCount: 0, toolCallsCount: 0 }
-    const durationMs = timeline ? timeline.project.endTs - timeline.project.startTs : 0
+    const durationMs = timeline
+      ? Math.max(0, timeline.project.endTs - timeline.project.startTs)
+      : 0
     return (
-      <OutroCard
-        projectName={timeline?.project.name ?? 'Session'}
-        metrics={metrics}
-        durationMs={durationMs}
-      />
+      <SceneAnimationWrap startedAt={overlay.startedAt}>
+        <OutroCard
+          projectName={timeline?.project.name ?? 'Session'}
+          metrics={metrics}
+          durationMs={durationMs}
+          durationInFrames={Math.round((DURATIONS_MS.Outro! / 1000) * 60)}
+        />
+      </SceneAnimationWrap>
     )
   }
 
@@ -56,7 +76,15 @@ export const OverlayHost = () => {
     const n = props.phaseNumber ?? 2
     const phase = props.phase ?? timeline?.phases[n - 1]
     if (!phase) return null
-    return <PhaseTransition phase={phase} phaseNumber={n} />
+    return (
+      <SceneAnimationWrap startedAt={overlay.startedAt}>
+        <PhaseTransition
+          phase={phase}
+          phaseNumber={n}
+          durationInFrames={Math.round((DURATIONS_MS.PhaseTransition! / 1000) * 60)}
+        />
+      </SceneAnimationWrap>
+    )
   }
 
   return null

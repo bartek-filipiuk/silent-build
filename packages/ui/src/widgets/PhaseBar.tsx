@@ -20,18 +20,13 @@ export const PhaseBar: React.FC<PhaseBarProps> = ({
   const totalDur =
     timeline.project.endTs - timeline.project.startTs || 1
 
-  // Find active phase
+  // Find active phase. Treat absTs exactly at a phase boundary as still
+  // inside the preceding phase (so `absTs === endTs` on the last phase means
+  // "finishing that phase", not "all complete").
   const activeIdx = phases.findIndex(
-    (p) => absTs >= p.startTs && absTs < p.endTs
+    (p) => absTs >= p.startTs && absTs <= p.endTs
   )
-  const lastPhase = phases[phases.length - 1]
-  const resolvedActive =
-    activeIdx === -1
-      ? lastPhase && absTs >= lastPhase.endTs
-        ? phases.length // all completed
-        : 0
-      : activeIdx
-
+  const resolvedActive = activeIdx === -1 ? 0 : activeIdx
   const active = phases[resolvedActive]
 
   return (

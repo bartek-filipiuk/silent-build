@@ -16,22 +16,25 @@ interface StoreState {
   timeline: SessionTimeline | null
   overlay: OverlayState | null
   connected: boolean
-  version: number
 }
 
-const DEFAULT: StoreState = {
+const state: StoreState = {
   timeline: null,
   overlay: null,
-  connected: false,
-  version: 0
+  connected: false
 }
-
-const state: StoreState = { ...DEFAULT }
 const listeners = new Set<() => void>()
 
 const emit = (): void => {
-  state.version += 1
   for (const l of listeners) l()
+}
+
+/** Shallow-clone timeline wrapper so useSyncExternalStore detects change. */
+const bumpTimeline = (): void => {
+  if (state.timeline) state.timeline = { ...state.timeline }
+}
+const bumpOverlay = (): void => {
+  if (state.overlay) state.overlay = { ...state.overlay }
 }
 
 export const store = {
@@ -54,7 +57,7 @@ export const store = {
     } else if (msg.kind === 'delta') {
       if (!state.timeline) {
         state.timeline = {
-          project: { name: 'Session', startTs: Date.now(), endTs: Date.now() },
+          project: { name: 'Session', startTs: 0, endTs: 0 },
           phases: [
             { index: 1, label: 'Architecture', startTs: 0, endTs: 0, source: 'heuristic' },
             { index: 2, label: 'Backend',      startTs: 0, endTs: 0, source: 'heuristic' },
@@ -66,6 +69,7 @@ export const store = {
         }
       }
       mergeEvents(state.timeline, msg.events)
+      bumpTimeline()
       emit()
     } else if (msg.kind === 'trigger') {
       if (msg.scene === 'Clear') {
@@ -83,6 +87,14 @@ export const store = {
       state.overlay = null
       emit()
     }
+  },
+
+  /** Test/debug helper — reset all state. */
+  reset(): void {
+    state.timeline = null
+    state.overlay = null
+    state.connected = false
+    emit()
   }
 }
 
@@ -112,3 +124,22 @@ export const useOverlay = (): OverlayState | null =>
 
 export const useConnected = (): boolean =>
   useSyncExternalStore(store.subscribe, () => store.getState().connected, () => false)
+
+/**
+ * Used by LiveAnimationProvider: wall-clock time when this browser tab first
+ * saw a session, not the (possibly historical) timestamp of the first event.
+ * Keeps timer monotonic from the viewer's perspective even when the jsonl's
+ * event timestamps are older (e.g. replay demo). On live streams the two
+ * coincide to within a few hundred ms.
+ */
+let viewerEpoch: number | null = null
+export const useViewerEpoch = (): number | null => {
+  const timeline = useTimeline()
+  if (timeline && viewerEpoch === null) {
+    viewerEpoch = Date.now()
+  }
+  if (!timeline) {
+    viewerEpoch = null
+  }
+  return viewerEpoch
+}

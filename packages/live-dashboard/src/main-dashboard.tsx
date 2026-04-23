@@ -8,11 +8,12 @@ import { createRoot } from 'react-dom/client'
 import { Dashboard } from '@silent-build/ui'
 import { connectSse } from './lib/sse.js'
 import { LiveAnimationProvider } from './lib/animation.js'
-import { useTimeline, useConnected } from './lib/store.js'
+import { useTimeline, useConnected, useViewerEpoch } from './lib/store.js'
 
 const App = () => {
   const timeline = useTimeline()
   const connected = useConnected()
+  const viewerEpoch = useViewerEpoch()
 
   useEffect(() => connectSse(), [])
 
@@ -30,8 +31,11 @@ const App = () => {
     )
   }
 
+  // Use viewer epoch (time this tab first saw data) as session start — keeps
+  // the on-screen timer rising from 00:00:00 regardless of whether the jsonl
+  // holds fresh live events or historical ones (replay demo).
   return (
-    <LiveAnimationProvider sessionStartTs={timeline.project.startTs}>
+    <LiveAnimationProvider sessionStartTs={viewerEpoch ?? timeline.project.startTs} pulseFps={30}>
       <Dashboard timeline={timeline} />
     </LiveAnimationProvider>
   )
