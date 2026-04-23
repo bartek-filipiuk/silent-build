@@ -2,6 +2,7 @@
 import { Command } from 'commander'
 import { join } from 'node:path'
 import { writeMarker } from './writer.js'
+import { notifyLive } from './live-client.js'
 import type { ManualMarker } from '@silent-build/shared'
 
 const program = new Command()
@@ -28,9 +29,15 @@ for (const phase of phases) {
   }
 
   cmd.option('-o, --output-root <dir>', 'root folder for output/', 'output')
+  cmd.option('--live [url]', 'also POST trigger to live-server (default http://127.0.0.1:3333)')
 
-  cmd.action((opts: { name?: string; outputRoot: string }) => {
+  cmd.action(async (opts: { name?: string; outputRoot: string; live?: string | boolean }) => {
     const timestamp = Date.now()
+    const liveUrl = typeof opts.live === 'string'
+      ? opts.live
+      : opts.live === true
+        ? 'http://127.0.0.1:3333'
+        : null
 
     if (phase === 'project-start') {
       const name = opts.name!
@@ -41,6 +48,10 @@ for (const phase of phases) {
       console.log(`Created ${dir}/manual_markers.json`)
       console.log(`\nExport for subsequent markers in this session:`)
       console.log(`  export SILENT_BUILD_DIR=${dir}`)
+      if (liveUrl) {
+        const ok = await notifyLive(phase, { url: liveUrl })
+        if (ok) console.log(`[live] intro overlay fired at ${liveUrl}`)
+      }
       return
     }
 
@@ -52,7 +63,14 @@ for (const phase of phases) {
     }
     writeMarker({ outputDir: dir, phase, timestamp })
     console.log(`Added ${phase} marker to ${dir}/manual_markers.json at ${new Date(timestamp).toISOString()}`)
+    if (liveUrl) {
+      const ok = await notifyLive(phase, { url: liveUrl })
+      if (ok) console.log(`[live] phase trigger fired at ${liveUrl}`)
+    }
   })
 }
 
-program.parse()
+program.parseAsync().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})
