@@ -1,8 +1,7 @@
-// packages/overlay/src/widgets/PhaseBar.tsx
 import type React from 'react'
-import { useCurrentFrame, interpolate } from 'remotion'
 import type { SessionTimeline } from '@silent-build/shared'
 import { tokens } from '@silent-build/theme'
+import { useAnimation, pulseOpacity as computePulse } from '../context.js'
 
 export interface PhaseBarProps {
   timeline: SessionTimeline
@@ -13,13 +12,8 @@ export const PhaseBar: React.FC<PhaseBarProps> = ({
   timeline,
   currentMs
 }) => {
-  const frame = useCurrentFrame()
-  // 1.5s pulse at 30fps = 45 frames; spec uses 90-frame cycle → use that.
-  const pulseOpacity = interpolate(
-    frame % 90,
-    [0, 45, 90],
-    [1, 0.6, 1]
-  )
+  const { pulse15s } = useAnimation()
+  const pulseOpacity = computePulse(pulse15s, 0.6, 1)
 
   const absTs = timeline.project.startTs + currentMs
   const phases = timeline.phases

@@ -1,8 +1,7 @@
-// packages/overlay/src/widgets/SecurityPanel.tsx
 import type React from 'react'
-import { useCurrentFrame, interpolate } from 'remotion'
 import type { SessionTimeline } from '@silent-build/shared'
 import { tokens } from '@silent-build/theme'
+import { useAnimation, pulseOpacity as computePulse } from '../context.js'
 
 export interface SecurityPanelProps {
   timeline: SessionTimeline
@@ -45,12 +44,8 @@ export const SecurityPanel: React.FC<SecurityPanelProps> = ({
   timeline,
   currentMs
 }) => {
-  const frame = useCurrentFrame()
-  const pulseOpacity = interpolate(
-    frame % 90,
-    [0, 45, 90],
-    [1, 0.55, 1]
-  )
+  const { pulse15s } = useAnimation()
+  const pulseOpacity = computePulse(pulse15s, 0.55, 1)
 
   const absTs = timeline.project.startTs + currentMs
   const findings = timeline.events

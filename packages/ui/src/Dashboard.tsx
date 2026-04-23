@@ -1,6 +1,4 @@
-// packages/overlay/src/Dashboard.tsx
 import type React from 'react'
-import { useCurrentFrame, useVideoConfig, interpolate } from 'remotion'
 import type { SessionTimeline } from '@silent-build/shared'
 import { Timer } from './widgets/Timer.js'
 import { CurrentPrompt } from './widgets/CurrentPrompt.js'
@@ -10,6 +8,7 @@ import { ActivityLog } from './widgets/ActivityLog.js'
 import { PhaseBar } from './widgets/PhaseBar.js'
 import { SecurityPanel } from './widgets/SecurityPanel.js'
 import { tokens } from '@silent-build/theme'
+import { useAnimation, pulseOpacity as computePulse } from './context.js'
 
 export interface DashboardProps {
   timeline: SessionTimeline
@@ -50,13 +49,8 @@ const CornerBracket: React.FC<{
 }
 
 const HeaderStrip: React.FC<{ name: string }> = ({ name }) => {
-  const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
-  const beacon = interpolate(
-    frame % fps,
-    [0, fps / 2, fps],
-    [1, 0.4, 1]
-  )
+  const { pulse1s } = useAnimation()
+  const beacon = computePulse(pulse1s, 0.4, 1)
   return (
     <div
       style={{
@@ -140,9 +134,7 @@ const HeaderStrip: React.FC<{ name: string }> = ({ name }) => {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ timeline }) => {
-  const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
-  const currentMs = Math.floor((frame / fps) * 1000)
+  const { currentMs } = useAnimation()
   const sessionDur = timeline.project.endTs - timeline.project.startTs
   const clampedMs = Math.min(currentMs, sessionDur)
 

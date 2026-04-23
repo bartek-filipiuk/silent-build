@@ -1,7 +1,6 @@
-// packages/overlay/src/widgets/Timer.tsx
 import type React from 'react'
-import { useCurrentFrame, useVideoConfig, interpolate } from 'remotion'
 import { tokens } from '@silent-build/theme'
+import { useAnimation, pulseOpacity } from '../context.js'
 
 export interface TimerProps {
   elapsedMs: number
@@ -18,15 +17,8 @@ const formatHMS = (ms: number) => {
 }
 
 export const Timer: React.FC<TimerProps> = ({ elapsedMs, totalMs }) => {
-  const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
-
-  // 1 Hz live-dot pulse. 1s = `fps` frames.
-  const dotOpacity = interpolate(
-    frame % fps,
-    [0, fps / 2, fps],
-    [1, 0.35, 1]
-  )
+  const { pulse1s } = useAnimation()
+  const dotOpacity = pulseOpacity(pulse1s, 0.35, 1)
 
   const progress =
     totalMs && totalMs > 0

@@ -1,12 +1,13 @@
-// packages/overlay/src/compositions/PhaseTransition.tsx
 import type React from 'react'
-import { useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion'
+import { interpolate, spring } from 'remotion'
 import type { Phase } from '@silent-build/shared'
 import { tokens } from '@silent-build/theme'
+import { useAnimation } from '../context.js'
 
 export interface PhaseTransitionProps {
   phase: Phase
   phaseNumber: 1 | 2 | 3 | 4
+  durationInFrames?: number
 }
 
 // Taglines keyed on phase NUMBER (not label), so this works regardless of
@@ -23,10 +24,11 @@ const spacedPhase = (n: number): string =>
   `P H A S E   ${n}  /  4`
 
 export const PhaseTransition: React.FC<PhaseTransitionProps> = ({
-  phase, phaseNumber
+  phase, phaseNumber, durationInFrames: durProp
 }) => {
-  const frame = useCurrentFrame()
-  const { fps, durationInFrames } = useVideoConfig()
+  const { currentMs, fps } = useAnimation()
+  const frame = Math.floor(currentMs * fps / 1000)
+  const durationInFrames = durProp ?? Math.round(fps * 2.5)
 
   // Card fades in/out cleanly at both ends (last 18 frames fade out).
   const fadeIn = interpolate(frame, [0, 18], [0, 1], { extrapolateRight: 'clamp' })

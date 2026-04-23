@@ -21,6 +21,7 @@
     "@remotion/renderer": "^4.0.200",
     "@silent-build/shared": "workspace:*",
     "@silent-build/theme": "workspace:*",
+    "@silent-build/ui": "workspace:*",
     "commander": "^12.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

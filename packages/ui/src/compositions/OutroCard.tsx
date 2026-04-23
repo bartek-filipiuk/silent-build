@@ -1,15 +1,16 @@
-// packages/overlay/src/compositions/OutroCard.tsx
 import type React from 'react'
-import { useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion'
+import { interpolate, spring } from 'remotion'
 import type { SessionTimeline } from '@silent-build/shared'
 import { tokens } from '@silent-build/theme'
 import { Logo } from '../brand/Logo.js'
+import { useAnimation } from '../context.js'
 
 export interface OutroCardProps {
   projectName: string
   metrics: SessionTimeline['metrics']
   durationMs: number
   repoUrl?: string
+  durationInFrames?: number
 }
 
 const pad = (n: number) => n.toString().padStart(2, '0')
@@ -113,10 +114,12 @@ const StatRow: React.FC<StatRowProps> = ({
 // ---------- main ----------
 
 export const OutroCard: React.FC<OutroCardProps> = ({
-  projectName, metrics, durationMs, repoUrl
+  projectName, metrics, durationMs, repoUrl, durationInFrames: durProp
 }) => {
-  const frame = useCurrentFrame()
-  const { fps, durationInFrames } = useVideoConfig()
+  const { currentMs, fps } = useAnimation()
+  const frame = Math.floor(currentMs * fps / 1000)
+  const durationInFrames = durProp ?? fps * 7
+  void durationInFrames
   const inset = 32, bracket = 32
 
   const cardOpacity = interpolate(frame, [0, 18], [0, 1], { extrapolateRight: 'clamp' })

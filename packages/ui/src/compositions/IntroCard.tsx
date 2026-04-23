@@ -1,13 +1,15 @@
-// packages/overlay/src/compositions/IntroCard.tsx
 import type React from 'react'
-import { useCurrentFrame, useVideoConfig, interpolate, spring, Sequence } from 'remotion'
+import { interpolate, spring } from 'remotion'
 import { tokens } from '@silent-build/theme'
 import { Logo } from '../brand/Logo.js'
+import { useAnimation } from '../context.js'
 
 export interface IntroCardProps {
   projectName: string
   targetDescription: string
   startingAt?: Date
+  /** Total length of the card in frames. Defaults to 4 s at current fps. */
+  durationInFrames?: number
 }
 
 // ---------- decorators ----------
@@ -127,10 +129,11 @@ const Countdown: React.FC<{ frame: number; durationInFrames: number }> = ({
 // ---------- main ----------
 
 export const IntroCard: React.FC<IntroCardProps> = ({
-  projectName, targetDescription, startingAt
+  projectName, targetDescription, startingAt, durationInFrames: durProp
 }) => {
-  const frame = useCurrentFrame()
-  const { fps, durationInFrames } = useVideoConfig()
+  const { currentMs, fps } = useAnimation()
+  const frame = Math.floor(currentMs * fps / 1000)
+  const durationInFrames = durProp ?? fps * 4
 
   const startDate = startingAt ?? new Date()
   const inset = 32
@@ -237,7 +240,7 @@ export const IntroCard: React.FC<IntroCardProps> = ({
         </div>
 
         {/* Data rows */}
-        <Sequence from={Math.round(fps * 0.2)}>
+        {frame >= Math.round(fps * 0.2) && (
           <div style={{
             display: 'flex', flexDirection: 'column',
             gap: tokens.spacing.lg, alignItems: 'center',
@@ -246,7 +249,7 @@ export const IntroCard: React.FC<IntroCardProps> = ({
             <DataRow label="Objective"  value={targetDescription} />
             <DataRow label="Start Time" value={formatUTC(startDate)} />
           </div>
-        </Sequence>
+        )}
 
         {/* Status list */}
         <div style={{

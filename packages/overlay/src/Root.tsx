@@ -1,15 +1,17 @@
 import type React from 'react'
 import { Composition, registerRoot } from 'remotion'
-import { Dashboard, type DashboardProps } from './Dashboard.js'
-import { IntroCard, type IntroCardProps } from './compositions/IntroCard.js'
-import { OutroCard, type OutroCardProps } from './compositions/OutroCard.js'
-import { PhaseTransition, type PhaseTransitionProps } from './compositions/PhaseTransition.js'
-import { Thumbnail, type ThumbnailProps } from './compositions/Thumbnail.js'
+import {
+  Dashboard, type DashboardProps,
+  IntroCard, type IntroCardProps,
+  OutroCard, type OutroCardProps,
+  PhaseTransition, type PhaseTransitionProps,
+  Thumbnail, type ThumbnailProps
+} from '@silent-build/ui'
 import mockTimeline from './fixtures/mock-timeline.json'
 import { SessionTimelineSchema } from '@silent-build/shared'
 import { loadFonts } from '@silent-build/theme'
+import { withRemotionAnimation } from './RemotionAnimationProvider.js'
 
-// Kick off font loading as soon as the composition bundle is evaluated.
 loadFonts()
 
 const parsed = SessionTimelineSchema.parse(mockTimeline)
@@ -17,9 +19,11 @@ const durationMs = parsed.project.endTs - parsed.project.startTs
 const FPS = 60
 const dashboardFrames = Math.max(60, Math.ceil((durationMs / 1000) * FPS))
 
-// Remotion requires Props extends Record<string, unknown> — cast-through.
-const cast = <T,>(c: React.ComponentType<T>) =>
-  c as unknown as React.ComponentType<Record<string, unknown>>
+// Remotion requires Props extends Record<string, unknown>; we also wrap each
+// composition in the RemotionAnimationProvider so @silent-build/ui widgets
+// receive currentMs + pulse phases derived from useCurrentFrame/useVideoConfig.
+const wrap = <T extends object>(c: React.ComponentType<T>) =>
+  withRemotionAnimation(c) as unknown as React.ComponentType<Record<string, unknown>>
 
 const mockPhase2 = parsed.phases[1]!
 
@@ -27,7 +31,7 @@ export const RemotionRoot: React.FC = () => (
   <>
     <Composition
       id="Dashboard"
-      component={cast<DashboardProps>(Dashboard)}
+      component={wrap<DashboardProps>(Dashboard)}
       durationInFrames={dashboardFrames}
       fps={FPS}
       width={576}
@@ -36,7 +40,7 @@ export const RemotionRoot: React.FC = () => (
     />
     <Composition
       id="Intro"
-      component={cast<IntroCardProps>(IntroCard)}
+      component={wrap<IntroCardProps>(IntroCard)}
       durationInFrames={4 * FPS}
       fps={FPS}
       width={1920}
@@ -49,7 +53,7 @@ export const RemotionRoot: React.FC = () => (
     />
     <Composition
       id="Outro"
-      component={cast<OutroCardProps>(OutroCard)}
+      component={wrap<OutroCardProps>(OutroCard)}
       durationInFrames={7 * FPS}
       fps={FPS}
       width={1920}
@@ -63,7 +67,7 @@ export const RemotionRoot: React.FC = () => (
     />
     <Composition
       id="PhaseTransition"
-      component={cast<PhaseTransitionProps>(PhaseTransition)}
+      component={wrap<PhaseTransitionProps>(PhaseTransition)}
       durationInFrames={Math.round(2.5 * FPS)}
       fps={FPS}
       width={1920}
@@ -75,7 +79,7 @@ export const RemotionRoot: React.FC = () => (
     />
     <Composition
       id="Thumbnail"
-      component={cast<ThumbnailProps>(Thumbnail)}
+      component={wrap<ThumbnailProps>(Thumbnail)}
       durationInFrames={1}
       fps={FPS}
       width={1280}
@@ -89,7 +93,6 @@ export const RemotionRoot: React.FC = () => (
   </>
 )
 
-// Re-export prop types for downstream tooling (render-cli uses them).
 export type { DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ThumbnailProps }
 
 registerRoot(RemotionRoot)

@@ -1,6 +1,4 @@
-// packages/overlay/src/compositions/Thumbnail.tsx
 import type React from 'react'
-import { useCurrentFrame } from 'remotion'
 import { tokens } from '@silent-build/theme'
 import { Logo } from '../brand/Logo.js'
 import { Wordmark } from '../brand/Wordmark.js'
@@ -257,7 +255,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({
 }) => {
   // Read frame 0 only — no animation. This keeps the component Remotion-
   // compatible while emitting a static single frame.
-  useCurrentFrame()
+  // Static — no animation, no hooks needed.
 
   const highlights = pickHighlights(title)
   const words = title.split(/\s+/)
