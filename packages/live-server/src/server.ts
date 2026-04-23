@@ -118,16 +118,20 @@ export function createServer(deps: CreateServerDeps): LiveServer {
       jsonResponse(res, 503, { error: 'Dashboard bundle not built. Run `pnpm live:build` first.' })
       return
     }
-    const safe = normalize(relPath).replace(/^(\.\.[\/\\])+/, '')
-    let filePath = join(deps.staticRoot, safe)
-    // Path traversal guard
+    // Friendly route aliases for Vite multi-entry build output (html files at root).
+    const bare = relPath.split('?')[0]!.replace(/\/$/, '')
+    const ALIASES: Record<string, string> = {
+      '/dashboard': '/dashboard.html',
+      '/overlay':   '/overlay.html',
+      '/control':   '/control.html',
+      '/':          '/dashboard.html'
+    }
+    const mapped = ALIASES[bare] ?? bare
+    const safe = normalize(mapped).replace(/^(\.\.[\/\\])+/, '')
+    const filePath = join(deps.staticRoot, safe)
     if (!filePath.startsWith(deps.staticRoot + sep) && filePath !== deps.staticRoot) {
       res.writeHead(403).end('forbidden')
       return
-    }
-    // Directory → index.html
-    if (!existsSync(filePath) || (existsSync(filePath) && relPath.endsWith('/'))) {
-      filePath = join(filePath, 'index.html')
     }
     if (!existsSync(filePath)) {
       res.writeHead(404).end('not found')
@@ -175,8 +179,8 @@ export function createServer(deps: CreateServerDeps): LiveServer {
       res.writeHead(204).end()
       return
     }
-    // Static
-    if (req.method === 'GET') return serveStatic(req, res, url)
+    // Static (also respond to HEAD for probes)
+    if (req.method === 'GET' || req.method === 'HEAD') return serveStatic(req, res, url)
     res.writeHead(404).end('not found')
   })
 
