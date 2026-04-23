@@ -2,7 +2,7 @@
 import type React from 'react'
 import { useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion'
 import type { SessionTimeline } from '@silent-build/shared'
-import { tokens } from '../theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 import { Logo } from '../brand/Logo.js'
 
 export interface OutroCardProps {

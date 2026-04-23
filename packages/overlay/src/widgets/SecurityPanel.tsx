@@ -2,7 +2,7 @@
 import type React from 'react'
 import { useCurrentFrame, interpolate } from 'remotion'
 import type { SessionTimeline } from '@silent-build/shared'
-import { tokens } from '../theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 
 export interface SecurityPanelProps {
   timeline: SessionTimeline

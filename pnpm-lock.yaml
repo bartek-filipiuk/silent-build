@@ -52,12 +52,18 @@ importers:
       '@remotion/cli':
         specifier: ^4.0.200
         version: 4.0.450(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@remotion/google-fonts':
+        specifier: ^4.0.451
+        version: 4.0.451(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@remotion/renderer':
         specifier: ^4.0.200
         version: 4.0.450(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@silent-build/shared':
         specifier: workspace:*
         version: link:../shared
+      '@silent-build/theme':
+        specifier: workspace:*
+        version: link:../theme
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -86,6 +92,12 @@ importers:
       zod:
         specifier: ^3.23.8
         version: 3.25.76
+
+  packages/theme:
+    dependencies:
+      '@remotion/google-fonts':
+        specifier: ^4.0.451
+        version: 4.0.451(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
 packages:
 
@@ -699,6 +711,9 @@ packages:
     resolution: {integrity: sha512-7EcOW3Mo7MviVOJpRbrQE7q/jGK4Q1migA3aUflc1S9xBvnMHImke55kE36S5HeD9tKTMUpAuQDaBaxs9ltXgg==}
     cpu: [x64]
     os: [win32]
+
+  '@remotion/google-fonts@4.0.451':
+    resolution: {integrity: sha512-8JBPRQmLX7PKaz8bvkXq7fARzH8DbDM2NgSfV7buhyRVlewsdLfWioZdn1woqMcY9y5Ik6APtxWOrWuF8acEig==}
 
   '@remotion/licensing@4.0.448':
     resolution: {integrity: sha512-weQ+yJLJN+NEeKKMlkHT9cydUSjxwGnteHqedAd3ffaBUOpRQthWJWQwLhCupqdFyDdkRt0Rtnh5ib7/dSByPA==}
@@ -1537,6 +1552,12 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
+  remotion@4.0.451:
+    resolution: {integrity: sha512-uTku1RmytCk50ZtPEoTdmB/4Erb+nH85vT3jkCLWQCaG9qWXxp2XAJ+eL7EfsCUyast2umZm4vdrdKXVxbeDMQ==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
@@ -2257,6 +2278,13 @@ snapshots:
 
   '@remotion/compositor-win32-x64-msvc@4.0.449':
     optional: true
+
+  '@remotion/google-fonts@4.0.451(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      remotion: 4.0.451(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    transitivePeerDependencies:
+      - react
+      - react-dom
 
   '@remotion/licensing@4.0.448': {}
 
@@ -3200,6 +3228,11 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   remotion@4.0.450(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  remotion@4.0.451(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)

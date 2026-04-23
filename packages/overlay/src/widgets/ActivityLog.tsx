@@ -1,7 +1,7 @@
 // packages/overlay/src/widgets/ActivityLog.tsx
 import type React from 'react'
 import type { SessionTimeline, TimelineEvent } from '@silent-build/shared'
-import { tokens } from '../theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 
 export interface ActivityLogProps {
   timeline: SessionTimeline

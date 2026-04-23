@@ -1,7 +1,7 @@
 // packages/overlay/src/widgets/Timer.tsx
 import type React from 'react'
 import { useCurrentFrame, useVideoConfig, interpolate } from 'remotion'
-import { tokens } from '../theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 
 export interface TimerProps {
   elapsedMs: number

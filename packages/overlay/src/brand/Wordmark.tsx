@@ -1,5 +1,5 @@
 import type React from 'react'
-import { tokens } from '../theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 
 export interface WordmarkProps {
   size?: number

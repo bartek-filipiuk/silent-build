@@ -2,7 +2,7 @@
 import type React from 'react'
 import { useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion'
 import type { Phase } from '@silent-build/shared'
-import { tokens } from '../theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 
 export interface PhaseTransitionProps {
   phase: Phase

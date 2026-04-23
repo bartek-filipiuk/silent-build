@@ -1,7 +1,7 @@
 // packages/overlay/src/compositions/IntroCard.tsx
 import type React from 'react'
 import { useCurrentFrame, useVideoConfig, interpolate, spring, Sequence } from 'remotion'
-import { tokens } from '../theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 import { Logo } from '../brand/Logo.js'
 
 export interface IntroCardProps {

@@ -9,7 +9,7 @@ import { FileActivity } from './widgets/FileActivity.js'
 import { ActivityLog } from './widgets/ActivityLog.js'
 import { PhaseBar } from './widgets/PhaseBar.js'
 import { SecurityPanel } from './widgets/SecurityPanel.js'
-import { tokens } from './theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 
 export interface DashboardProps {
   timeline: SessionTimeline

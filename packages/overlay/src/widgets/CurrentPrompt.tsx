@@ -1,7 +1,7 @@
 // packages/overlay/src/widgets/CurrentPrompt.tsx
 import type React from 'react'
 import type { SessionTimeline } from '@silent-build/shared'
-import { tokens } from '../theme/tokens.js'
+import { tokens } from '@silent-build/theme'
 
 export interface CurrentPromptProps {
   timeline: SessionTimeline

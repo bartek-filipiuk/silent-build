@@ -7,7 +7,7 @@ import { PhaseTransition, type PhaseTransitionProps } from './compositions/Phase
 import { Thumbnail, type ThumbnailProps } from './compositions/Thumbnail.js'
 import mockTimeline from './fixtures/mock-timeline.json'
 import { SessionTimelineSchema } from '@silent-build/shared'
-import { loadFonts } from './theme/fonts.js'
+import { loadFonts } from '@silent-build/theme'
 
 // Kick off font loading as soon as the composition bundle is evaluated.
 loadFonts()
