@@ -1,0 +1,33 @@
+{
+  "name": "@silent-build/film-assets",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "film-assets": "./dist/cli.js"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./repo-metadata": "./src/repo-metadata.ts",
+    "./voiceover-script": "./src/voiceover-script.ts",
+    "./elevenlabs": "./src/elevenlabs.ts",
+    "./shot-list": "./src/shot-list.ts",
+    "./doctor": "./src/doctor.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "assets": "tsx src/cli.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@silent-build/curator": "workspace:*",
+    "@silent-build/shared": "workspace:*",
+    "commander": "^12.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
