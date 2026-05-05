@@ -19,5 +19,9 @@ export {
   StatsCard,
   type StatsCardProps
 } from './compositions/StatsCard.js'
+export {
+  CommitCard,
+  type CommitCardProps
+} from './compositions/CommitCard.js'
 export * from './brand/Logo.js'
 export * from './brand/Wordmark.js'

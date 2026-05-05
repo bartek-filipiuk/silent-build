@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Composition, registerRoot } from 'remotion'
 import {
+  CommitCard, type CommitCardProps,
   Dashboard, type DashboardProps,
   IntroCard, type IntroCardProps,
   OutroCard, type OutroCardProps,
@@ -123,9 +124,24 @@ export const RemotionRoot: React.FC = () => (
         liveUrl: 'fastduels.com'
       } as unknown as Record<string, unknown>}
     />
+    <Composition
+      id="CommitCard"
+      component={wrap<CommitCardProps>(CommitCard)}
+      durationInFrames={2 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        shortSha: '1647088',
+        message: 'feat(markers): --live flag POSTs to live-server',
+        filesChanged: 5,
+        insertions: 87,
+        deletions: 3
+      } as unknown as Record<string, unknown>}
+    />
   </>
 )
 
-export type { DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, StatsCardProps, ThumbnailProps }
+export type { CommitCardProps, DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, StatsCardProps, ThumbnailProps }
 
 registerRoot(RemotionRoot)

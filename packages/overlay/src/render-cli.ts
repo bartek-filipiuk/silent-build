@@ -10,8 +10,8 @@ const program = new Command()
 
 const USER_CWD = process.env['INIT_CWD'] ?? process.cwd()
 
-type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro' | 'StatsCard'
-const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro', 'StatsCard']
+type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro' | 'StatsCard' | 'CommitCard'
+const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro', 'StatsCard', 'CommitCard']
 
 const outputStem = (comp: CompId): string => {
   switch (comp) {
@@ -22,6 +22,7 @@ const outputStem = (comp: CompId): string => {
     case 'Thumbnail': return 'thumbnail'
     case 'ProjectIntro': return 'projectintro'
     case 'StatsCard': return 'stats-card'
+    case 'CommitCard': return 'commit-card'
   }
 }
 
@@ -122,6 +123,14 @@ program
             filesTouched: timeline.metrics.filesTouched
           }
         }
+        case 'CommitCard':
+          return {
+            shortSha: 'abcdef0',
+            message: 'sample commit',
+            filesChanged: 1,
+            insertions: 1,
+            deletions: 0
+          }
       }
     })()
 
