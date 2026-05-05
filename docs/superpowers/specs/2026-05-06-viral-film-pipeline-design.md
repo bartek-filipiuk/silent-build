@@ -73,14 +73,20 @@ silent-build/
 │   ├── silent-build-project-starter.md ← NEW (Bartek's checklist)
 │   └── shot-list-template.md           ← NEW (jinja-style template)
 └── skills/
-    └── start-silent-build-project/     ← NEW skill
+    ├── start-silent-build-project/     ← NEW skill
+    │   ├── SKILL.md
+    │   ├── references/
+    │   │   ├── workflow-stages.md
+    │   │   ├── session-naming.md
+    │   │   └── phase-checkpoints.md
+    │   └── bin/
+    │       └── status.mjs              read project state, suggest next step
+    └── generate-voiceover-script/      ← NEW skill
         ├── SKILL.md
         ├── references/
-        │   ├── workflow-stages.md
-        │   ├── session-naming.md
-        │   └── phase-checkpoints.md
+        │   └── tone-and-style.md       brand voice guidelines for hooks/outros
         └── bin/
-            └── status.mjs              read project state, suggest next step
+            └── validate.mjs            Zod check of skill output
 ```
 
 ## New Remotion compositions
@@ -201,23 +207,37 @@ Logic:
 
 Exposes a CLI: `pnpm assets:metadata --repo <path> --jsonl-dir <path>` → prints JSON.
 
-### `voiceover-script.ts`
+### `voiceover-script.ts` + skill
+
+Voiceover script generation is **interactive in a CC session**, not headless. Two surfaces:
 
 ```ts
+// Pure TS helpers, no LLM call:
 export interface VoiceoverLines {
   hook: string                 // 5 s — face #1 line, but also fallback if no face
   context?: string             // 5 s — optional mid-film context
   outro: string                // 10 s — face #2 line, CTA + cliffhanger
 }
 
-export const generateVoiceoverScript = (
+export const buildVoiceoverPrompt = (
   metadata: RepoMetadata,
-  audit?: AuditFindings,       // future, optional
-  nextProject?: string         // for cliffhanger
-): Promise<VoiceoverLines>
+  nextProject?: string
+): string                       // returns a Claude-ready prompt with the metadata interpolated
+
+export const validateVoiceoverScript = (
+  raw: unknown
+): VoiceoverLines               // Zod-validated parse of the JSON Claude returns
 ```
 
-Calls Claude (via headless `claude -p`, no API key needed) with a prompt template using the metadata to produce 3 lines of EN voiceover. Output is editable JSON — Bartek can tweak before TTS.
+User-facing flow lives in a skill `skills/generate-voiceover-script/`:
+
+1. User: `/generate-voiceover-script <metadata.json>`
+2. Skill reads metadata, calls `buildVoiceoverPrompt` to construct a prompt
+3. Claude (current session) generates 3 lines with the prompt as context
+4. Skill validates output via `validateVoiceoverScript`, writes to `<out>/voiceover-script.json`
+5. User can iterate ("make hook punchier", "swap 'engine' for 'system'")
+
+Reuses `claude` session token / subscription — no API key, no shell-out.
 
 ### `elevenlabs.ts`
 
@@ -305,9 +325,11 @@ Suno prompts (one per file):
     90 BPM, hopeful but understated."
 ```
 
-Bartek generates these once via Suno UI, downloads, drops into `assets/music/`. Files are licensed via Suno subscription (or extended license) — note in repo README.
+Bartek generates these once via Suno UI, downloads, drops into `assets/music/`. Files are licensed via Suno **standard subscription** — i.e., usable in personal commercial videos but not redistributable. Therefore `assets/music/*.wav` is **gitignored**; canonical copies live in Bartek's external storage (e.g., Drive/Dropbox), referenced by `assets/music/README.md` (committed) which lists the 4 expected files + Suno generation prompts.
 
-Files are checked into git as **canonical brand assets**. Same loops across all silent-build films → consistent audio identity.
+`pnpm assets:doctor` (see CLI surface) checks that all 4 files exist locally and warns if missing.
+
+Cross-film identity comes from convention (same prompts → similar sound) + the `assets/music/README.md` manifest, not from committing the audio.
 
 ## Talking-head strategy (Strategy A from prior conversation)
 
@@ -439,9 +461,14 @@ pnpm render:zooms    --project <jsonl-dir> [--max <n>]
 
 ## Open questions to resolve in plan phase
 
-1. **Voice clone vs preset voice for ElevenLabs**: which voice ID to commit to first? Plan should pick one, document, allow override.
-2. **Suno license**: extended commercial license vs standard subscription? Affects whether music files can be in public repo. Plan should document.
-3. **`shiki` syntax highlighting in Remotion bundle**: confirm bundle size impact (~50 KB stated, verify); if too heavy, use `prism-react-renderer` (~20 KB) as fallback.
-4. **CommitCard / CodeZoom selection logic**: which commits / which files become inserts? Heuristics: top 3 commits by `insertions+deletions` per phase + top 3 most-edited files. Plan should pick + test.
-5. **`claude -p` headless availability check at install time**: `pnpm assets:generate` needs `claude` in PATH for voiceover script generation. Plan: add `assets:doctor` subcommand that verifies dependencies (claude, ffmpeg, remotion, ElevenLabs API key, Suno music files present).
-6. **Hot-path render order for `assets:generate`**: parallelizing Remotion compositions vs sequential to share bundle (single bundle = faster cold start, parallel = better CPU usage). Plan should benchmark.
+1. **Voice clone vs preset voice for ElevenLabs**: spec defaults to preset `21m00Tcm4TlvDq8ikWAM` (Rachel). Voice cloning deferred — Bartek opts in by recording sample, dropping ID into `assets/voices/bartek-clone-id.txt` after first film. Plan should not block on clone.
+2. **`shiki` syntax highlighting in Remotion bundle**: confirm bundle size impact (~50 KB stated, verify); if too heavy, use `prism-react-renderer` (~20 KB) as fallback.
+3. **CommitCard / CodeZoom selection logic**: which commits / which files become inserts? Heuristics: top 3 commits by `insertions+deletions` per phase + top 3 most-edited files. Plan should pick + test.
+4. **`assets:doctor` subcommand**: verifies dependencies (ffmpeg, remotion, ElevenLabs API key in env, Suno music files present in `assets/music/`). No `claude -p` requirement (skill-based flow).
+5. **Hot-path render order for `assets:generate`**: parallelizing Remotion compositions vs sequential to share bundle (single bundle = faster cold start, parallel = better CPU usage). Plan should benchmark.
+
+### Decisions resolved in this spec (no longer open)
+
+- Voiceover script generation: **interactive via skill `generate-voiceover-script`**, not headless `claude -p`. Reuses current CC session.
+- Suno license: **standard subscription**. Music files gitignored, README manifest committed, files live in external storage.
+- Target film duration: **7 min** (5-min hard floor, 8-min hard ceiling for any single film).
