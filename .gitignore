@@ -3,6 +3,9 @@ dist/
 .env
 .env.local
 output/*/
+output/*.json
+output/*.mov
+output/*.mp4
 !output/README.md
 *.log
 .DS_Store
