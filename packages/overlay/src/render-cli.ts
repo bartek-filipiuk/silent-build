@@ -10,8 +10,8 @@ const program = new Command()
 
 const USER_CWD = process.env['INIT_CWD'] ?? process.cwd()
 
-type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro'
-const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro']
+type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro' | 'StatsCard'
+const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro', 'StatsCard']
 
 const outputStem = (comp: CompId): string => {
   switch (comp) {
@@ -21,6 +21,7 @@ const outputStem = (comp: CompId): string => {
     case 'PhaseTransition': return 'phase-transition'
     case 'Thumbnail': return 'thumbnail'
     case 'ProjectIntro': return 'projectintro'
+    case 'StatsCard': return 'stats-card'
   }
 }
 
@@ -103,6 +104,22 @@ program
             subtitle: 'fastduels.com',
             techStack: ['SvelteKit', 'Cloudflare', 'PartyKit', 'D1'],
             startTs: new Date(timeline.project.startTs).toISOString()
+          }
+        }
+        case 'StatsCard': {
+          const days = Math.max(
+            1,
+            Math.ceil(
+              (timeline.project.endTs - timeline.project.startTs) / 86_400_000
+            )
+          )
+          return {
+            projectName: timeline.project.name,
+            totalPrompts: timeline.metrics.promptsCount,
+            totalToolCalls: timeline.metrics.toolCallsCount,
+            totalDays: days,
+            totalTokens: timeline.metrics.totalTokens,
+            filesTouched: timeline.metrics.filesTouched
           }
         }
       }

@@ -6,6 +6,7 @@ import {
   OutroCard, type OutroCardProps,
   PhaseTransition, type PhaseTransitionProps,
   ProjectIntro, type ProjectIntroProps,
+  StatsCard, type StatsCardProps,
   Thumbnail, type ThumbnailProps
 } from '@silent-build/ui'
 import mockTimeline from './fixtures/mock-timeline.json'
@@ -105,9 +106,26 @@ export const RemotionRoot: React.FC = () => (
         techStack: ['SvelteKit', 'Cloudflare', 'PartyKit', 'D1']
       } as unknown as Record<string, unknown>}
     />
+    <Composition
+      id="StatsCard"
+      component={wrap<StatsCardProps>(StatsCard)}
+      durationInFrames={5 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        projectName: parsed.project.name,
+        totalPrompts: parsed.metrics.promptsCount,
+        totalToolCalls: parsed.metrics.toolCallsCount,
+        totalDays: 9,
+        totalTokens: parsed.metrics.totalTokens,
+        filesTouched: parsed.metrics.filesTouched,
+        liveUrl: 'fastduels.com'
+      } as unknown as Record<string, unknown>}
+    />
   </>
 )
 
-export type { DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, ThumbnailProps }
+export type { DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, StatsCardProps, ThumbnailProps }
 
 registerRoot(RemotionRoot)

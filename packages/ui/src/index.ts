@@ -15,5 +15,9 @@ export {
   ProjectIntro,
   type ProjectIntroProps
 } from './compositions/ProjectIntro.js'
+export {
+  StatsCard,
+  type StatsCardProps
+} from './compositions/StatsCard.js'
 export * from './brand/Logo.js'
 export * from './brand/Wordmark.js'
