@@ -8,6 +8,7 @@ output/*.mov
 output/*.mp4
 !output/README.md
 !output/duels-narrative.json
+!output/duels-metadata.json
 *.log
 .DS_Store
 .vscode/
