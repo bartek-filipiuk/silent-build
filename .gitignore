@@ -3,7 +3,11 @@ dist/
 .env
 .env.local
 output/*/
+output/*.json
+output/*.mov
+output/*.mp4
 !output/README.md
+!output/duels-narrative.json
 *.log
 .DS_Store
 .vscode/

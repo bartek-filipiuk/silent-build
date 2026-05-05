@@ -1,0 +1,7 @@
+{"type":"user","timestamp":"2026-04-26T11:00:00.000Z","uuid":"u1","message":{"role":"user","content":"start a project for fastduels concept"}}
+{"type":"assistant","timestamp":"2026-04-26T11:00:30.000Z","uuid":"a1","message":{"role":"assistant","content":[{"type":"text","text":"Reading concept doc"},{"type":"tool_use","name":"Read","input":{"file_path":"/p/concept.md"}}]}}
+{"type":"user","timestamp":"2026-04-26T11:01:00.000Z","uuid":"u2","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"t1","content":"file contents"}]}}
+{"type":"assistant","timestamp":"2026-04-26T11:01:30.000Z","uuid":"a2","message":{"role":"assistant","content":[{"type":"tool_use","name":"Write","input":{"file_path":"/p/foo.ts"}}]}}
+{"type":"user","timestamp":"2026-04-26T11:02:00.000Z","uuid":"u3","message":{"role":"user","content":"now design the UI"}}
+malformed line that should be skipped
+{"type":"assistant","timestamp":"2026-04-26T11:02:30.000Z","uuid":"a3","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/ui.svelte"}}]}}

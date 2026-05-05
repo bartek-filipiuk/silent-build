@@ -1,0 +1,29 @@
+{
+  "name": "@silent-build/curator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "curate": "./dist/cli.js"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./preprocess": "./src/preprocess.ts",
+    "./narrative-schema": "./src/narrative-schema.ts",
+    "./jsonl-reader": "./src/jsonl-reader.ts"
+  },
+  "scripts": {
+    "curate:scan": "tsx src/cli.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@silent-build/shared": "workspace:*",
+    "commander": "^12.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

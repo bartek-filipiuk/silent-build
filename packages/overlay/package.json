@@ -11,6 +11,7 @@
     "render:outro": "tsx src/render-cli.ts --composition Outro",
     "render:phase": "tsx src/render-cli.ts --composition PhaseTransition",
     "render:thumb": "tsx src/render-cli.ts --composition Thumbnail --format png --max-frames 1",
+    "render:narrative": "tsx src/render-narrative.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -19,6 +20,8 @@
     "@remotion/cli": "^4.0.200",
     "@remotion/google-fonts": "^4.0.451",
     "@remotion/renderer": "^4.0.200",
+    "@silent-build/curator": "workspace:*",
+    "@silent-build/harvester": "workspace:*",
     "@silent-build/shared": "workspace:*",
     "@silent-build/theme": "workspace:*",
     "@silent-build/ui": "workspace:*",

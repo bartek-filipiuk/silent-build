@@ -12,14 +12,44 @@
 
 ## Architektura
 
-Monorepo pnpm workspaces z 4 paczkami:
-- `@silent-build/shared` — Zod schemas, TS types (kontrakt miedzy paczkami)
-- `@silent-build/markers` — CLI, zapisuje manual phase markers
-- `@silent-build/harvester` — CLI, parsuje `.jsonl` sesje -> `timeline.json`
-- `@silent-build/overlay` — Remotion project, renderuje dashboard -> PNG/MOV
+Monorepo pnpm workspaces:
+- `@silent-build/shared` — Zod schemas, TS types (kontrakt między paczkami)
+- `@silent-build/theme` — design tokens + fonts
+- `@silent-build/ui` — widgets + compositions (Dashboard, Intro, Outro, PhaseTransition, Thumbnail) + AnimationCtx
+- `@silent-build/markers` — CLI, zapisuje manual phase markers (`--live` flag postuje do live-server)
+- `@silent-build/harvester` — CLI, parsuje `.jsonl` sesję → `timeline.json`
+- `@silent-build/curator` — CLI, łączy wiele sesji → `candidates.json` (top-50 fragmentów wybranych heurystykami)
+- `@silent-build/overlay` — Remotion project: renderuje single timeline lub multi-scene `narrative.json` → MOV
+- `@silent-build/live-server` — SSE server + jsonl watcher dla live streamingu
+- `@silent-build/live-dashboard` — Vite/React, 3 entry points (`/dashboard/`, `/overlay/`, `/control/`) dla OBS
 
-Spec: `docs/superpowers/specs/2026-04-21-silent-build-design.md`
-Plan: `docs/superpowers/plans/2026-04-21-silent-build-pipeline-mvp.md`
+Specs:
+- `docs/superpowers/specs/2026-04-21-silent-build-design.md` (MVP pipeline)
+- `docs/superpowers/specs/2026-05-05-curator-best-of-design.md` (best-of multi-session)
+
+## Best-of multi-session films (curator + skill)
+
+Dla projektów rozłożonych na wiele sesji Claude Code (np. fastduels.com — 4 jsonl-e, 9 dni pracy):
+
+```bash
+# 1. instaluj skill (raz)
+pnpm skill:install
+
+# 2. skanowanie heurystykami → candidates.json
+pnpm curate:scan --project ~/.claude/projects/-home-bartek-games-projects-myproject \
+                 --out output/myproject-candidates.json --name myproject
+
+# 3. interaktywna kuracja w Claude Code
+claude
+> /curate-narrative output/myproject-candidates.json
+
+# 4. render każdej sceny do osobnych MOV-ów + manifest.json
+pnpm render:narrative --input output/myproject-narrative.json --out output/myproject-final
+```
+
+Output: per-scene Intro/PhaseTransition/Outro overlays (1920×1080) + per-clip Dashboard segmenty (576×1080) + `manifest.json` + ffmpeg concat lists. Sklejka w CapCut albo `ffmpeg -f concat -c copy`.
+
+Reference: `output/duels-narrative.json` (12-min film, 6 scen, 12 clipów).
 
 ## Wymagania
 

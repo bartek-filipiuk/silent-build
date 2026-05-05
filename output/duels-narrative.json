@@ -1,0 +1,175 @@
+{
+  "project": "duels",
+  "targetMinutes": 12,
+  "generatedAt": "2026-05-05T22:35:00.000Z",
+  "scenes": [
+    {
+      "id": "start",
+      "title": "Concept",
+      "durationSec": 60,
+      "overlay": { "kind": "Intro" },
+      "clips": [
+        {
+          "from": "2026-04-26T11:40:58.312Z",
+          "to": "2026-04-26T12:14:00.762Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "Reading Koncepcja Produktowa.md — two game concepts",
+          "score": 10,
+          "rationale": "Opening prompt of the entire 9-day journey, references the concept doc that defines what duels will be",
+          "durationSec": 56,
+          "compressionRatio": 35.4
+        }
+      ]
+    },
+    {
+      "id": "plan",
+      "title": "Plan: vertical slice + account system",
+      "durationSec": 100,
+      "overlay": { "kind": "PhaseTransition", "props": { "phaseNumber": 2 } },
+      "clips": [
+        {
+          "from": "2026-04-26T11:57:20.345Z",
+          "to": "2026-04-26T12:30:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "Vertical slice scope: start with Wyżej czy Niżej",
+          "score": 9,
+          "rationale": "Decision to MVP one game first; spec drafting begins",
+          "durationSec": 47,
+          "compressionRatio": 41.7
+        },
+        {
+          "from": "2026-05-01T19:47:02.493Z",
+          "to": "2026-05-01T20:30:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "Account system: plan → execute, opus 4.7",
+          "score": 8,
+          "rationale": "Second major feature plan, invoking superpowers planning",
+          "durationSec": 50,
+          "compressionRatio": 51.0
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "title": "Build: monorepo + multiplayer engine",
+      "durationSec": 200,
+      "overlay": { "kind": "PhaseTransition", "props": { "phaseNumber": 3 } },
+      "clips": [
+        {
+          "from": "2026-04-26T12:58:14.030Z",
+          "to": "2026-04-26T13:30:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "Scaffolding 20 files — initial monorepo",
+          "score": 9,
+          "rationale": "First big creation burst sets up apps/web + packages",
+          "durationSec": 65,
+          "compressionRatio": 29.5
+        },
+        {
+          "from": "2026-04-26T16:21:02.115Z",
+          "to": "2026-04-26T16:50:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "Edit-burst on play/+page.svelte — game UI core",
+          "score": 8,
+          "rationale": "36× edits to the central game route — heaviest-touched file",
+          "durationSec": 65,
+          "compressionRatio": 26.7
+        },
+        {
+          "from": "2026-04-26T18:48:28.650Z",
+          "to": "2026-04-26T19:20:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "Scaffolding 29 files — partykit multiplayer server",
+          "score": 9,
+          "rationale": "Largest scaffolding burst, real-time multiplayer infrastructure",
+          "durationSec": 67,
+          "compressionRatio": 28.2
+        }
+      ]
+    },
+    {
+      "id": "design",
+      "title": "Design: NASA palette + i18n polish",
+      "durationSec": 130,
+      "overlay": { "kind": "PhaseTransition", "props": { "phaseNumber": 4 } },
+      "clips": [
+        {
+          "from": "2026-04-26T18:45:09.432Z",
+          "to": "2026-04-26T19:24:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "Design from Claude Design — implementation",
+          "score": 9,
+          "rationale": "Real human reaction: 'mamy design i jest kozacko na maxa'",
+          "durationSec": 63,
+          "compressionRatio": 37.0
+        },
+        {
+          "from": "2026-04-26T19:24:20.059Z",
+          "to": "2026-04-26T19:55:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "Typography fixes + 23× edits to pl.json",
+          "score": 7,
+          "rationale": "Font sizes + i18n polish, paraglide migration",
+          "durationSec": 63,
+          "compressionRatio": 29.2
+        }
+      ]
+    },
+    {
+      "id": "audit",
+      "title": "Security audit + 5 blocking fixes",
+      "durationSec": 100,
+      "overlay": { "kind": "PhaseTransition", "props": { "phaseNumber": 5 } },
+      "clips": [
+        {
+          "from": "2026-05-02T06:26:06.435Z",
+          "to": "2026-05-02T06:50:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "merguj do main, /security-audit, plan deploy",
+          "score": 10,
+          "rationale": "User explicitly requests audit before deploy — narrative pivot",
+          "durationSec": 48,
+          "compressionRatio": 29.9
+        },
+        {
+          "from": "2026-05-03T20:04:13.182Z",
+          "to": "2026-05-03T20:30:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "CSP fix: 'Refused to execute inline script'",
+          "score": 8,
+          "rationale": "Real post-audit hardening — Content Security Policy rule fix",
+          "durationSec": 49,
+          "compressionRatio": 31.6
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "title": "Ship: fastduels.com",
+      "durationSec": 130,
+      "overlay": { "kind": "Outro" },
+      "clips": [
+        {
+          "from": "2026-04-26T20:27:06.704Z",
+          "to": "2026-04-26T21:00:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "First production push — Cloudflare + PartyKit live",
+          "score": 9,
+          "rationale": "Day-1 deploy moment; first time the URL works for real users",
+          "durationSec": 61,
+          "compressionRatio": 32.5
+        },
+        {
+          "from": "2026-05-05T11:00:00.000Z",
+          "to": "2026-05-05T11:45:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+          "label": "fastduels.com becomes PRIMARY — domain rebrand",
+          "score": 10,
+          "rationale": "Final landing: duelack.com → 301 → fastduels.com, official brand live",
+          "durationSec": 62,
+          "compressionRatio": 43.5
+        }
+      ]
+    }
+  ]
+}

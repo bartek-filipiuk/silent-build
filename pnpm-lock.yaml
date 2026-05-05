@@ -18,6 +18,22 @@ importers:
         specifier: ^2.1.1
         version: 2.1.9(@types/node@22.19.17)(terser@5.46.1)
 
+  packages/curator:
+    dependencies:
+      '@silent-build/shared':
+        specifier: workspace:*
+        version: link:../shared
+      commander:
+        specifier: ^12.1.0
+        version: 12.1.0
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
+
   packages/harvester:
     dependencies:
       '@silent-build/shared':
@@ -114,6 +130,12 @@ importers:
       '@remotion/renderer':
         specifier: ^4.0.200
         version: 4.0.450(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@silent-build/curator':
+        specifier: workspace:*
+        version: link:../curator
+      '@silent-build/harvester':
+        specifier: workspace:*
+        version: link:../harvester
       '@silent-build/shared':
         specifier: workspace:*
         version: link:../shared
