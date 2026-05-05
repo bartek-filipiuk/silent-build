@@ -18,6 +18,8 @@
     "curate:scan": "pnpm --filter @silent-build/curator run curate:scan scan",
     "assets:metadata": "pnpm --filter @silent-build/film-assets run assets metadata",
     "assets:tts": "pnpm --filter @silent-build/film-assets run assets tts",
+    "assets:shotlist": "pnpm --filter @silent-build/film-assets run assets shotlist",
+    "assets:generate": "pnpm --filter @silent-build/film-assets run assets generate",
     "skill:install": "mkdir -p ~/.claude/skills && ln -sfn $PWD/skills/curate-narrative ~/.claude/skills/curate-narrative && echo 'linked: ~/.claude/skills/curate-narrative -> '$PWD/skills/curate-narrative",
     "render": "pnpm --filter @silent-build/overlay run render",
     "render:dashboard": "pnpm --filter @silent-build/overlay run render:dashboard",
