@@ -145,7 +145,8 @@ program
         proResProfile: '4444',
         outputLocation: movPath,
         inputProps,
-        pixelFormat: 'yuva444p10le'
+        pixelFormat: 'yuva444p10le',
+        imageFormat: 'png'
       })
       console.log(`Done: ${movPath}`)
     }

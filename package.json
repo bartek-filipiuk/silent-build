@@ -21,7 +21,10 @@
     "render:outro": "pnpm --filter @silent-build/overlay run render:outro",
     "render:phase": "pnpm --filter @silent-build/overlay run render:phase",
     "render:thumb": "pnpm --filter @silent-build/overlay run render:thumb",
-    "studio": "pnpm --filter @silent-build/overlay run studio"
+    "studio": "pnpm --filter @silent-build/overlay run studio",
+    "live:server": "pnpm --filter @silent-build/live-server run start",
+    "live:dashboard:dev": "pnpm --filter @silent-build/live-dashboard run dev",
+    "live:build": "pnpm --filter @silent-build/live-dashboard run build"
   },
   "devDependencies": {
     "typescript": "^5.5.4",
