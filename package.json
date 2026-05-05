@@ -17,6 +17,7 @@
     "harvest": "pnpm --filter @silent-build/harvester run harvest",
     "curate:scan": "pnpm --filter @silent-build/curator run curate:scan scan",
     "assets:metadata": "pnpm --filter @silent-build/film-assets run assets metadata",
+    "assets:tts": "pnpm --filter @silent-build/film-assets run assets tts",
     "skill:install": "mkdir -p ~/.claude/skills && ln -sfn $PWD/skills/curate-narrative ~/.claude/skills/curate-narrative && echo 'linked: ~/.claude/skills/curate-narrative -> '$PWD/skills/curate-narrative",
     "render": "pnpm --filter @silent-build/overlay run render",
     "render:dashboard": "pnpm --filter @silent-build/overlay run render:dashboard",
