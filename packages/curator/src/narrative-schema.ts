@@ -17,6 +17,7 @@ export const NarrativeClipSchema = z
     label: z.string().min(1).max(120),
     score: z.number().min(0).max(10),
     rationale: z.string().min(1).max(280),
+    durationSec: z.number().int().positive(),
     compressionRatio: z.number().min(1)
   })
   .refine((c) => new Date(c.from).getTime() < new Date(c.to).getTime(), {

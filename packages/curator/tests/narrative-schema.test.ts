@@ -13,6 +13,7 @@ const validClip = {
   label: 'Reading concept doc',
   score: 9,
   rationale: 'Opening prompt clearly sets project goal',
+  durationSec: 30,
   compressionRatio: 56
 }
 

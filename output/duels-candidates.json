@@ -1,0 +1,463 @@
+{
+  "project": "duels",
+  "sources": [
+    "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/2f3cee52-72bf-46ac-9334-ed13da99d4f4.jsonl",
+    "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/352fd291-a344-43b0-8d11-19ae8efaa123.jsonl",
+    "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+    "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/f383b6cc-612a-49b6-be1e-d9146e31e877.jsonl"
+  ],
+  "totalEvents": 18346,
+  "generatedAt": "2026-05-05T20:21:28.853Z",
+  "candidates": [
+    {
+      "id": "cand-001",
+      "from": "2026-04-26T11:40:58.312Z",
+      "to": "2026-04-26T12:04:38.964Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "start",
+      "reason": "first 5 user prompts",
+      "metricsSummary": "5 prompts",
+      "firstPromptText": "zobacz @\"Koncepcja Produktowa_ _Kto to jest__ oraz _Wyżej czy Niżej__.md\" - mma tu idee dwoch giec, chce zrobic obie ale oczywiscie jedna po drugien, zobacz ten stack co jest, tam to wyglada na apke do instalacji ale ja jednak wole webową, zobacz czy ogolie poza tym ten stack si…"
+    },
+    {
+      "id": "cand-002",
+      "from": "2026-04-26T11:57:20.345Z",
+      "to": "2026-04-26T11:58:02.406Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "design keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "lecimt vertical slice i zaczynamy od Wyżej czy Niżej? - ale spiszmy gdzies wszystko co potzrebne aby nasteona gra byla do zrobienia latwiej tzn zebysmy juz mieli background i poznije ewentualnie cos co zbierzemy z feedbacku w czasie kodowania. AHA zanim zaczniemy kodowac itp mus…"
+    },
+    {
+      "id": "cand-003",
+      "from": "2026-04-26T12:50:29.556Z",
+      "to": "2026-04-26T12:50:29.556Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git commit",
+      "metricsSummary": "git diff --stat && git add tsconfig.base.json package.json && git commit -m \"ch…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-004",
+      "from": "2026-04-26T12:58:14.030Z",
+      "to": "2026-04-26T13:07:26.621Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (20 new files)",
+      "metricsSummary": "21 writes, 20 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-005",
+      "from": "2026-04-26T13:53:46.272Z",
+      "to": "2026-04-26T14:03:20.054Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (22 new files)",
+      "metricsSummary": "24 writes, 22 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-006",
+      "from": "2026-04-26T13:55:28.835Z",
+      "to": "2026-04-26T13:55:28.835Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git commit",
+      "metricsSummary": "git add apps/web/src/lib/nick && git commit -m \"feat(web): add nick validation…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-007",
+      "from": "2026-04-26T14:25:52.199Z",
+      "to": "2026-04-26T14:25:52.199Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git commit",
+      "metricsSummary": "git add apps/web/src/lib/ui apps/web/package.json pnpm-lock.yaml && git commit…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-008",
+      "from": "2026-04-26T15:01:53.842Z",
+      "to": "2026-04-26T15:09:24.062Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (17 new files)",
+      "metricsSummary": "17 writes, 17 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-009",
+      "from": "2026-04-26T15:02:10.344Z",
+      "to": "2026-04-26T15:02:10.344Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git commit",
+      "metricsSummary": "git add docs/superpowers/plans/2026-04-26-phase-4-multiplayer.md && git commit…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-010",
+      "from": "2026-04-26T15:44:37.640Z",
+      "to": "2026-04-26T15:44:37.640Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git commit",
+      "metricsSummary": "git add apps/web packages/partykit-server && git commit -m \"fix(web): properly…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-011",
+      "from": "2026-04-26T15:50:38.362Z",
+      "to": "2026-04-26T15:56:29.056Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (6 new files)",
+      "metricsSummary": "6 writes, 6 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-012",
+      "from": "2026-04-26T16:15:21.034Z",
+      "to": "2026-04-26T16:15:21.034Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git commit",
+      "metricsSummary": "git add docs/superpowers/plans/2026-04-26-phase-6-categories-and-picker.md && g…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-013",
+      "from": "2026-04-26T16:21:02.115Z",
+      "to": "2026-04-26T16:21:47.846Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "edit-burst on +page.svelte",
+      "metricsSummary": "10 edits, 3 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-014",
+      "from": "2026-04-26T16:38:54.218Z",
+      "to": "2026-04-26T16:42:21.758Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (6 new files)",
+      "metricsSummary": "6 writes, 6 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-015",
+      "from": "2026-04-26T16:44:57.112Z",
+      "to": "2026-04-26T16:45:19.606Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "audit",
+      "reason": "audit/security keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "wszysto dziala z twojej perpektywy, wszystko secure? endpointy, nikt nie moze sie wbic jakoo inny gracz itp? mozesz odpalic jakis research, devtools mcp czy nawet /security-audit"
+    },
+    {
+      "id": "cand-016",
+      "from": "2026-04-26T17:21:37.099Z",
+      "to": "2026-04-26T17:26:58.089Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (17 new files)",
+      "metricsSummary": "17 writes, 17 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-017",
+      "from": "2026-04-26T17:55:00.938Z",
+      "to": "2026-04-26T17:55:36.975Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "design keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "lec wszystkie poprawki i sugestie ktore daja wygrane, nawet najmniejsze. nastepnie jak juz zrobisz poprawki zobacz devtoolsem czy jest ok. po wszysykim stworz super prompta dla claude design zebym go przekazal, gdzie bedzie mapowanie tego co mamy na froncie, co tam mamy za kompo…"
+    },
+    {
+      "id": "cand-018",
+      "from": "2026-04-26T18:19:37.665Z",
+      "to": "2026-04-26T18:19:37.665Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git commit",
+      "metricsSummary": "git commit -m \"$(cat <<'EOF'\nsecurity: HIGH+MEDIUM hardening (auth-001, config-…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-019",
+      "from": "2026-04-26T18:45:09.432Z",
+      "to": "2026-04-26T18:45:14.702Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "design keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "dobra, mamy design i jest kozacko na maxa. Wez obadaj dokladnie i implementuj 1:1 - Fetch this design file, read its readme, and implement the relevant aspects of the design. https://api.anthropic.com/v1/design/h/BVGHV7a0UUJtBC_aWQOhZQ?open_file=duels%2FStadium+System.html\nImple…"
+    },
+    {
+      "id": "cand-020",
+      "from": "2026-04-26T18:48:28.650Z",
+      "to": "2026-04-26T18:58:07.174Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (29 new files)",
+      "metricsSummary": "33 writes, 29 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-021",
+      "from": "2026-04-26T19:12:11.888Z",
+      "to": "2026-04-26T19:12:11.888Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git push",
+      "metricsSummary": "git add -A && git commit -m \"$(cat <<'EOF'\nfeat(web): Stadium System redesign —…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-022",
+      "from": "2026-04-26T19:24:20.059Z",
+      "to": "2026-04-26T19:24:41.841Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "design keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "graficznie jest mega, mam tylko problem z wielkosciami niktorych tekstow oraz odstepami np w pytaniach ktore sa serwowane userowi, zlewaja sie z innymi elementami, tzreba je dobrze wydzielic zeby bylo jednoznacznie widac pytanie. Co do wielksoci czcnionek to np header, zmiana je…"
+    },
+    {
+      "id": "cand-023",
+      "from": "2026-04-26T19:44:25.298Z",
+      "to": "2026-04-26T19:44:25.298Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git push",
+      "metricsSummary": "git add -A && git commit -m \"$(cat <<'EOF'\nux(web): readability pass — bigger t…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-024",
+      "from": "2026-04-26T20:27:06.704Z",
+      "to": "2026-04-26T20:27:06.704Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git push",
+      "metricsSummary": "git add -A && git commit -m \"$(cat <<'EOF'\nux(web): bigger landing stats, live…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-025",
+      "from": "2026-04-26T21:09:38.863Z",
+      "to": "2026-04-26T21:09:38.863Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "end",
+      "reason": "git push",
+      "metricsSummary": "git commit -m \"$(cat <<'EOF'\ndocs(scheduler): seed handoff + per-run prompt for…",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-026",
+      "from": "2026-05-01T18:47:50.189Z",
+      "to": "2026-05-01T18:55:16.356Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (8 new files)",
+      "metricsSummary": "11 writes, 8 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-027",
+      "from": "2026-05-01T19:38:34.112Z",
+      "to": "2026-05-01T19:39:06.498Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "design keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "nie no kurde :) to musimy obmyslec aby bylo jakies logowanie i konta zeby na stale zie zapisywalo wszystco co dotyczy user i jego wszystkich giet. Zrob research w kdozie i tego jak to mozna ogarnac technologicznie, wejdz ultra gleboko w  temat, zrob jakis research w necie jak to…"
+    },
+    {
+      "id": "cand-028",
+      "from": "2026-05-01T19:39:20.486Z",
+      "to": "2026-05-01T19:47:02.493Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "agent run (8 min)",
+      "metricsSummary": "Agent + 8 min wallclock",
+      "firstPromptText": "ok lecimy z rekomendowanym, odpal supermoce, roszpisz jak tzreba, plan, egzekucja, opus 4.7"
+    },
+    {
+      "id": "cand-029",
+      "from": "2026-05-01T19:47:02.493Z",
+      "to": "2026-05-01T19:48:07.300Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "plan",
+      "reason": "plan/spec keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "ok lecimy z rekomendowanym, odpal supermoce, roszpisz jak tzreba, plan, egzekucja, opus 4.7"
+    },
+    {
+      "id": "cand-030",
+      "from": "2026-05-02T05:46:51.258Z",
+      "to": "2026-05-02T05:46:51.258Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "plan",
+      "reason": "plan/spec keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "przed startem wyjasnij mi ultrakrotko jak teraz bedzie wygladalo \"logownaie\" usera, gdzie jest zapis jego postepu itp nastepnie plan zatwoerdzony, lecimy calosc"
+    },
+    {
+      "id": "cand-031",
+      "from": "2026-05-02T06:00:09.385Z",
+      "to": "2026-05-02T06:26:06.435Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "agent run (26 min)",
+      "metricsSummary": "Agent + 26 min wallclock",
+      "firstPromptText": "merguj do main wszystko, nastepnie /security-audit tzreba by zrobic i pozniej planujemy deploy, nie mamy jeszcez domeny wiec jak kupie to ppzniej musimy to spiac tam gdzie bedzie strona, cloudflare tak?"
+    },
+    {
+      "id": "cand-032",
+      "from": "2026-05-02T06:26:06.435Z",
+      "to": "2026-05-02T06:26:17.390Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "audit",
+      "reason": "audit/security keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "merguj do main wszystko, nastepnie /security-audit tzreba by zrobic i pozniej planujemy deploy, nie mamy jeszcez domeny wiec jak kupie to ppzniej musimy to spiac tam gdzie bedzie strona, cloudflare tak?"
+    },
+    {
+      "id": "cand-033",
+      "from": "2026-05-02T07:02:47.735Z",
+      "to": "2026-05-02T07:15:30.016Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "build",
+      "reason": "agent run (13 min)",
+      "metricsSummary": "Agent + 13 min wallclock",
+      "firstPromptText": "fixuj najwazniejsze i pozniej sie szykujemy na ostateczne testy e2e (manual) i lecimy na prod, nie dopisuj zadnych testow automatycznych"
+    },
+    {
+      "id": "cand-034",
+      "from": "2026-05-03T20:04:13.182Z",
+      "to": "2026-05-03T20:04:41.542Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "audit",
+      "reason": "audit/security keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "widze w console: Refused to execute inline script because it violates the following Content Security Policy directive: \"script-src 'self'\". Either the 'unsafe-inline' keyword, a hash ('sha256-F7gWny0R5zX8GmCbasjuDDwYtboFN8dEA8BWI/q/9uc='), or a nonce ('nonce-...') is required to…"
+    },
+    {
+      "id": "cand-035",
+      "from": "2026-05-04T05:08:13.484Z",
+      "to": "2026-05-04T05:08:13.484Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "audit",
+      "reason": "audit/security keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "ok poklikalem troche i mma pare uwag. Uzyj devtooms mcp wejdz sam i tez zobacz. Jak chce zagrac z kims to po wyborze rozgrywki na /pl/play?mode=friend&inviter=1&category=tech mam pusty ekran i errory w konsoli: DAW54p6_.js:1 Refused to connect to 'http://localhost:1999/parties/l…"
+    },
+    {
+      "id": "cand-036",
+      "from": "2026-05-04T12:03:18.361Z",
+      "to": "2026-05-04T12:03:29.202Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/f383b6cc-612a-49b6-be1e-d9146e31e877.jsonl",
+      "tag": "design",
+      "reason": "design keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "ok zobacz co za gre tu mamy, btanch ustawiony poprawnie, dodajemy nowy tryb, zobac ztez jak sor tu robi deploye, jest gdzies spisane wstzrsko a teraz lecimy z : Zaimplementuj docs/superpowers/specs/2026-05-04-multi-choice-game-mode-design.md.\n  Trzy phases (A/B/C) wg planu, jede…"
+    },
+    {
+      "id": "cand-037",
+      "from": "2026-05-04T12:14:42.614Z",
+      "to": "2026-05-04T12:22:21.312Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/f383b6cc-612a-49b6-be1e-d9146e31e877.jsonl",
+      "tag": "build",
+      "reason": "scaffolding (13 new files)",
+      "metricsSummary": "14 writes, 13 files",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-038",
+      "from": "2026-05-04T13:20:22.468Z",
+      "to": "2026-05-04T13:20:36.448Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "plan",
+      "reason": "plan/spec keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "ok git, zobacz czy w roadmapie mamy cos z formularzami, bo teraz niby jest google form ale do zgloszenia problemy oraz frma ktorego nie ma  - \"problem z pytaniem\" mysle zeby zrobic dedykowane formy na stronie. Obadaj temat jak to dobzre zrobic, zaplanuj, smtp uzyje resend wiec t…"
+    },
+    {
+      "id": "cand-039",
+      "from": "2026-05-04T19:22:40.039Z",
+      "to": "2026-05-04T19:22:40.427Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "audit",
+      "reason": "audit/security keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "po rundzie: Cx5C8rXv.js:1  POST https://duels.bartek-filipiuk.partykit.dev/parties/solo/global/submit-run 400 (Bad Request)\nwindow.fetch @ Cx5C8rXv.js:1\nd @ CUyfC2q3.js:1\n(anonymous) @ 15.IhB9Cu6y.js:1\nawait in (anonymous)\nOs @ CVEKz0I2.js:1\n(anonymous) @ BO8iX6f_.js:1\nyn @ CVEK…"
+    },
+    {
+      "id": "cand-040",
+      "from": "2026-05-04T19:52:40.457Z",
+      "to": "2026-05-04T19:52:40.856Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "plan",
+      "reason": "plan/spec keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "ok dziala, tam dodawlaismy tez form do pytan jak ktos ma jakies uwagi ale nie widze go, zobacz czy powinien byc widoczny. Druga kwestia, historia z wynikami dla usera, czy tam jest jakas paginacja czy jak to sie bedzie wyswoetlac jezlei bedzie duzo meczy? 3. jak klimam quick mat…"
+    },
+    {
+      "id": "cand-041",
+      "from": "2026-05-04T20:35:20.605Z",
+      "to": "2026-05-04T20:35:20.986Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "design keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "super, jedna rzecz, te logo DUELS jest za male (poza homepage) oraz zmieniamy nazwe na FASTDUELS (bo mamy nowa domene fastduels.com). Inne: default language robimy english (bez prefixu, polski to /pl) czli bez prefizu i po angielsku z defaultu. Zobacz tez czy mamy wszystko ptzre…"
+    },
+    {
+      "id": "cand-042",
+      "from": "2026-05-04T21:12:34.946Z",
+      "to": "2026-05-04T21:13:34.100Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "edit-burst on pl.json",
+      "metricsSummary": "10 edits, 1 file",
+      "firstPromptText": ""
+    },
+    {
+      "id": "cand-043",
+      "from": "2026-05-05T03:44:13.517Z",
+      "to": "2026-05-05T03:44:13.921Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/9ae17571-01c9-40c8-88d6-7ab56c76779c.jsonl",
+      "tag": "design",
+      "reason": "design keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "wyglada ok, zobacz czy wiesz jak np zobaczyc wbazie ile realnie mielsimy gier i kto gral? oglnie to zrob manual (md docs) z tym jak dzialac z ta strona CF, wrangler, db itp z poziomy linii komend (nie z UI CF)"
+    },
+    {
+      "id": "cand-044",
+      "from": "2026-05-05T12:11:52.775Z",
+      "to": "2026-05-05T12:12:13.330Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/2f3cee52-72bf-46ac-9334-ed13da99d4f4.jsonl",
+      "tag": "audit",
+      "reason": "audit/security keyword",
+      "metricsSummary": "keyword match in prompt",
+      "firstPromptText": "mamy bug, jak robie quick match i czekam na polaczenie to nikt nie moze sie podczepic a w konsoli widze: 7Refused to connect to 'ws:<URL>/parties/lobby/global?_pk=36f122f0-1679-4170-a9f8-b4551dbceae2' because it violates the following Content Security Policy directive: \"connect-…"
+    },
+    {
+      "id": "cand-045",
+      "from": "2026-05-05T20:13:46.492Z",
+      "to": "2026-05-05T20:18:47.801Z",
+      "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-games-projects-duels/2f3cee52-72bf-46ac-9334-ed13da99d4f4.jsonl",
+      "tag": "end",
+      "reason": "last 3 user prompts",
+      "metricsSummary": "3 prompts",
+      "firstPromptText": "ok"
+    }
+  ]
+}
