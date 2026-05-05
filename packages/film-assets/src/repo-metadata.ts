@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { findJsonlsIn, readMergedJsonls } from '@silent-build/curator/jsonl-reader'
+import { derivePunchline } from './punchline.js'
 import { RepoMetadataSchema, type RepoMetadata } from './types.js'
 
 const VIRAL_FRAMEWORK_KEYWORDS: Record<string, string> = {
@@ -72,20 +73,6 @@ const extractSubtitle = (
   return `github.com/.../${pkgName || repoPath.split('/').pop() || 'project'}`
 }
 
-const derivePunchlineHeuristic = (
-  pkgName: string,
-  techStack: string[],
-  startTs: string,
-  endTs: string
-): string => {
-  const days = Math.max(
-    1,
-    Math.ceil((Date.parse(endTs) - Date.parse(startTs)) / (24 * 3600 * 1000))
-  )
-  const stack = techStack[0] ?? 'TypeScript'
-  return `${days} days · ${pkgName} · ${stack}`
-}
-
 export const extractRepoMetadata = (
   repoPath: string,
   jsonlDir: string
@@ -109,12 +96,7 @@ export const extractRepoMetadata = (
   const startTs = events[0]?.isoTs ?? new Date().toISOString()
   const endTs = events[events.length - 1]?.isoTs ?? startTs
 
-  const punchline = derivePunchlineHeuristic(
-    projectName,
-    techStack,
-    startTs,
-    endTs
-  )
+  const punchline = derivePunchline({ projectName, techStack, startTs, endTs })
 
   return RepoMetadataSchema.parse({
     projectName,
