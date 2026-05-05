@@ -3,6 +3,7 @@ import { Command } from 'commander'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, isAbsolute, join, resolve } from 'node:path'
+import { runDoctor } from './doctor.js'
 import { renderVoiceover } from './elevenlabs.js'
 import { extractRepoMetadata } from './repo-metadata.js'
 import { generateShotList } from './shot-list.js'
@@ -193,6 +194,25 @@ program
       )
     }
   )
+
+program
+  .command('doctor')
+  .description('Verify dependencies, music files, env vars')
+  .action(() => {
+    const result = runDoctor({
+      musicDir: resolve(USER_CWD, 'assets/music'),
+      voiceFile: resolve(USER_CWD, 'assets/voices/bartek-clone-id.txt'),
+      requireFfmpeg: true,
+      env: { ELEVENLABS_API_KEY: process.env['ELEVENLABS_API_KEY'] }
+    })
+    for (const check of result.checks) {
+      const icon =
+        check.status === 'ok' ? '✓' : check.status === 'warn' ? '⚠' : '✗'
+      console.log(`${icon} ${check.name} — ${check.message}`)
+    }
+    console.log(`\noverall: ${result.overall.toUpperCase()}`)
+    if (result.overall === 'fail') process.exit(1)
+  })
 
 program.parseAsync().catch((err) => {
   console.error(`[film-assets] error: ${err instanceof Error ? err.message : err}`)
