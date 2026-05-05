@@ -11,5 +11,9 @@ export * from './compositions/IntroCard.js'
 export * from './compositions/OutroCard.js'
 export * from './compositions/PhaseTransition.js'
 export * from './compositions/Thumbnail.js'
+export {
+  ProjectIntro,
+  type ProjectIntroProps
+} from './compositions/ProjectIntro.js'
 export * from './brand/Logo.js'
 export * from './brand/Wordmark.js'
