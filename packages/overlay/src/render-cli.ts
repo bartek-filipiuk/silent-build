@@ -10,8 +10,8 @@ const program = new Command()
 
 const USER_CWD = process.env['INIT_CWD'] ?? process.cwd()
 
-type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro' | 'StatsCard' | 'CommitCard'
-const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro', 'StatsCard', 'CommitCard']
+type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro' | 'StatsCard' | 'CommitCard' | 'CodeZoom'
+const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro', 'StatsCard', 'CommitCard', 'CodeZoom']
 
 const outputStem = (comp: CompId): string => {
   switch (comp) {
@@ -23,6 +23,7 @@ const outputStem = (comp: CompId): string => {
     case 'ProjectIntro': return 'projectintro'
     case 'StatsCard': return 'stats-card'
     case 'CommitCard': return 'commit-card'
+    case 'CodeZoom': return 'code-zoom'
   }
 }
 
@@ -130,6 +131,13 @@ program
             filesChanged: 1,
             insertions: 1,
             deletions: 0
+          }
+        case 'CodeZoom':
+          return {
+            filePath: 'src/example.ts',
+            language: 'typescript',
+            excerpt: 'export const hello = () => 1\n',
+            highlightLine: 1
           }
       }
     })()

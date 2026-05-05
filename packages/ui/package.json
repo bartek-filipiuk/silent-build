@@ -15,7 +15,8 @@
     "@silent-build/shared": "workspace:*",
     "@silent-build/theme": "workspace:*",
     "react": "^18.3.1",
-    "remotion": "^4.0.200"
+    "remotion": "^4.0.200",
+    "shiki": "^1.18.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.5"

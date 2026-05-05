@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Composition, registerRoot } from 'remotion'
 import {
+  CodeZoom, type CodeZoomProps,
   CommitCard, type CommitCardProps,
   Dashboard, type DashboardProps,
   IntroCard, type IntroCardProps,
@@ -139,9 +140,23 @@ export const RemotionRoot: React.FC = () => (
         deletions: 3
       } as unknown as Record<string, unknown>}
     />
+    <Composition
+      id="CodeZoom"
+      component={wrap<CodeZoomProps>(CodeZoom)}
+      durationInFrames={3 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        filePath: 'packages/partykit-server/src/match/match-room.ts',
+        language: 'typescript',
+        excerpt: 'export class MatchRoom {\n  onConnect(...) { }\n  onMessage(...) { }\n}\n',
+        highlightLine: 2
+      } as unknown as Record<string, unknown>}
+    />
   </>
 )
 
-export type { CommitCardProps, DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, StatsCardProps, ThumbnailProps }
+export type { CodeZoomProps, CommitCardProps, DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, StatsCardProps, ThumbnailProps }
 
 registerRoot(RemotionRoot)

@@ -23,5 +23,9 @@ export {
   CommitCard,
   type CommitCardProps
 } from './compositions/CommitCard.js'
+export {
+  CodeZoom,
+  type CodeZoomProps
+} from './compositions/CodeZoom.js'
 export * from './brand/Logo.js'
 export * from './brand/Wordmark.js'
