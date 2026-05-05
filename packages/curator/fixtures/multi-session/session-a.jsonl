@@ -1,0 +1,13 @@
+{"type":"user","timestamp":"2026-05-01T10:00:00.000Z","uuid":"a-u1","message":{"role":"user","content":"plan out the architecture"}}
+{"type":"assistant","timestamp":"2026-05-01T10:00:10.000Z","uuid":"a-a1","message":{"role":"assistant","content":[{"type":"tool_use","name":"Write","input":{"file_path":"/p/spec.md"}}]}}
+{"type":"user","timestamp":"2026-05-01T10:30:00.000Z","uuid":"a-u2","message":{"role":"user","content":"now build the backend"}}
+{"type":"assistant","timestamp":"2026-05-01T10:30:10.000Z","uuid":"a-a2","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:31:00.000Z","uuid":"a-a3","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:32:00.000Z","uuid":"a-a4","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:33:00.000Z","uuid":"a-a5","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:34:00.000Z","uuid":"a-a6","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:35:00.000Z","uuid":"a-a7","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:36:00.000Z","uuid":"a-a8","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:37:00.000Z","uuid":"a-a9","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:38:00.000Z","uuid":"a-a10","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}
+{"type":"assistant","timestamp":"2026-05-01T10:39:00.000Z","uuid":"a-a11","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/p/server.ts"}}]}}

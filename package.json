@@ -15,6 +15,7 @@
     "typecheck": "pnpm -r typecheck",
     "mark": "pnpm --filter @silent-build/markers run mark",
     "harvest": "pnpm --filter @silent-build/harvester run harvest",
+    "curate:scan": "pnpm --filter @silent-build/curator run curate:scan scan",
     "render": "pnpm --filter @silent-build/overlay run render",
     "render:dashboard": "pnpm --filter @silent-build/overlay run render:dashboard",
     "render:intro": "pnpm --filter @silent-build/overlay run render:intro",
