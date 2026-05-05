@@ -2,7 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   RepoMetadataSchema,
   VoiceoverLinesSchema,
-  TtsConfigSchema
+  TtsConfigSchema,
+  ShotListContextSchema
 } from '../src/types.js'
 
 describe('RepoMetadataSchema', () => {
@@ -77,5 +78,59 @@ describe('TtsConfigSchema', () => {
         apiKey: 'sk_xyz'
       })
     ).not.toThrow()
+  })
+
+  it('fills modelId default when absent', () => {
+    const parsed = TtsConfigSchema.parse({
+      voiceId: 'v1',
+      apiKey: 'sk_xyz'
+    })
+    expect(parsed.modelId).toBe('eleven_multilingual_v2')
+  })
+})
+
+describe('ShotListContextSchema', () => {
+  it('accepts minimal valid input (just projectName + punchline)', () => {
+    const parsed = ShotListContextSchema.parse({
+      projectName: 'duels',
+      punchline: '9 days'
+    })
+    expect(parsed.projectName).toBe('duels')
+  })
+
+  it('fills topFiles default to [] when absent', () => {
+    const parsed = ShotListContextSchema.parse({
+      projectName: 'duels',
+      punchline: '9 days'
+    })
+    expect(parsed.topFiles).toEqual([])
+  })
+
+  it('fills topCommits default to [] when absent', () => {
+    const parsed = ShotListContextSchema.parse({
+      projectName: 'duels',
+      punchline: '9 days'
+    })
+    expect(parsed.topCommits).toEqual([])
+  })
+
+  it('rejects when topFiles has more than 5 entries', () => {
+    expect(() =>
+      ShotListContextSchema.parse({
+        projectName: 'd',
+        punchline: 'p',
+        topFiles: ['a', 'b', 'c', 'd', 'e', 'f']
+      })
+    ).toThrow()
+  })
+
+  it('rejects when topCommit is missing message', () => {
+    expect(() =>
+      ShotListContextSchema.parse({
+        projectName: 'd',
+        punchline: 'p',
+        topCommits: [{ sha: 'abc' }]
+      })
+    ).toThrow()
   })
 })
