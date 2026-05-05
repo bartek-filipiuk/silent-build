@@ -21,7 +21,7 @@
     "assets:shotlist": "pnpm --filter @silent-build/film-assets run assets shotlist",
     "assets:generate": "pnpm --filter @silent-build/film-assets run assets generate",
     "assets:doctor": "pnpm --filter @silent-build/film-assets run assets doctor",
-    "skill:install": "mkdir -p ~/.claude/skills && ln -sfn $PWD/skills/curate-narrative ~/.claude/skills/curate-narrative && echo 'linked: ~/.claude/skills/curate-narrative -> '$PWD/skills/curate-narrative",
+    "skill:install": "mkdir -p ~/.claude/skills && ln -sfn $PWD/skills/curate-narrative ~/.claude/skills/curate-narrative && ln -sfn $PWD/skills/generate-voiceover-script ~/.claude/skills/generate-voiceover-script && ln -sfn $PWD/skills/start-silent-build-project ~/.claude/skills/start-silent-build-project && echo 'linked 3 skills into ~/.claude/skills/'",
     "render": "pnpm --filter @silent-build/overlay run render",
     "render:dashboard": "pnpm --filter @silent-build/overlay run render:dashboard",
     "render:intro": "pnpm --filter @silent-build/overlay run render:intro",
