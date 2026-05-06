@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync, realpathSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const STAGES = [
   'concept',
@@ -62,6 +63,32 @@ const pipelineDone = (silentBuildRoot, projectName) => {
   )
 }
 
+const conceptNextStep = (projectRoot) => {
+  if (!existsSync(join(projectRoot, 'concept.md'))) {
+    return {
+      label: 'Write concept.md — 1-page product brief (what + why + tech stack)',
+      command: 'echo "# concept" > concept.md && $EDITOR concept.md'
+    }
+  }
+  if (!existsSync(join(projectRoot, 'README.md'))) {
+    return {
+      label: 'Write README.md — project name, status, eventual live URL',
+      command: '$EDITOR README.md'
+    }
+  }
+  if (!hasGlob(join(projectRoot, 'docs/superpowers/specs'), '.md')) {
+    return {
+      label:
+        'Open Claude Code and invoke `superpowers:brainstorming` on concept.md → produces design spec in docs/superpowers/specs/',
+      command: 'claude  # then: read concept.md and brainstorm the design'
+    }
+  }
+  return {
+    label: 'Concept complete — proceed to Build stage',
+    command: ''
+  }
+}
+
 export const detectStage = (
   projectRoot,
   silentBuildRoot = null,
@@ -71,10 +98,7 @@ export const detectStage = (
     return {
       stage: 'concept',
       completedSteps: [],
-      nextStep: {
-        label: 'Write concept.md and start a brainstorming CC session',
-        command: 'echo "# concept" > concept.md && claude'
-      }
+      nextStep: conceptNextStep(projectRoot)
     }
   }
   if (!buildDone(projectRoot)) {
@@ -146,6 +170,19 @@ const main = () => {
   console.log(JSON.stringify(r, null, 2))
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Detect direct invocation. Resolve symlinks on argv[1] so this works when the
+// script is launched through ~/.claude/skills/<name>/bin/status.mjs (a symlink
+// into the repo) — Node sets import.meta.url to the real path after resolution,
+// while argv[1] keeps the symlink path, so a string compare fails.
+const isInvokedDirectly = () => {
+  if (!process.argv[1]) return false
+  try {
+    return realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)
+  } catch {
+    return false
+  }
+}
+
+if (isInvokedDirectly()) {
   main()
 }
