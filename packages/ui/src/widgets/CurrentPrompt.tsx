@@ -36,17 +36,17 @@ export const CurrentPrompt: React.FC<CurrentPromptProps> = ({
   const elapsedAtPrompt = prompt ? prompt.ts - timeline.project.startTs : 0
   const rawText = prompt?.text ?? ''
   const text =
-    rawText.length > 200 ? rawText.slice(0, 180) + '…' : rawText
+    rawText.length > 360 ? rawText.slice(0, 340) + '…' : rawText
 
   return (
     <div
       style={{
-        height: 140,
+        height: 280,
         padding: `${tokens.spacing.md}px ${tokens.spacing.xl}px`,
         borderBottom: tokens.borders.hairline,
         display: 'flex',
         flexDirection: 'column',
-        gap: tokens.spacing.xs,
+        gap: tokens.spacing.sm,
         overflow: 'hidden'
       }}
     >
@@ -85,21 +85,22 @@ export const CurrentPrompt: React.FC<CurrentPromptProps> = ({
       <div
         style={{
           fontFamily: tokens.typography.fontMono,
-          fontSize: 15,
-          lineHeight: 1.45,
+          fontSize: 22,
+          lineHeight: 1.4,
           color: tokens.colors.textPrimary,
-          // 3-line clamp via webkit (renders fine in Chrome/Remotion headless).
+          flex: 1,
+          // 7-line clamp via webkit (renders fine in Chrome/Remotion headless).
           display: '-webkit-box',
-          WebkitLineClamp: 3,
+          WebkitLineClamp: 7,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           // Left marker — visual anchor without adding an SVG.
-          borderLeft: `2px solid ${tokens.colors.amber}`,
-          paddingLeft: tokens.spacing.sm
+          borderLeft: `3px solid ${tokens.colors.amber}`,
+          paddingLeft: tokens.spacing.md
         }}
       >
-        {text || <span style={{ color: tokens.colors.textMuted }}>— awaiting first prompt —</span>}
+        {text || <span style={{ color: tokens.colors.textMuted, fontSize: 16 }}>— awaiting first prompt —</span>}
       </div>
     </div>
   )
