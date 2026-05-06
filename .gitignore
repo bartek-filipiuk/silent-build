@@ -8,6 +8,7 @@ output/*.mov
 output/*.mp4
 !output/README.md
 !output/duels-narrative.json
+!output/duels-metadata.json
 *.log
 .DS_Store
 .vscode/
@@ -15,3 +16,5 @@ output/*.mp4
 pnpm-lock.yaml.backup
 coverage/
 *.tsbuildinfo
+assets/music/*.wav
+assets/music/*.mp3

@@ -1,10 +1,14 @@
 import type React from 'react'
 import { Composition, registerRoot } from 'remotion'
 import {
+  CodeZoom, type CodeZoomProps,
+  CommitCard, type CommitCardProps,
   Dashboard, type DashboardProps,
   IntroCard, type IntroCardProps,
   OutroCard, type OutroCardProps,
   PhaseTransition, type PhaseTransitionProps,
+  ProjectIntro, type ProjectIntroProps,
+  StatsCard, type StatsCardProps,
   Thumbnail, type ThumbnailProps
 } from '@silent-build/ui'
 import mockTimeline from './fixtures/mock-timeline.json'
@@ -90,9 +94,69 @@ export const RemotionRoot: React.FC = () => (
         episode: 1
       } as unknown as Record<string, unknown>}
     />
+    <Composition
+      id="ProjectIntro"
+      component={wrap<ProjectIntroProps>(ProjectIntro)}
+      durationInFrames={10 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        projectName: parsed.project.name,
+        punchline: '7 days · 1 multiplayer game · 1v1',
+        subtitle: 'fastduels.com',
+        techStack: ['SvelteKit', 'Cloudflare', 'PartyKit', 'D1']
+      } as unknown as Record<string, unknown>}
+    />
+    <Composition
+      id="StatsCard"
+      component={wrap<StatsCardProps>(StatsCard)}
+      durationInFrames={5 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        projectName: parsed.project.name,
+        totalPrompts: parsed.metrics.promptsCount,
+        totalToolCalls: parsed.metrics.toolCallsCount,
+        totalDays: 9,
+        totalTokens: parsed.metrics.totalTokens,
+        filesTouched: parsed.metrics.filesTouched,
+        liveUrl: 'fastduels.com'
+      } as unknown as Record<string, unknown>}
+    />
+    <Composition
+      id="CommitCard"
+      component={wrap<CommitCardProps>(CommitCard)}
+      durationInFrames={2 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        shortSha: '1647088',
+        message: 'feat(markers): --live flag POSTs to live-server',
+        filesChanged: 5,
+        insertions: 87,
+        deletions: 3
+      } as unknown as Record<string, unknown>}
+    />
+    <Composition
+      id="CodeZoom"
+      component={wrap<CodeZoomProps>(CodeZoom)}
+      durationInFrames={3 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        filePath: 'packages/partykit-server/src/match/match-room.ts',
+        language: 'typescript',
+        excerpt: 'export class MatchRoom {\n  onConnect(...) { }\n  onMessage(...) { }\n}\n',
+        highlightLine: 2
+      } as unknown as Record<string, unknown>}
+    />
   </>
 )
 
-export type { DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ThumbnailProps }
+export type { CodeZoomProps, CommitCardProps, DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, StatsCardProps, ThumbnailProps }
 
 registerRoot(RemotionRoot)

@@ -11,5 +11,21 @@ export * from './compositions/IntroCard.js'
 export * from './compositions/OutroCard.js'
 export * from './compositions/PhaseTransition.js'
 export * from './compositions/Thumbnail.js'
+export {
+  ProjectIntro,
+  type ProjectIntroProps
+} from './compositions/ProjectIntro.js'
+export {
+  StatsCard,
+  type StatsCardProps
+} from './compositions/StatsCard.js'
+export {
+  CommitCard,
+  type CommitCardProps
+} from './compositions/CommitCard.js'
+export {
+  CodeZoom,
+  type CodeZoomProps
+} from './compositions/CodeZoom.js'
 export * from './brand/Logo.js'
 export * from './brand/Wordmark.js'

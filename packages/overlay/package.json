@@ -11,6 +11,10 @@
     "render:outro": "tsx src/render-cli.ts --composition Outro",
     "render:phase": "tsx src/render-cli.ts --composition PhaseTransition",
     "render:thumb": "tsx src/render-cli.ts --composition Thumbnail --format png --max-frames 1",
+    "render:projectintro": "tsx src/render-cli.ts --composition ProjectIntro",
+    "render:stats": "tsx src/render-cli.ts --composition StatsCard",
+    "render:commitcard": "tsx src/render-cli.ts --composition CommitCard",
+    "render:codezoom": "tsx src/render-cli.ts --composition CodeZoom",
     "render:narrative": "tsx src/render-narrative.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

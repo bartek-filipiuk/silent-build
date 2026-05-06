@@ -10,8 +10,8 @@ const program = new Command()
 
 const USER_CWD = process.env['INIT_CWD'] ?? process.cwd()
 
-type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail'
-const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail']
+type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro' | 'StatsCard' | 'CommitCard' | 'CodeZoom'
+const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro', 'StatsCard', 'CommitCard', 'CodeZoom']
 
 const outputStem = (comp: CompId): string => {
   switch (comp) {
@@ -20,6 +20,10 @@ const outputStem = (comp: CompId): string => {
     case 'Outro': return 'outro'
     case 'PhaseTransition': return 'phase-transition'
     case 'Thumbnail': return 'thumbnail'
+    case 'ProjectIntro': return 'projectintro'
+    case 'StatsCard': return 'stats-card'
+    case 'CommitCard': return 'commit-card'
+    case 'CodeZoom': return 'code-zoom'
   }
 }
 
@@ -95,6 +99,46 @@ program
           if (opts.episode) props['episode'] = parseInt(opts.episode, 10)
           return props
         }
+        case 'ProjectIntro': {
+          return {
+            projectName: timeline.project.name,
+            punchline: '7 days · 1 multiplayer game · 1v1',
+            subtitle: 'fastduels.com',
+            techStack: ['SvelteKit', 'Cloudflare', 'PartyKit', 'D1'],
+            startTs: new Date(timeline.project.startTs).toISOString()
+          }
+        }
+        case 'StatsCard': {
+          const days = Math.max(
+            1,
+            Math.ceil(
+              (timeline.project.endTs - timeline.project.startTs) / 86_400_000
+            )
+          )
+          return {
+            projectName: timeline.project.name,
+            totalPrompts: timeline.metrics.promptsCount,
+            totalToolCalls: timeline.metrics.toolCallsCount,
+            totalDays: days,
+            totalTokens: timeline.metrics.totalTokens,
+            filesTouched: timeline.metrics.filesTouched
+          }
+        }
+        case 'CommitCard':
+          return {
+            shortSha: 'abcdef0',
+            message: 'sample commit',
+            filesChanged: 1,
+            insertions: 1,
+            deletions: 0
+          }
+        case 'CodeZoom':
+          return {
+            filePath: 'src/example.ts',
+            language: 'typescript',
+            excerpt: 'export const hello = () => 1\n',
+            highlightLine: 1
+          }
       }
     })()
 

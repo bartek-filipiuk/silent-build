@@ -51,6 +51,42 @@ Output: per-scene Intro/PhaseTransition/Outro overlays (1920×1080) + per-clip D
 
 Reference: `output/duels-narrative.json` (12-min film, 6 scen, 12 clipów).
 
+## Viral pipeline (silent-build series)
+
+End-to-end automation for "silent build #N" YouTube films:
+
+```bash
+# 1. Once: install all skills + generate Suno music pack
+pnpm skill:install
+# (manually generate 4 Suno tracks per assets/music/README.md)
+
+# 2. Per project:
+pnpm assets:doctor
+pnpm assets:metadata --repo <project> --jsonl-dir <jsonl-dir> --out output/<x>-meta.json
+claude  # then: /generate-voiceover-script output/<x>-meta.json
+ELEVENLABS_API_KEY=... pnpm assets:tts --script output/<x>-voiceover-script.json --out output/<x>-vo
+
+pnpm curate:scan --project <jsonl-dir> --out output/<x>-cands.json
+claude  # then: /curate-narrative output/<x>-cands.json
+pnpm render:narrative --input output/<x>-narrative.json --out output/<x>-segments
+
+pnpm render:projectintro --project output/<x>-segments
+pnpm render:stats --project output/<x>-segments
+
+pnpm assets:shotlist --metadata output/<x>-meta.json --out docs/films/<x>-shot-list.md
+```
+
+Plus offline:
+- Record talking-head + OBS demo per shot-list (Day 5)
+- Premiere assembly per `docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md` 7-min timeline (Day 6)
+- YT upload (Day 7)
+
+Per-film human work: ~1 h. Across the series: brand consistency via reused Suno loops, voice ID, ProjectIntro template.
+
+Full spec: `docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md`
+Plan: `docs/superpowers/plans/2026-05-06-viral-film-pipeline.md`
+Per-project starter checklist: `docs/films/silent-build-project-starter.md`
+
 ## Wymagania
 
 - Node 22+ (dziala tez na Node 20.11+ z warningiem)
