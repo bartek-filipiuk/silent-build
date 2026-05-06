@@ -104,6 +104,20 @@ Idempotent — safe to re-run after pulling new commits.
 - `assets/music/` — Suno-generated lo-fi loops (gitignored, manifest in `assets/music/README.md`). Standard subscription license — copy from external storage before each pipeline run.
 - `assets/voices/bartek-clone-id.txt` — ElevenLabs voice ID. Default is preset Rachel (`21m00Tcm4TlvDq8ikWAM`); replace with your cloned voice ID after running ElevenLabs voice cloning UI.
 
+## Inline tags in prompts
+
+When you mix stages in a single CC session (build + quick audit + deploy in one `claude` run), prefix pivot prompts with `[TAG]` so the curator catches them as explicit scene markers:
+
+```
+[SECURITY] check for open redirects on /r/<code>
+[CODE_REVIEW] zerknij na auth flow
+[DEPLOY] wrangler deploy and verify URL
+```
+
+Recognized tag tokens (case-insensitive): `CONCEPT|IDEA|START → start`, `PLAN|ARCHITECTURE|SPEC|ROADMAP → plan`, `BUILD|CODE|FEATURE|IMPLEMENT|REFACTOR → build`, `DESIGN|UI|UX|STYLE|THEME → design`, `REVIEW|CODE_REVIEW|CODE-REVIEW|AUDIT|SECURITY|HARDEN → audit`, `DEPLOY|SHIP|RELEASE|LAUNCH|END → end`. Tag must be at the start of the prompt; mid-sentence brackets are ignored. Signal=8 (overrides keyword detection signal=5).
+
+Full reference: `docs/films/inline-tags.md`. To render a specific scene only: `pnpm render:narrative --input <path> --scenes 5`. For separate deep-dive films, build a second narrative.json from tagged clips and render with `--out output/<slug>/deep-dives/...`.
+
 ## OBS recording layer (per project)
 
 Each Claude Code session from Day 1 onwards is recorded with OBS Studio so the final film shows the real terminal/editor on the left (1344×1080) and the silent-build dashboard render on the right (576×1080) — total 1920×1080.

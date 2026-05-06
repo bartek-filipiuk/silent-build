@@ -32,6 +32,7 @@ export {
   detectEditBursts,
   detectScaffolding,
   detectAgentRuns,
+  detectInlineTags,
   detectPromptKeywords,
   detectCommitPush,
   detectLongPauses,

@@ -5,6 +5,7 @@ import {
   detectLastPrompts,
   detectEditBursts,
   detectScaffolding,
+  detectInlineTags,
   detectPromptKeywords,
   detectCommitPush,
   detectLongPauses
@@ -77,6 +78,90 @@ describe('detectPromptKeywords', () => {
     expect(tags.has('end')).toBe(true)
     expect(tags.has('design')).toBe(true)
     expect(tags.has('plan')).toBe(true)
+  })
+})
+
+describe('detectInlineTags', () => {
+  const fakeEvent = (
+    isoTs: string,
+    text: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'user',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: { message: { content: text } }
+  })
+
+  it('matches [SECURITY] tag at start of prompt', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', '[SECURITY] check open redirect on /r/<code>'),
+      fakeEvent('2026-05-01T10:01:00.000Z', 'next prompt')
+    ]
+    const cands = detectInlineTags(events)
+    expect(cands).toHaveLength(1)
+    expect(cands[0]!.tag).toBe('audit')
+    expect(cands[0]!.reason).toContain('[SECURITY]')
+  })
+
+  it('maps CODE_REVIEW and CODE-REVIEW to audit', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', '[CODE_REVIEW] zerknij na auth.ts'),
+      fakeEvent('2026-05-01T10:01:00.000Z', '[CODE-REVIEW] also check the API layer'),
+      fakeEvent('2026-05-01T10:02:00.000Z', 'next')
+    ]
+    const cands = detectInlineTags(events)
+    expect(cands).toHaveLength(2)
+    expect(cands.every((c) => c.tag === 'audit')).toBe(true)
+  })
+
+  it('maps DEPLOY/SHIP/RELEASE to end', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', '[DEPLOY] wrangler deploy please'),
+      fakeEvent('2026-05-01T10:01:00.000Z', '[SHIP] tag v0.1.0'),
+      fakeEvent('2026-05-01T10:02:00.000Z', 'next')
+    ]
+    const cands = detectInlineTags(events)
+    expect(cands).toHaveLength(2)
+    expect(cands.every((c) => c.tag === 'end')).toBe(true)
+  })
+
+  it('ignores tags inside the body (only matches prefix)', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', 'here is some context [SECURITY] but not a marker'),
+      fakeEvent('2026-05-01T10:01:00.000Z', 'next')
+    ]
+    const cands = detectInlineTags(events)
+    expect(cands).toHaveLength(0)
+  })
+
+  it('ignores unknown tag tokens', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', '[GIBBERISH] something'),
+      fakeEvent('2026-05-01T10:01:00.000Z', 'next')
+    ]
+    const cands = detectInlineTags(events)
+    expect(cands).toHaveLength(0)
+  })
+
+  it('case-insensitive on tag token', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', '[security] lowercase still matches'),
+      fakeEvent('2026-05-01T10:01:00.000Z', 'next')
+    ]
+    const cands = detectInlineTags(events)
+    expect(cands).toHaveLength(1)
+    expect(cands[0]!.tag).toBe('audit')
+  })
+
+  it('signal=8 (stronger than promptKeywords=5)', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', '[AUDIT] check this'),
+      fakeEvent('2026-05-01T10:01:00.000Z', 'next')
+    ]
+    const cands = detectInlineTags(events)
+    expect(cands[0]!.signal).toBe(8)
   })
 })
 

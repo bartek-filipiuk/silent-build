@@ -15,6 +15,41 @@ const RX_END = /\b(deploy|launch|prod|production|release|ship|merge)\b/i
 const RX_DESIGN = /\b(design|figma|brief|ui|ux|brand|logo)\b/i
 const RX_PLAN = /\b(plan|spec|roadmap|architecture|concept)\b/i
 
+// Explicit inline tag at the start of a prompt: "[CODE_REVIEW] zerknij na X"
+// or "[SECURITY] sprawdź czy nie ma open redirect". Stronger signal than
+// keyword match (signal=8 vs 5) because it's intentional user marker.
+const INLINE_TAG_RX = /^\s*\[([A-Za-z][A-Za-z_-]{1,20})\]\s*/
+const INLINE_TAG_TO_SCENE: Record<string, CandidateTag> = {
+  CONCEPT: 'start',
+  IDEA: 'start',
+  START: 'start',
+  PLAN: 'plan',
+  ARCHITECTURE: 'plan',
+  SPEC: 'plan',
+  ROADMAP: 'plan',
+  BUILD: 'build',
+  CODE: 'build',
+  FEATURE: 'build',
+  IMPLEMENT: 'build',
+  REFACTOR: 'build',
+  DESIGN: 'design',
+  UI: 'design',
+  UX: 'design',
+  STYLE: 'design',
+  THEME: 'design',
+  REVIEW: 'audit',
+  'CODE-REVIEW': 'audit',
+  CODE_REVIEW: 'audit',
+  AUDIT: 'audit',
+  SECURITY: 'audit',
+  HARDEN: 'audit',
+  DEPLOY: 'end',
+  SHIP: 'end',
+  RELEASE: 'end',
+  LAUNCH: 'end',
+  END: 'end'
+}
+
 const truncate = (s: string, n = 280): string =>
   s.length > n ? s.slice(0, n - 1).trim() + '…' : s.trim()
 
@@ -275,6 +310,34 @@ export const detectAgentRuns = (
   return out
 }
 
+export const detectInlineTags = (events: RawEvent[]): CandidateRaw[] => {
+  const out: CandidateRaw[] = []
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i]!
+    if (ev.type !== 'user' || isToolResultOnly(ev)) continue
+    const text = extractUserText(ev)
+    if (!text.trim()) continue
+    if (isSyntheticPrompt(text)) continue
+    const m = text.match(INLINE_TAG_RX)
+    if (!m || !m[1]) continue
+    const tagToken = m[1].toUpperCase()
+    const sceneTag = INLINE_TAG_TO_SCENE[tagToken]
+    if (!sceneTag) continue
+    const nextEv = events[i + 1] ?? ev
+    out.push({
+      from: isoOf(ev),
+      to: isoOf(nextEv),
+      sourceJsonl: ev.sourceJsonl,
+      tag: sceneTag,
+      reason: `inline tag [${tagToken}]`,
+      metricsSummary: `[${tagToken}] → ${sceneTag}`,
+      firstPromptText: truncate(text, 280),
+      signal: 8
+    })
+  }
+  return out
+}
+
 export const detectPromptKeywords = (events: RawEvent[]): CandidateRaw[] => {
   const out: CandidateRaw[] = []
   for (let i = 0; i < events.length; i++) {
@@ -416,6 +479,7 @@ export const preprocess = (
     ...detectEditBursts(events),
     ...detectScaffolding(events),
     ...detectAgentRuns(events),
+    ...detectInlineTags(events),
     ...detectPromptKeywords(events),
     ...detectCommitPush(events)
   ]

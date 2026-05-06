@@ -30,6 +30,8 @@ End state: `concept.md`, `README.md`, design spec exist. Session has the prompt 
 
 **Before each session: F9 in OBS to start recording.** Save filename: `day-1-build.mov`, `day-2-build-fix.mov`, etc. F10 to stop when you close CC.
 
+**Inline tags for mid-session pivots:** if you mix stages in one session (e.g. build → quick audit → back to build), prefix the pivot prompt with `[SECURITY]`, `[CODE_REVIEW]`, `[DEPLOY]`, etc. The curator picks these up as explicit scene markers (signal=8, stronger than keyword detection). Full tag list + workflow: `docs/films/inline-tags.md`.
+
 - [ ] Mark project start: `cd <silent-build>; pnpm mark project-start --name "<X>"`
 - [ ] In project repo: invoke `superpowers:writing-plans` from spec → `docs/superpowers/plans/<date>-<feature>.md`
 - [ ] Implement task-by-task; commit after each task with `feat(...)`/`fix(...)`/`test(...)`
