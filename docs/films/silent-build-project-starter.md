@@ -45,31 +45,32 @@ Why a NEW session: the audit jsonl becomes a clean candidate stream for the Audi
 
 ## Day N+3 — Demo + face record (offline)
 
-In `silent-build`:
+In `silent-build` (replace `<slug>` with project name, e.g. `duels`):
 
-- [ ] `pnpm assets:metadata --repo <project> --jsonl-dir ~/.claude/projects/<slug> --out output/<project>-meta.json`
-- [ ] `claude` then `/generate-voiceover-script output/<project>-meta.json` → save voiceover-script.json
-- [ ] `pnpm assets:shotlist --metadata output/<project>-meta.json --out docs/films/<project>-shot-list.md`
+- [ ] `mkdir -p docs/films/<slug> output/<slug>`
+- [ ] `pnpm assets:metadata --repo <project> --jsonl-dir ~/.claude/projects/-…-<slug> --out docs/films/<slug>/metadata.json`
+- [ ] `claude` then `/generate-voiceover-script docs/films/<slug>/metadata.json` → save to `docs/films/<slug>/voiceover-script.json`
+- [ ] `pnpm assets:shotlist --metadata docs/films/<slug>/metadata.json --out docs/films/<slug>/shot-list.md`
 - [ ] Read shot-list.md
-- [ ] OBS demo screencast 60s per shot-list (record to `output/<project>-demo.mov`)
-- [ ] Face record 30s of takes (hook + outro) per shot-list
+- [ ] OBS demo screencast 60s per shot-list → record to `output/<slug>/demo.mov`
+- [ ] Face record 30s of takes (hook + outro) per shot-list → `output/<slug>/face.mov`
 
 ## Day N+4 — silent-build pipeline run
 
 - [ ] `cd <silent-build>`
-- [ ] `pnpm curate:scan --project ~/.claude/projects/<slug> --out output/<project>-candidates.json --name <project>`
-- [ ] `claude` → `/curate-narrative output/<project>-candidates.json` → save narrative.json
-- [ ] `pnpm render:narrative --input output/<project>-narrative.json --out output/<project>-segments`
-- [ ] `pnpm assets:generate --repo <project> --jsonl-dir ~/.claude/projects/<slug> --out output/<project>-assets`
-- [ ] `pnpm render:projectintro --project output/<project>-assets`
-- [ ] `pnpm render:stats --project output/<project>-assets`
+- [ ] `pnpm curate:scan --project ~/.claude/projects/-…-<slug> --out output/<slug>/candidates.json --name <slug>`
+- [ ] `claude` → `/curate-narrative output/<slug>/candidates.json` → save to `docs/films/<slug>/narrative.json`
+- [ ] `pnpm render:narrative --input docs/films/<slug>/narrative.json --out output/<slug>/segments`
+- [ ] `pnpm render:projectintro --project output/<slug>/segments` → also produces frames in segments dir
+- [ ] `pnpm render:stats --project output/<slug>/segments`
 - [ ] (B-roll inserts: render CommitCard / CodeZoom for top items)
-- [ ] `ELEVENLABS_API_KEY=... pnpm assets:tts --script output/<project>-assets/voiceover-script.json --out output/<project>-assets/voiceover`
-- [ ] Premiere assembly per `docs/films/<project>-shot-list.md` + 7-min timeline (see `docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md` section "Updated 7-min timeline")
-- [ ] YT upload: title, description from spec template, tags, thumbnail, end-screen
+- [ ] `ELEVENLABS_API_KEY=... pnpm assets:tts --script docs/films/<slug>/voiceover-script.json --out output/<slug>/voiceover`
+- [ ] Premiere assembly per `docs/films/<slug>/shot-list.md` + 7-min timeline (see `docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md` section "Updated 7-min timeline"). Final export → `output/<slug>/final/<slug>-silent-build-N.mp4`.
+- [ ] Draft YT metadata in `docs/films/<slug>/publish.md` (title, description, tags, end-screen)
+- [ ] YT upload using `publish.md` content
 - [ ] Repo README update with YT link
 
-End state: published video, README link added.
+End state: published video, README link added, `docs/films/<slug>/` has full record under version control.
 
 ---
 

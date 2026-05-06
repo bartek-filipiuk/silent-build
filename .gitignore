@@ -2,13 +2,8 @@ node_modules/
 dist/
 .env
 .env.local
-output/*/
-output/*.json
-output/*.mov
-output/*.mp4
+output/
 !output/README.md
-!output/duels-narrative.json
-!output/duels-metadata.json
 *.log
 .DS_Store
 .vscode/
