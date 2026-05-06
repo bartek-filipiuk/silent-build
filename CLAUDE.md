@@ -104,6 +104,20 @@ Idempotent — safe to re-run after pulling new commits.
 - `assets/music/` — Suno-generated lo-fi loops (gitignored, manifest in `assets/music/README.md`). Standard subscription license — copy from external storage before each pipeline run.
 - `assets/voices/bartek-clone-id.txt` — ElevenLabs voice ID. Default is preset Rachel (`21m00Tcm4TlvDq8ikWAM`); replace with your cloned voice ID after running ElevenLabs voice cloning UI.
 
+## OBS recording layer (per project)
+
+Each Claude Code session from Day 1 onwards is recorded with OBS Studio so the final film shows the real terminal/editor on the left (1344×1080) and the silent-build dashboard render on the right (576×1080) — total 1920×1080.
+
+- Setup cookbook: `assets/obs/README.md` (one-time per machine, ~10 min)
+- OBS canvas resolution: 1344×1080 @ 30 fps, x264 CRF 23 (or NVENC CQ 23)
+- Recordings live in `~/video-projects/<slug>/raw-recordings/day-N-<stage>.mkv` — kept on the project repo side, NOT in silent-build, NOT in git
+- Hotkey convention: F9 = start, F10 = stop. Convention is per-CC-session: one recording covers one `claude` invocation top-to-bottom.
+- Storage: ~5 GB/h, ~25-30 GB per project total. Delete after YT publish + 1 week.
+
+In Premiere assembly, the raw recording per CC session is razor-cut by `narrative.json` clip ranges and time-stretched to match each clip's `durationSec` (compression ratios 25-50× typical). Dashboard segments from `output/<slug>/segments/` go on the right track at the same timeline positions.
+
+If you forget to start OBS at the beginning of a session: that session is a writeoff for the left-panel layer (you still have dashboard data from the jsonl). The film loses authenticity for that span — you can either stitch a short reconstruction, or accept a dashboard-only segment with a "session: rebuilding multiplayer" lower-third caption.
+
 ## Auto/manual handoff for film production
 
 The pipeline is ~30% automation, ~70% Premiere assembly + face/demo recording. The 7-min target timeline + Strategy A talking-head positioning is documented in `docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md`. Per-project execution checklist: `docs/films/silent-build-project-starter.md`.
