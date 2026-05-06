@@ -44,7 +44,10 @@ const TokensDeltaEventSchema = z.object({
   type: z.literal('tokens_delta'),
   data: z.object({
     input: z.number().int().nonnegative(),
-    output: z.number().int().nonnegative()
+    output: z.number().int().nonnegative(),
+    cacheRead: z.number().int().nonnegative().optional(),
+    cacheWrite: z.number().int().nonnegative().optional(),
+    model: z.string().optional()
   })
 })
 

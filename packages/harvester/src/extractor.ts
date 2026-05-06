@@ -27,10 +27,23 @@ export function extractTokens(events: ParsedEvent[]): Extract<TimelineEvent, { t
     if (ev.type !== 'assistant') continue
     const usage = ev.message.usage
     if (!usage) continue
+    const data: Extract<TimelineEvent, { type: 'tokens_delta' }>['data'] = {
+      input: usage.input_tokens,
+      output: usage.output_tokens
+    }
+    if (usage.cache_read_input_tokens !== undefined && usage.cache_read_input_tokens > 0) {
+      data.cacheRead = usage.cache_read_input_tokens
+    }
+    if (usage.cache_creation_input_tokens !== undefined && usage.cache_creation_input_tokens > 0) {
+      data.cacheWrite = usage.cache_creation_input_tokens
+    }
+    if (ev.message.model) {
+      data.model = ev.message.model
+    }
     out.push({
       ts: new Date(ev.timestamp).getTime(),
       type: 'tokens_delta',
-      data: { input: usage.input_tokens, output: usage.output_tokens }
+      data
     })
   }
   return out
