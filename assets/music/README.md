@@ -6,12 +6,16 @@ Suno-generated lo-fi loops, **standard subscription license**. Files are gitigno
 
 ## Files expected here
 
-| Filename | Length | Used in |
+Either `.wav` (lossless, larger) or `.mp3` (smaller, indistinguishable for film background). Suno lets you download both — pick MP3 if storage matters.
+
+| Base name | Length | Used in |
 |---|---|---|
-| `intro-chill-60s.wav` | 60 s | film opening (0:05–1:00) |
-| `build-hustle-90s.wav` | 90 s | build/design phases (1:30–4:45) |
-| `climax-drop-30s.wav` | 30 s | deploy moment + outro reveal (4:45–5:30) |
-| `outro-celebratory-45s.wav` | 45 s | demo screencast + stats (5:30–6:45) |
+| `intro-chill-60s.{wav,mp3}` | 60 s | film opening (0:05–1:00) |
+| `build-hustle-90s.{wav,mp3}` | 90 s | build/design phases (1:30–4:45) |
+| `climax-drop-30s.{wav,mp3}` | 30 s | deploy moment + outro reveal (4:45–5:30) |
+| `outro-celebratory-45s.{wav,mp3}` | 45 s | demo screencast + stats (5:30–6:45) |
+
+`pnpm assets:doctor` accepts either extension and reports `all 4 expected files present` regardless of format mix.
 
 ## Suno prompts (canonical, regenerate as needed)
 

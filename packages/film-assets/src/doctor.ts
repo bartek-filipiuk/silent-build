@@ -19,12 +19,14 @@ export interface DoctorOptions {
   env: { ELEVENLABS_API_KEY: string | undefined }
 }
 
-const REQUIRED_MUSIC_FILES = [
-  'intro-chill-60s.wav',
-  'build-hustle-90s.wav',
-  'climax-drop-30s.wav',
-  'outro-celebratory-45s.wav'
-]
+const REQUIRED_MUSIC_BASES = [
+  'intro-chill-60s',
+  'build-hustle-90s',
+  'climax-drop-30s',
+  'outro-celebratory-45s'
+] as const
+
+const ACCEPTED_EXTS = ['.wav', '.mp3'] as const
 
 const checkMusic = (musicDir: string): DoctorCheck => {
   if (!existsSync(musicDir)) {
@@ -35,18 +37,20 @@ const checkMusic = (musicDir: string): DoctorCheck => {
     }
   }
   const present = new Set(readdirSync(musicDir))
-  const missing = REQUIRED_MUSIC_FILES.filter((f) => !present.has(f))
+  const missing = REQUIRED_MUSIC_BASES.filter(
+    (base) => !ACCEPTED_EXTS.some((ext) => present.has(base + ext))
+  )
   if (missing.length === 0) {
     return {
       name: 'music files',
       status: 'ok',
-      message: `all 4 expected files present`
+      message: `all 4 expected files present (.wav or .mp3)`
     }
   }
   return {
     name: 'music files',
     status: 'warn',
-    message: `${missing.length} missing: ${missing.join(', ')}`
+    message: `${missing.length} missing: ${missing.map((b) => b + '.{wav,mp3}').join(', ')}`
   }
 }
 

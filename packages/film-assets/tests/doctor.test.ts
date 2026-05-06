@@ -1,5 +1,14 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { runDoctor } from '../src/doctor.js'
+
+const TMP = '/tmp/doctor-music-test'
+const seedMusic = (files: string[]) => {
+  rmSync(TMP, { recursive: true, force: true })
+  mkdirSync(TMP, { recursive: true })
+  for (const f of files) writeFileSync(join(TMP, f), '')
+}
 
 describe('runDoctor', () => {
   it('reports each check with name and status', () => {
@@ -50,5 +59,63 @@ describe('runDoctor', () => {
     if (result.checks.some((c) => c.status === 'fail')) {
       expect(result.overall).toBe('fail')
     }
+  })
+
+  describe('music file extension flexibility', () => {
+    afterEach(() => {
+      rmSync(TMP, { recursive: true, force: true })
+    })
+
+    it('accepts all 4 files as .mp3', () => {
+      seedMusic([
+        'intro-chill-60s.mp3',
+        'build-hustle-90s.mp3',
+        'climax-drop-30s.mp3',
+        'outro-celebratory-45s.mp3'
+      ])
+      const r = runDoctor({
+        musicDir: TMP,
+        voiceFile: '/tmp/x',
+        requireFfmpeg: false,
+        env: { ELEVENLABS_API_KEY: 'sk_test' }
+      })
+      const music = r.checks.find((c) => c.name.includes('music'))
+      expect(music?.status).toBe('ok')
+    })
+
+    it('accepts mixed .wav and .mp3', () => {
+      seedMusic([
+        'intro-chill-60s.wav',
+        'build-hustle-90s.mp3',
+        'climax-drop-30s.wav',
+        'outro-celebratory-45s.mp3'
+      ])
+      const r = runDoctor({
+        musicDir: TMP,
+        voiceFile: '/tmp/x',
+        requireFfmpeg: false,
+        env: { ELEVENLABS_API_KEY: 'sk_test' }
+      })
+      const music = r.checks.find((c) => c.name.includes('music'))
+      expect(music?.status).toBe('ok')
+    })
+
+    it('warns when only 3 of 4 present (any extension)', () => {
+      seedMusic([
+        'intro-chill-60s.mp3',
+        'build-hustle-90s.wav',
+        'outro-celebratory-45s.mp3'
+        // climax-drop-30s missing in any extension
+      ])
+      const r = runDoctor({
+        musicDir: TMP,
+        voiceFile: '/tmp/x',
+        requireFfmpeg: false,
+        env: { ELEVENLABS_API_KEY: 'sk_test' }
+      })
+      const music = r.checks.find((c) => c.name.includes('music'))
+      expect(music?.status).toBe('warn')
+      expect(music?.message).toContain('climax-drop-30s')
+    })
   })
 })
