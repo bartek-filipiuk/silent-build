@@ -13,8 +13,6 @@ export interface TokenCounterProps {
   currentMs: number
 }
 
-const MAX_TOKENS = 200_000
-
 const formatNumber = (n: number): string => {
   if (n >= 1_000_000) {
     return (n / 1_000_000).toFixed(1) + 'M'
@@ -46,116 +44,86 @@ export const TokenCounter: React.FC<TokenCounterProps> = ({
   const cost = computeCostUpTo(timeline.events, absTs)
   const modelLabel = currentModelLabel(timeline.events, absTs)
 
-  const pct = Math.min(1, total / MAX_TOKENS)
-  const fillColor =
-    pct > 0.95
-      ? tokens.colors.redAlert
-      : pct > 0.8
-      ? tokens.colors.amberBright
-      : tokens.colors.amber
-
   return (
     <div
       style={{
-        height: 110,
+        height: 92,
         padding: `${tokens.spacing.sm}px ${tokens.spacing.xl}px`,
         borderBottom: tokens.borders.hairline,
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        gap: tokens.spacing.xs
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: tokens.spacing.md
       }}
     >
-      {/* Top row: TOKENS label + big number, model badge on right */}
+      {/* Left column: TOKENS label + big number */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'baseline',
-          justifyContent: 'space-between'
+          flexDirection: 'column',
+          gap: 2,
+          minWidth: 0
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: tokens.spacing.sm }}>
-          <span
-            style={{
-              fontFamily: tokens.typography.fontMono,
-              fontSize: tokens.typography.label.size,
-              fontWeight: tokens.typography.label.weight,
-              letterSpacing: tokens.typography.label.ls,
-              color: tokens.colors.textDim,
-              textTransform: 'uppercase'
-            }}
-          >
-            Tokens
-          </span>
-          <span
-            style={{
-              fontFamily: tokens.typography.fontHeading,
-              fontSize: 24,
-              fontWeight: 600,
-              color: fillColor,
-              fontVariantNumeric: 'tabular-nums'
-            }}
-          >
-            {formatNumber(total)}
-          </span>
-        </div>
         <span
           style={{
             fontFamily: tokens.typography.fontMono,
-            fontSize: 11,
+            fontSize: tokens.typography.label.size,
+            fontWeight: tokens.typography.label.weight,
+            letterSpacing: tokens.typography.label.ls,
+            color: tokens.colors.textDim,
+            textTransform: 'uppercase'
+          }}
+        >
+          Tokens
+        </span>
+        <span
+          style={{
+            fontFamily: tokens.typography.fontHeading,
+            fontSize: 32,
+            fontWeight: 600,
+            color: tokens.colors.amber,
+            fontVariantNumeric: 'tabular-nums',
+            lineHeight: 1
+          }}
+        >
+          {formatNumber(total)}
+        </span>
+      </div>
+
+      {/* Right column: model badge + cost */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: 4,
+          flexShrink: 0
+        }}
+      >
+        <span
+          style={{
+            fontFamily: tokens.typography.fontMono,
+            fontSize: 10,
             fontWeight: 600,
             color: tokens.colors.amberBright,
-            letterSpacing: '0.08em',
+            letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            padding: `2px ${tokens.spacing.xs}px`,
+            padding: `2px ${tokens.spacing.sm}px`,
             border: `1px solid ${tokens.colors.amberDim}`,
-            borderRadius: 3
+            borderRadius: 3,
+            whiteSpace: 'nowrap'
           }}
         >
           {modelLabel}
         </span>
-      </div>
-
-      {/* Progress bar (context window utilization) */}
-      <div
-        style={{
-          height: 4,
-          width: '100%',
-          background: tokens.colors.grid,
-          position: 'relative'
-        }}
-      >
         <div
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100%',
-            width: `${pct * 100}%`,
-            background: fillColor
-          }}
-        />
-      </div>
-
-      {/* Bottom row: "of 200k" left, COST $ right */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'baseline',
-          justifyContent: 'space-between'
-        }}
-      >
-        <span
-          style={{
-            fontFamily: tokens.typography.fontMono,
-            fontSize: tokens.typography.micro.size,
-            color: tokens.colors.textDim,
-            fontVariantNumeric: 'tabular-nums'
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: tokens.spacing.xs
           }}
         >
-          of 200k context
-        </span>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: tokens.spacing.xs }}>
           <span
             style={{
               fontFamily: tokens.typography.fontMono,
@@ -165,15 +133,16 @@ export const TokenCounter: React.FC<TokenCounterProps> = ({
               textTransform: 'uppercase'
             }}
           >
-            Cost
+            API cost
           </span>
           <span
             style={{
               fontFamily: tokens.typography.fontHeading,
-              fontSize: 18,
+              fontSize: 26,
               fontWeight: 600,
               color: tokens.colors.greenOk,
-              fontVariantNumeric: 'tabular-nums'
+              fontVariantNumeric: 'tabular-nums',
+              lineHeight: 1
             }}
           >
             {formatCost(cost)}
