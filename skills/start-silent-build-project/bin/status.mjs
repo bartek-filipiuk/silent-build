@@ -89,6 +89,30 @@ const conceptNextStep = (projectRoot) => {
   }
 }
 
+// Warns when raw-recordings/ is missing or empty AFTER the concept stage —
+// once the user has started Day 1 (build), OBS recordings should accumulate.
+// A pre-Day 1 empty dir is fine and gets no warning.
+const obsRecordingsWarning = (projectRoot, stage) => {
+  if (stage === 'concept' || stage === 'done') return null
+  const dir = join(projectRoot, 'raw-recordings')
+  if (!existsSync(dir)) {
+    return `OBS not set up yet — create raw-recordings/ and start nagrywać sesje (F9 in OBS)`
+  }
+  let entries
+  try {
+    entries = readdirSync(dir)
+  } catch {
+    return `raw-recordings/ exists but is unreadable`
+  }
+  const recordings = entries.filter(
+    (f) => f.endsWith('.mkv') || f.endsWith('.mp4') || f.endsWith('.mov')
+  )
+  if (recordings.length === 0) {
+    return `raw-recordings/ is empty — did you forget to F9 in OBS this session? (lewy panel filmu = writeoff bez recordingu)`
+  }
+  return null
+}
+
 export const detectStage = (
   projectRoot,
   silentBuildRoot = null,
@@ -98,9 +122,17 @@ export const detectStage = (
     return {
       stage: 'concept',
       completedSteps: [],
-      nextStep: conceptNextStep(projectRoot)
+      nextStep: conceptNextStep(projectRoot),
+      warnings: []
     }
   }
+  const warningsFor = (stage) => {
+    const w = []
+    const obs = obsRecordingsWarning(projectRoot, stage)
+    if (obs) w.push(obs)
+    return w
+  }
+
   if (!buildDone(projectRoot)) {
     return {
       stage: 'build',
@@ -109,7 +141,8 @@ export const detectStage = (
         label:
           'Invoke superpowers:writing-plans on your design spec to produce a plan',
         command: 'claude'
-      }
+      },
+      warnings: warningsFor('build')
     }
   }
   if (!auditDone(projectRoot)) {
@@ -119,7 +152,8 @@ export const detectStage = (
       nextStep: {
         label: 'Run a security audit in a NEW CC session',
         command: 'claude  # then: do a security audit on this codebase'
-      }
+      },
+      warnings: warningsFor('audit')
     }
   }
   if (!deployDone(projectRoot)) {
@@ -129,7 +163,8 @@ export const detectStage = (
       nextStep: {
         label: 'Deploy and add live URL to README.md',
         command: 'wrangler deploy  # or vercel/fly/etc'
-      }
+      },
+      warnings: warningsFor('deploy')
     }
   }
   if (!demoDone(silentBuildRoot, projectName)) {
@@ -139,7 +174,8 @@ export const detectStage = (
       nextStep: {
         label: 'Record OBS demo + face takes per shot-list',
         command: 'pnpm assets:shotlist --metadata <m> --out docs/films/<x>-shot-list.md'
-      }
+      },
+      warnings: warningsFor('demo')
     }
   }
   if (!pipelineDone(silentBuildRoot, projectName)) {
@@ -149,7 +185,8 @@ export const detectStage = (
       nextStep: {
         label: 'Run silent-build pipeline (curator → render → assets)',
         command: 'pnpm curate:scan ...; /curate-narrative; pnpm render:narrative ...'
-      }
+      },
+      warnings: warningsFor('pipeline')
     }
   }
   return {
@@ -158,7 +195,8 @@ export const detectStage = (
     nextStep: {
       label: 'All stages complete. Publish to YT.',
       command: ''
-    }
+    },
+    warnings: warningsFor('done')
   }
 }
 

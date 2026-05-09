@@ -8,6 +8,7 @@ import {
   detectInlineTags,
   detectPromptKeywords,
   detectCommitPush,
+  detectAiMistakes,
   detectLongPauses
 } from '../src/preprocess.js'
 import { readMergedJsonls, readJsonlFile } from '../src/jsonl-reader.js'
@@ -70,6 +71,18 @@ describe('detectScaffolding', () => {
 })
 
 describe('detectPromptKeywords', () => {
+  const fakeEvent = (
+    isoTs: string,
+    text: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'user',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: { message: { content: text } }
+  })
+
   it('tags audit, design, plan, end keywords', () => {
     const events = readMergedJsonls(MULTI_DIR)
     const cands = detectPromptKeywords(events)
@@ -78,6 +91,48 @@ describe('detectPromptKeywords', () => {
     expect(tags.has('end')).toBe(true)
     expect(tags.has('design')).toBe(true)
     expect(tags.has('plan')).toBe(true)
+  })
+
+  it('detects refactor keywords (simplify/refactor/cleanup) → build', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', 'simplify the auth module'),
+      fakeEvent('2026-05-01T10:01:00.000Z', "let's refactor the API layer"),
+      fakeEvent('2026-05-01T10:02:00.000Z', 'cleanup the unused imports')
+    ]
+    const cands = detectPromptKeywords(events)
+    expect(cands).toHaveLength(3)
+    expect(cands.every((c) => c.tag === 'build')).toBe(true)
+    expect(cands.every((c) => c.reason === 'refactor keyword')).toBe(true)
+  })
+
+  it('detects implement/scaffold keyword → build', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', "let's implement the redirect handler"),
+      fakeEvent('2026-05-01T10:01:00.000Z', 'scaffold the routes for /[code]/stats')
+    ]
+    const cands = detectPromptKeywords(events)
+    expect(cands).toHaveLength(2)
+    expect(cands.every((c) => c.tag === 'build')).toBe(true)
+    expect(cands.every((c) => c.reason === 'implement keyword')).toBe(true)
+  })
+
+  it('detects mvp/scope/brainstorm keywords → plan', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', 'define the MVP scope'),
+      fakeEvent('2026-05-01T10:01:00.000Z', "let's brainstorm the data model")
+    ]
+    const cands = detectPromptKeywords(events)
+    expect(cands).toHaveLength(2)
+    expect(cands.every((c) => c.tag === 'plan')).toBe(true)
+  })
+
+  it('audit keyword wins over refactor when both present', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', 'simplify and audit the security module')
+    ]
+    const cands = detectPromptKeywords(events)
+    expect(cands).toHaveLength(1)
+    expect(cands[0]!.tag).toBe('audit')
   })
 })
 
@@ -162,6 +217,128 @@ describe('detectInlineTags', () => {
     ]
     const cands = detectInlineTags(events)
     expect(cands[0]!.signal).toBe(8)
+  })
+})
+
+describe('detectAiMistakes', () => {
+  const userEvent = (
+    isoTs: string,
+    text: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'user',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: { message: { content: text } }
+  })
+
+  const assistantWithEdit = (
+    isoTs: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'assistant',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: {
+      message: {
+        content: [
+          {
+            type: 'tool_use',
+            name: 'Edit',
+            input: { file_path: '/p/foo.ts', old_string: 'a', new_string: 'b' }
+          }
+        ]
+      }
+    }
+  })
+
+  const assistantWithBash = (
+    isoTs: string,
+    cmd: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'assistant',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: {
+      message: {
+        content: [
+          {
+            type: 'tool_use',
+            name: 'Bash',
+            input: { command: cmd }
+          }
+        ]
+      }
+    }
+  })
+
+  it('detects "this is wrong" prompt after an Edit tool use', () => {
+    const events = [
+      assistantWithEdit('2026-05-01T10:00:00.000Z'),
+      userEvent('2026-05-01T10:00:30.000Z', 'this is wrong, the regex matches too much')
+    ]
+    const cands = detectAiMistakes(events)
+    expect(cands).toHaveLength(1)
+    expect(cands[0]!.tag).toBe('build')
+    expect(cands[0]!.reason).toContain('ai-mistake')
+  })
+
+  it('detects Polish "nie tak / popraw to" after Edit', () => {
+    const events = [
+      assistantWithEdit('2026-05-01T10:00:00.000Z'),
+      userEvent('2026-05-01T10:00:30.000Z', 'nie tak — to ma być async')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(1)
+  })
+
+  it('does NOT fire on correction prompt without preceding Edit', () => {
+    const events = [
+      userEvent('2026-05-01T10:00:00.000Z', 'this is wrong'),
+      userEvent('2026-05-01T10:00:30.000Z', 'fix this')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(0)
+  })
+
+  it('detects git revert in Bash command', () => {
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git revert HEAD~1')
+    ]
+    const cands = detectAiMistakes(events)
+    expect(cands).toHaveLength(1)
+    expect(cands[0]!.reason).toContain('git revert')
+  })
+
+  it('detects git reset HEAD~1', () => {
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git reset --hard HEAD~1')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(1)
+  })
+
+  it('does NOT fire on plain git checkout <branch>', () => {
+    // checkout to a branch is not an undo signal — only checkout -- <file>
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git checkout feat/foo')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(0)
+  })
+
+  it('detects git checkout -- <file> (file-level undo)', () => {
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git checkout -- src/auth.ts')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(1)
+  })
+
+  it('signal=7 (between editBurst=8 and pause-derived)', () => {
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git revert HEAD')
+    ]
+    expect(detectAiMistakes(events)[0]!.signal).toBe(7)
   })
 })
 

@@ -13,7 +13,9 @@ const DESIGN_FILE_RX = /(\.(svelte|tsx|jsx))$|\/messages\/[^/]+\.json$/i
 const RX_AUDIT = /\b(audit|security|recon|cve|vulnerability)\b/i
 const RX_END = /\b(deploy|launch|prod|production|release|ship|merge)\b/i
 const RX_DESIGN = /\b(design|figma|brief|ui|ux|brand|logo)\b/i
-const RX_PLAN = /\b(plan|spec|roadmap|architecture|concept)\b/i
+const RX_PLAN = /\b(plan|spec|roadmap|architecture|concept|mvp|scope|brainstorm)\b/i
+const RX_REFACTOR = /\b(simplify|refactor|cleanup|dedupe|consolidate|optimize)\b/i
+const RX_BUILD = /\b(implement|scaffold)\b/i
 
 // Explicit inline tag at the start of a prompt: "[CODE_REVIEW] zerknij na X"
 // or "[SECURITY] sprawdź czy nie ma open redirect". Stronger signal than
@@ -349,6 +351,7 @@ export const detectPromptKeywords = (events: RawEvent[]): CandidateRaw[] => {
 
     let tag: CandidateTag | null = null
     let reason = ''
+    // Order matters: most-specific phase keywords first.
     if (RX_AUDIT.test(text)) {
       tag = 'audit'
       reason = 'audit/security keyword'
@@ -358,6 +361,12 @@ export const detectPromptKeywords = (events: RawEvent[]): CandidateRaw[] => {
     } else if (RX_DESIGN.test(text)) {
       tag = 'design'
       reason = 'design keyword'
+    } else if (RX_REFACTOR.test(text)) {
+      tag = 'build'
+      reason = 'refactor keyword'
+    } else if (RX_BUILD.test(text)) {
+      tag = 'build'
+      reason = 'implement keyword'
     } else if (RX_PLAN.test(text)) {
       tag = 'plan'
       reason = 'plan/spec keyword'
@@ -403,6 +412,74 @@ export const detectCommitPush = (events: RawEvent[]): CandidateRaw[] => {
         signal: 6
       })
     }
+  }
+  return out
+}
+
+// Phrases that, *immediately after* an Edit/Write tool use, signal the user
+// is correcting an AI mistake. Mix EN + PL because Bartek prompts in both.
+// "fix" alone is too noisy (fix this typo / fix the lint error are normal
+// build flow), so we require the bigram "fix this" / "fix it".
+const RX_AI_MISTAKE = /\b(this is wrong|that's wrong|undo|revert that|broken|hallucinated|made (?:it|that) up|nie tak|źle|popraw to|cofnij|fix this|fix it)\b/i
+
+export const detectAiMistakes = (events: RawEvent[]): CandidateRaw[] => {
+  const out: CandidateRaw[] = []
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i]!
+
+    // Pattern A — git revert / reset / checkout in Bash (assistant tool use).
+    // These are unambiguous "undo" signals after AI did something wrong.
+    if (ev.type === 'assistant') {
+      for (const t of extractToolUses(ev)) {
+        if (t.name !== 'Bash') continue
+        const cmd = t.input['command']
+        if (typeof cmd !== 'string') continue
+        if (
+          /\bgit\s+(?:revert|reset)\b/.test(cmd) ||
+          /\bgit\s+checkout\s+--(?:\s|$)/.test(cmd)
+        ) {
+          out.push({
+            from: isoOf(ev),
+            to: isoOf(ev),
+            sourceJsonl: ev.sourceJsonl,
+            tag: 'build',
+            reason: 'ai-mistake recovery (git revert/reset/checkout)',
+            metricsSummary: truncate(cmd, 80),
+            firstPromptText: '',
+            signal: 7
+          })
+        }
+      }
+      continue
+    }
+
+    // Pattern B — user prompt with a correction keyword AFTER a previous
+    // assistant turn that included Edit/Write tool calls. Signals the user
+    // caught a mistake in what the AI just produced.
+    if (ev.type !== 'user' || isToolResultOnly(ev)) continue
+    const text = extractUserText(ev)
+    if (!text.trim()) continue
+    if (isSyntheticPrompt(text)) continue
+    if (!RX_AI_MISTAKE.test(text)) continue
+
+    const prev = events[i - 1]
+    if (!prev || prev.type !== 'assistant') continue
+    const tools = extractToolUses(prev)
+    const hadEdit = tools.some(
+      (t) => t.name === 'Edit' || t.name === 'Write' || t.name === 'NotebookEdit'
+    )
+    if (!hadEdit) continue
+
+    out.push({
+      from: isoOf(prev),
+      to: isoOf(ev),
+      sourceJsonl: ev.sourceJsonl,
+      tag: 'build',
+      reason: 'ai-mistake recovery (user correction after edit)',
+      metricsSummary: truncate(text, 80),
+      firstPromptText: truncate(text, 280),
+      signal: 7
+    })
   }
   return out
 }
@@ -481,7 +558,8 @@ export const preprocess = (
     ...detectAgentRuns(events),
     ...detectInlineTags(events),
     ...detectPromptKeywords(events),
-    ...detectCommitPush(events)
+    ...detectCommitPush(events),
+    ...detectAiMistakes(events)
   ]
 
   const deduped = dedupe(all)
