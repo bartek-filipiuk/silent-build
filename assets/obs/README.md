@@ -107,7 +107,7 @@ After a few sessions you'll have:
 ├── day-3-deploy.mkv         (~ 2.5 GB if 30 min)
 ```
 
-These are the source clips Premiere razor-cuts in the assembly stage (per `docs/films/silent-build-project-starter.md` Day N+4).
+These are the source clips Premiere razor-cuts in the assembly stage (per `docs/films/workflow/project-starter.md` Day N+4).
 
 ## Storage management
 

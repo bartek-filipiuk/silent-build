@@ -85,7 +85,7 @@ Per-film human work: ~1 h. Across the series: brand consistency via reused Suno 
 
 Full spec: `docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md`
 Plan: `docs/superpowers/plans/2026-05-06-viral-film-pipeline.md`
-Per-project starter checklist: `docs/films/silent-build-project-starter.md`
+All film production docs: `docs/films/README.md` (indeks). Per-project starter: `docs/films/workflow/project-starter.md`. Universal format spec: `docs/films/format/spec.md`. Pre-publish checklist: `docs/films/production/film-checklist.md`.
 
 ## Wymagania
 

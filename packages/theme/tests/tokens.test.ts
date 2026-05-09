@@ -15,8 +15,9 @@ describe('tokens.colors', () => {
   })
 
   it('hex values start with #', () => {
+    const rgbaKeys = new Set(['amberGlow', 'amberHalo'])
     for (const [key, val] of Object.entries(tokens.colors)) {
-      if (key === 'amberGlow') continue // rgba()
+      if (rgbaKeys.has(key)) continue // rgba()
       expect(val.startsWith('#'), `color ${key} should be hex`).toBe(true)
     }
   })

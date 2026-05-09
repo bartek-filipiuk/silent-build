@@ -27,5 +27,15 @@ export {
   CodeZoom,
   type CodeZoomProps
 } from './compositions/CodeZoom.js'
+export {
+  StatsPunchIn,
+  type StatsPunchInProps,
+  type StatsPunchInMetric
+} from './compositions/StatsPunchIn.js'
+export {
+  ChapterLowerThird,
+  type ChapterLowerThirdProps
+} from './compositions/ChapterLowerThird.js'
+export * from './primitives/index.js'
 export * from './brand/Logo.js'
 export * from './brand/Wordmark.js'

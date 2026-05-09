@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Composition, registerRoot } from 'remotion'
 import {
+  ChapterLowerThird, type ChapterLowerThirdProps,
   CodeZoom, type CodeZoomProps,
   CommitCard, type CommitCardProps,
   Dashboard, type DashboardProps,
@@ -9,6 +10,7 @@ import {
   PhaseTransition, type PhaseTransitionProps,
   ProjectIntro, type ProjectIntroProps,
   StatsCard, type StatsCardProps,
+  StatsPunchIn, type StatsPunchInProps,
   Thumbnail, type ThumbnailProps
 } from '@silent-build/ui'
 import mockTimeline from './fixtures/mock-timeline.json'
@@ -154,9 +156,39 @@ export const RemotionRoot: React.FC = () => (
         highlightLine: 2
       } as unknown as Record<string, unknown>}
     />
+    <Composition
+      id="StatsPunchIn"
+      component={wrap<StatsPunchInProps>(StatsPunchIn)}
+      durationInFrames={2 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        phaseLabel: 'AFTER BUILD',
+        metrics: [
+          { label: 'Tokens', value: 47_000 },
+          { label: 'Files', value: 47 },
+          { label: 'Commits', value: 23 },
+          { label: 'Cost', value: 0.84, isMoney: true }
+        ]
+      } as unknown as Record<string, unknown>}
+    />
+    <Composition
+      id="ChapterLowerThird"
+      component={wrap<ChapterLowerThirdProps>(ChapterLowerThird)}
+      durationInFrames={3 * FPS}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      defaultProps={{
+        index: 3,
+        total: 6,
+        label: 'BUILD'
+      } as unknown as Record<string, unknown>}
+    />
   </>
 )
 
-export type { CodeZoomProps, CommitCardProps, DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, StatsCardProps, ThumbnailProps }
+export type { ChapterLowerThirdProps, CodeZoomProps, CommitCardProps, DashboardProps, IntroCardProps, OutroCardProps, PhaseTransitionProps, ProjectIntroProps, StatsCardProps, StatsPunchInProps, ThumbnailProps }
 
 registerRoot(RemotionRoot)

@@ -13,3 +13,4 @@ coverage/
 *.tsbuildinfo
 assets/music/*.wav
 assets/music/*.mp3
+assets/premiere/*.prproj

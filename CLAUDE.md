@@ -116,7 +116,7 @@ When you mix stages in a single CC session (build + quick audit + deploy in one 
 
 Recognized tag tokens (case-insensitive): `CONCEPT|IDEA|START → start`, `PLAN|ARCHITECTURE|SPEC|ROADMAP → plan`, `BUILD|CODE|FEATURE|IMPLEMENT|REFACTOR → build`, `DESIGN|UI|UX|STYLE|THEME → design`, `REVIEW|CODE_REVIEW|CODE-REVIEW|AUDIT|SECURITY|HARDEN → audit`, `DEPLOY|SHIP|RELEASE|LAUNCH|END → end`. Tag must be at the start of the prompt; mid-sentence brackets are ignored. Signal=8 (overrides keyword detection signal=5).
 
-Full reference: `docs/films/inline-tags.md`. To render a specific scene only: `pnpm render:narrative --input <path> --scenes 5`. For separate deep-dive films, build a second narrative.json from tagged clips and render with `--out output/<slug>/deep-dives/...`.
+Full reference: `docs/films/workflow/inline-tags.md`. To render a specific scene only: `pnpm render:narrative --input <path> --scenes 5`. For separate deep-dive films, build a second narrative.json from tagged clips and render with `--out output/<slug>/deep-dives/...`.
 
 ## OBS recording layer (per project)
 
@@ -134,4 +134,11 @@ If you forget to start OBS at the beginning of a session: that session is a writ
 
 ## Auto/manual handoff for film production
 
-The pipeline is ~30% automation, ~70% Premiere assembly + face/demo recording. The 7-min target timeline + Strategy A talking-head positioning is documented in `docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md`. Per-project execution checklist: `docs/films/silent-build-project-starter.md`.
+The pipeline is ~30% automation, ~70% Premiere assembly + face/demo recording. The 7-min target timeline + Strategy A talking-head positioning is documented in `docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md`.
+
+**Wszystkie dokumenty produkcji filmu**: `docs/films/README.md` (indeks). Klucz:
+- `docs/films/format/spec.md` — uniwersalny przepis formatu (co MUSI być, kiedy łamać, dlaczego)
+- `docs/films/workflow/project-starter.md` — per-stage execution checklist (Day 0 → Day N+4)
+- `docs/films/workflow/film-prompt.md` — gotowy prompt do CC żeby zacząć kolejny film
+- `docs/films/production/film-checklist.md` — uniwersalny pre-publish checklist
+- `docs/films/production/automation-checklist.md` — co automat / co manual / kiedy + roadmap

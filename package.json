@@ -30,6 +30,8 @@
     "render:thumb": "pnpm --filter @silent-build/overlay run render:thumb",
     "render:projectintro": "pnpm --filter @silent-build/overlay run render:projectintro",
     "render:stats": "pnpm --filter @silent-build/overlay run render:stats",
+    "render:stats-punchin": "pnpm --filter @silent-build/overlay run render:stats-punchin",
+    "render:chapter-lt": "pnpm --filter @silent-build/overlay run render:chapter-lt",
     "render:commitcard": "pnpm --filter @silent-build/overlay run render:commitcard",
     "render:codezoom": "pnpm --filter @silent-build/overlay run render:codezoom",
     "render:narrative": "pnpm --filter @silent-build/overlay run render:narrative",
