@@ -13,7 +13,9 @@ const DESIGN_FILE_RX = /(\.(svelte|tsx|jsx))$|\/messages\/[^/]+\.json$/i
 const RX_AUDIT = /\b(audit|security|recon|cve|vulnerability)\b/i
 const RX_END = /\b(deploy|launch|prod|production|release|ship|merge)\b/i
 const RX_DESIGN = /\b(design|figma|brief|ui|ux|brand|logo)\b/i
-const RX_PLAN = /\b(plan|spec|roadmap|architecture|concept)\b/i
+const RX_PLAN = /\b(plan|spec|roadmap|architecture|concept|mvp|scope|brainstorm)\b/i
+const RX_REFACTOR = /\b(simplify|refactor|cleanup|dedupe|consolidate|optimize)\b/i
+const RX_BUILD = /\b(implement|scaffold)\b/i
 
 // Explicit inline tag at the start of a prompt: "[CODE_REVIEW] zerknij na X"
 // or "[SECURITY] sprawdź czy nie ma open redirect". Stronger signal than
@@ -349,6 +351,7 @@ export const detectPromptKeywords = (events: RawEvent[]): CandidateRaw[] => {
 
     let tag: CandidateTag | null = null
     let reason = ''
+    // Order matters: most-specific phase keywords first.
     if (RX_AUDIT.test(text)) {
       tag = 'audit'
       reason = 'audit/security keyword'
@@ -358,6 +361,12 @@ export const detectPromptKeywords = (events: RawEvent[]): CandidateRaw[] => {
     } else if (RX_DESIGN.test(text)) {
       tag = 'design'
       reason = 'design keyword'
+    } else if (RX_REFACTOR.test(text)) {
+      tag = 'build'
+      reason = 'refactor keyword'
+    } else if (RX_BUILD.test(text)) {
+      tag = 'build'
+      reason = 'implement keyword'
     } else if (RX_PLAN.test(text)) {
       tag = 'plan'
       reason = 'plan/spec keyword'

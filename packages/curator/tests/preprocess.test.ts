@@ -70,6 +70,18 @@ describe('detectScaffolding', () => {
 })
 
 describe('detectPromptKeywords', () => {
+  const fakeEvent = (
+    isoTs: string,
+    text: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'user',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: { message: { content: text } }
+  })
+
   it('tags audit, design, plan, end keywords', () => {
     const events = readMergedJsonls(MULTI_DIR)
     const cands = detectPromptKeywords(events)
@@ -78,6 +90,48 @@ describe('detectPromptKeywords', () => {
     expect(tags.has('end')).toBe(true)
     expect(tags.has('design')).toBe(true)
     expect(tags.has('plan')).toBe(true)
+  })
+
+  it('detects refactor keywords (simplify/refactor/cleanup) → build', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', 'simplify the auth module'),
+      fakeEvent('2026-05-01T10:01:00.000Z', "let's refactor the API layer"),
+      fakeEvent('2026-05-01T10:02:00.000Z', 'cleanup the unused imports')
+    ]
+    const cands = detectPromptKeywords(events)
+    expect(cands).toHaveLength(3)
+    expect(cands.every((c) => c.tag === 'build')).toBe(true)
+    expect(cands.every((c) => c.reason === 'refactor keyword')).toBe(true)
+  })
+
+  it('detects implement/scaffold keyword → build', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', "let's implement the redirect handler"),
+      fakeEvent('2026-05-01T10:01:00.000Z', 'scaffold the routes for /[code]/stats')
+    ]
+    const cands = detectPromptKeywords(events)
+    expect(cands).toHaveLength(2)
+    expect(cands.every((c) => c.tag === 'build')).toBe(true)
+    expect(cands.every((c) => c.reason === 'implement keyword')).toBe(true)
+  })
+
+  it('detects mvp/scope/brainstorm keywords → plan', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', 'define the MVP scope'),
+      fakeEvent('2026-05-01T10:01:00.000Z', "let's brainstorm the data model")
+    ]
+    const cands = detectPromptKeywords(events)
+    expect(cands).toHaveLength(2)
+    expect(cands.every((c) => c.tag === 'plan')).toBe(true)
+  })
+
+  it('audit keyword wins over refactor when both present', () => {
+    const events = [
+      fakeEvent('2026-05-01T10:00:00.000Z', 'simplify and audit the security module')
+    ]
+    const cands = detectPromptKeywords(events)
+    expect(cands).toHaveLength(1)
+    expect(cands[0]!.tag).toBe('audit')
   })
 })
 
