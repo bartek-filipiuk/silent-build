@@ -8,6 +8,7 @@ import {
   detectInlineTags,
   detectPromptKeywords,
   detectCommitPush,
+  detectAiMistakes,
   detectLongPauses
 } from '../src/preprocess.js'
 import { readMergedJsonls, readJsonlFile } from '../src/jsonl-reader.js'
@@ -216,6 +217,128 @@ describe('detectInlineTags', () => {
     ]
     const cands = detectInlineTags(events)
     expect(cands[0]!.signal).toBe(8)
+  })
+})
+
+describe('detectAiMistakes', () => {
+  const userEvent = (
+    isoTs: string,
+    text: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'user',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: { message: { content: text } }
+  })
+
+  const assistantWithEdit = (
+    isoTs: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'assistant',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: {
+      message: {
+        content: [
+          {
+            type: 'tool_use',
+            name: 'Edit',
+            input: { file_path: '/p/foo.ts', old_string: 'a', new_string: 'b' }
+          }
+        ]
+      }
+    }
+  })
+
+  const assistantWithBash = (
+    isoTs: string,
+    cmd: string
+  ): import('../src/jsonl-reader.js').RawEvent => ({
+    ts: Date.parse(isoTs),
+    isoTs,
+    type: 'assistant',
+    sourceJsonl: '/fake.jsonl',
+    lineNumber: 1,
+    raw: {
+      message: {
+        content: [
+          {
+            type: 'tool_use',
+            name: 'Bash',
+            input: { command: cmd }
+          }
+        ]
+      }
+    }
+  })
+
+  it('detects "this is wrong" prompt after an Edit tool use', () => {
+    const events = [
+      assistantWithEdit('2026-05-01T10:00:00.000Z'),
+      userEvent('2026-05-01T10:00:30.000Z', 'this is wrong, the regex matches too much')
+    ]
+    const cands = detectAiMistakes(events)
+    expect(cands).toHaveLength(1)
+    expect(cands[0]!.tag).toBe('build')
+    expect(cands[0]!.reason).toContain('ai-mistake')
+  })
+
+  it('detects Polish "nie tak / popraw to" after Edit', () => {
+    const events = [
+      assistantWithEdit('2026-05-01T10:00:00.000Z'),
+      userEvent('2026-05-01T10:00:30.000Z', 'nie tak — to ma być async')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(1)
+  })
+
+  it('does NOT fire on correction prompt without preceding Edit', () => {
+    const events = [
+      userEvent('2026-05-01T10:00:00.000Z', 'this is wrong'),
+      userEvent('2026-05-01T10:00:30.000Z', 'fix this')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(0)
+  })
+
+  it('detects git revert in Bash command', () => {
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git revert HEAD~1')
+    ]
+    const cands = detectAiMistakes(events)
+    expect(cands).toHaveLength(1)
+    expect(cands[0]!.reason).toContain('git revert')
+  })
+
+  it('detects git reset HEAD~1', () => {
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git reset --hard HEAD~1')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(1)
+  })
+
+  it('does NOT fire on plain git checkout <branch>', () => {
+    // checkout to a branch is not an undo signal — only checkout -- <file>
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git checkout feat/foo')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(0)
+  })
+
+  it('detects git checkout -- <file> (file-level undo)', () => {
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git checkout -- src/auth.ts')
+    ]
+    expect(detectAiMistakes(events)).toHaveLength(1)
+  })
+
+  it('signal=7 (between editBurst=8 and pause-derived)', () => {
+    const events = [
+      assistantWithBash('2026-05-01T10:00:00.000Z', 'git revert HEAD')
+    ]
+    expect(detectAiMistakes(events)[0]!.signal).toBe(7)
   })
 })
 

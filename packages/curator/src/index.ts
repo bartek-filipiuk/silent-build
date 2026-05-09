@@ -35,6 +35,7 @@ export {
   detectInlineTags,
   detectPromptKeywords,
   detectCommitPush,
+  detectAiMistakes,
   detectLongPauses,
   type PreprocessResult
 } from './preprocess.js'
