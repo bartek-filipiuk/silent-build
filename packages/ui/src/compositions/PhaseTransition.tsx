@@ -4,27 +4,33 @@ import type { Phase } from '@silent-build/shared'
 import { tokens } from '@silent-build/theme'
 import { useAnimation } from '../context.js'
 
+export type PhaseNumber = 1 | 2 | 3 | 4 | 5 | 6
+
 export interface PhaseTransitionProps {
   phase: Phase
-  phaseNumber: 1 | 2 | 3 | 4
+  phaseNumber: PhaseNumber
+  /** Total phases in the narrative (defaults to 6 — silent-build convention). */
+  totalPhases?: number
   durationInFrames?: number
 }
 
-// Taglines keyed on phase NUMBER (not label), so this works regardless of
-// how the upstream phase.label is localized/customized.
-const TAGLINES: Record<1 | 2 | 3 | 4, string> = {
+// Taglines keyed on phase NUMBER. 6-phase scheme matches narrative.json
+// convention (start/plan/build/design/audit/end).
+const TAGLINES: Record<PhaseNumber, string> = {
   1: 'scaffold the world',
-  2: 'build the API that powers this',
-  3: 'make it feel right',
-  4: 'break it before the internet does'
+  2: 'spec what to build',
+  3: 'build the thing',
+  4: 'make it feel right',
+  5: 'break it before the internet does',
+  6: 'ship it'
 }
 
 // Decorative spaced-letters formatter.
-const spacedPhase = (n: number): string =>
-  `P H A S E   ${n}  /  4`
+const spacedPhase = (n: number, total: number): string =>
+  `P H A S E   ${n}  /  ${total}`
 
 export const PhaseTransition: React.FC<PhaseTransitionProps> = ({
-  phase, phaseNumber, durationInFrames: durProp
+  phase, phaseNumber, totalPhases = 6, durationInFrames: durProp
 }) => {
   const { currentMs, fps } = useAnimation()
   const frame = Math.floor(currentMs * fps / 1000)
@@ -110,7 +116,7 @@ export const PhaseTransition: React.FC<PhaseTransitionProps> = ({
           textTransform: 'uppercase',
           opacity: phaseLineOpacity,
           transform: `translateY(${phaseLineTranslate}px)`
-        }}>{spacedPhase(phaseNumber)}</div>
+        }}>{spacedPhase(phaseNumber, totalPhases)}</div>
 
         {/* Big phase label */}
         <div style={{

@@ -45,9 +45,90 @@ const buildClipTimeline = (
   const scaleTs = (ts: number): number =>
     Math.round(fromMs + (ts - fromMs) * ratio)
 
-  const slicedEvents: TimelineEvent[] = full.events
+  // System / skill-loader prompts that the dashboard shouldn't surface as
+  // "current prompt" — these are synthetic Claude Code injections, not user
+  // intent. Mirrors the curator's isSyntheticPrompt allowlist.
+  const isSyntheticPromptText = (text: string): boolean => {
+    const t = text.trimStart()
+    return (
+      t.startsWith('Base directory for this skill:') ||
+      t.startsWith('<command-name>') ||
+      t.startsWith('<task-notification>') ||
+      t.startsWith('<system-reminder>') ||
+      t.startsWith('<local-command-caveat>') ||
+      t.startsWith('<bash-input>') ||
+      t.startsWith('<task>')
+    )
+  }
+
+  // Aggregate cumulative state from events BEFORE clip start. Without this,
+  // every clip dashboard ticks from TOKENS=0 / "awaiting first prompt", which
+  // looks like a fresh session even when this is e.g. the audit clip 5h in.
+  const preClipFiles = new Set<string>()
+  let preClipTokens = 0
+  let preClipCacheRead = 0
+  let preClipCacheWrite = 0
+  let preClipPrompts = 0
+  let preClipToolCalls = 0
+  let lastPromptText: string | null = null
+  for (const ev of full.events) {
+    if (ev.ts >= fromMs) break
+    if (ev.type === 'prompt') {
+      preClipPrompts++
+      if (!isSyntheticPromptText(ev.data.text)) {
+        lastPromptText = ev.data.text
+      }
+    }
+    if (ev.type === 'tool_call') preClipToolCalls++
+    if (ev.type === 'tokens_delta') {
+      preClipTokens += ev.data.input + ev.data.output
+      preClipCacheRead += ev.data.cacheRead ?? 0
+      preClipCacheWrite += ev.data.cacheWrite ?? 0
+    }
+    if (ev.type === 'file_write') preClipFiles.add(ev.data.path)
+    if (ev.type === 'file_edit') preClipFiles.add(ev.data.path)
+  }
+
+  // Synthetic baseline events injected just before fromMs so widgets that
+  // sum events up to currentMs (TokenCounter, ActivityLog, FileActivity,
+  // CurrentPrompt) see the cumulative pre-clip state.
+  const baselineTs = fromMs - 1
+  const baselineEvents: TimelineEvent[] = []
+  if (preClipTokens > 0 || preClipCacheRead > 0 || preClipCacheWrite > 0) {
+    baselineEvents.push({
+      ts: baselineTs,
+      type: 'tokens_delta',
+      data: {
+        input: preClipTokens,
+        output: 0,
+        ...(preClipCacheRead > 0 ? { cacheRead: preClipCacheRead } : {}),
+        ...(preClipCacheWrite > 0 ? { cacheWrite: preClipCacheWrite } : {})
+      }
+    })
+  }
+  if (lastPromptText) {
+    baselineEvents.push({
+      ts: baselineTs,
+      type: 'prompt',
+      data: { text: lastPromptText, tokensIn: 0 }
+    })
+  }
+  for (const f of preClipFiles) {
+    baselineEvents.push({
+      ts: baselineTs,
+      type: 'file_write',
+      data: { path: f, linesAdded: 0 }
+    })
+  }
+
+  const intraClipEvents: TimelineEvent[] = full.events
     .filter((e) => e.ts >= fromMs && e.ts <= toMs)
+    .filter(
+      (e) => e.type !== 'prompt' || !isSyntheticPromptText(e.data.text)
+    )
     .map((e) => ({ ...e, ts: scaleTs(e.ts) }))
+
+  const slicedEvents: TimelineEvent[] = [...baselineEvents, ...intraClipEvents]
 
   const segMs = Math.round(targetMs / 4)
   const phases: Phase[] = ([1, 2, 3, 4] as const).map((i) => ({
@@ -58,27 +139,35 @@ const buildClipTimeline = (
     source: 'heuristic'
   }))
 
-  const filesTouched = new Set<string>()
-  let totalTokens = 0
-  let promptsCount = 0
-  let toolCallsCount = 0
-  for (const ev of slicedEvents) {
-    if (ev.type === 'prompt') promptsCount++
-    if (ev.type === 'tool_call') toolCallsCount++
-    if (ev.type === 'tokens_delta') totalTokens += ev.data.input + ev.data.output
-    if (ev.type === 'file_write') filesTouched.add(ev.data.path)
-    if (ev.type === 'file_edit') filesTouched.add(ev.data.path)
+  // Cumulative metrics = pre-clip baseline + intra-clip delta.
+  const intraFiles = new Set<string>()
+  let intraTokens = 0
+  let intraPrompts = 0
+  let intraToolCalls = 0
+  for (const ev of intraClipEvents) {
+    if (ev.type === 'prompt') intraPrompts++
+    if (ev.type === 'tool_call') intraToolCalls++
+    if (ev.type === 'tokens_delta') {
+      intraTokens +=
+        ev.data.input +
+        ev.data.output +
+        (ev.data.cacheRead ?? 0) +
+        (ev.data.cacheWrite ?? 0)
+    }
+    if (ev.type === 'file_write') intraFiles.add(ev.data.path)
+    if (ev.type === 'file_edit') intraFiles.add(ev.data.path)
   }
+  const allFiles = new Set<string>([...preClipFiles, ...intraFiles])
 
   return {
     project: { name: projectName, startTs: fromMs, endTs: fromMs + targetMs },
     phases,
     events: slicedEvents,
     metrics: {
-      totalTokens,
-      filesTouched: filesTouched.size,
-      promptsCount,
-      toolCallsCount
+      totalTokens: preClipTokens + preClipCacheRead + preClipCacheWrite + intraTokens,
+      filesTouched: allFiles.size,
+      promptsCount: preClipPrompts + intraPrompts,
+      toolCallsCount: preClipToolCalls + intraToolCalls
     }
   }
 }
@@ -133,7 +222,7 @@ const renderOverlayForScene = async (
   } else {
     const props = scene.overlay.props
     const fakePhase: Phase = {
-      index: Math.min(4, props.phaseNumber) as 1 | 2 | 3 | 4,
+      index: Math.min(4, props.phaseNumber) as 1 | 2 | 3 | 4, // Phase.index is 1-4 in shared schema; leave clamped here
       label: scene.title,
       startTs: 0,
       endTs: scene.durationSec * 1000,
@@ -141,7 +230,8 @@ const renderOverlayForScene = async (
     }
     inputProps = {
       phase: fakePhase,
-      phaseNumber: Math.min(4, props.phaseNumber) as 1 | 2 | 3 | 4
+      phaseNumber: props.phaseNumber as 1 | 2 | 3 | 4 | 5 | 6,
+      totalPhases: narrative.scenes.length
     }
   }
 
