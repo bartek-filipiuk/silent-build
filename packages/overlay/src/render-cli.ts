@@ -10,8 +10,8 @@ const program = new Command()
 
 const USER_CWD = process.env['INIT_CWD'] ?? process.cwd()
 
-type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro' | 'StatsCard' | 'CommitCard' | 'CodeZoom'
-const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro', 'StatsCard', 'CommitCard', 'CodeZoom']
+type CompId = 'Dashboard' | 'Intro' | 'Outro' | 'PhaseTransition' | 'Thumbnail' | 'ProjectIntro' | 'StatsCard' | 'StatsPunchIn' | 'ChapterLowerThird' | 'CommitCard' | 'CodeZoom'
+const ALL_COMPS: CompId[] = ['Dashboard', 'Intro', 'Outro', 'PhaseTransition', 'Thumbnail', 'ProjectIntro', 'StatsCard', 'StatsPunchIn', 'ChapterLowerThird', 'CommitCard', 'CodeZoom']
 
 const outputStem = (comp: CompId): string => {
   switch (comp) {
@@ -22,6 +22,8 @@ const outputStem = (comp: CompId): string => {
     case 'Thumbnail': return 'thumbnail'
     case 'ProjectIntro': return 'projectintro'
     case 'StatsCard': return 'stats-card'
+    case 'StatsPunchIn': return 'stats-punchin'
+    case 'ChapterLowerThird': return 'chapter-lt'
     case 'CommitCard': return 'commit-card'
     case 'CodeZoom': return 'code-zoom'
   }
@@ -39,6 +41,10 @@ program
   .option('--phase <n>', 'phase number 1-4 (for PhaseTransition)', '2')
   .option('--title <text>', 'title (for Thumbnail)', 'I built it in silence')
   .option('--episode <n>', 'episode number (for Thumbnail)')
+  .option('--chapter-label <text>', 'chapter label for ChapterLowerThird (e.g. "BUILD")', 'BUILD')
+  .option('--chapter-index <n>', 'chapter index 1..total for ChapterLowerThird', '3')
+  .option('--chapter-total <n>', 'total chapters for ChapterLowerThird', '6')
+  .option('--punchin-label <text>', 'phase header for StatsPunchIn (e.g. "AFTER BUILD")', 'AFTER BUILD')
   .action(async (opts: {
     project: string
     composition: string
@@ -49,6 +55,10 @@ program
     phase: string
     title: string
     episode?: string
+    chapterLabel: string
+    chapterIndex: string
+    chapterTotal: string
+    punchinLabel: string
   }) => {
     const compId = opts.composition as CompId
     if (!ALL_COMPS.includes(compId)) {
@@ -123,6 +133,24 @@ program
             totalTokens: timeline.metrics.totalTokens,
             filesTouched: timeline.metrics.filesTouched
           }
+        }
+        case 'StatsPunchIn': {
+          return {
+            phaseLabel: opts.punchinLabel,
+            metrics: [
+              { label: 'Tokens', value: timeline.metrics.totalTokens },
+              { label: 'Files', value: timeline.metrics.filesTouched },
+              { label: 'Prompts', value: timeline.metrics.promptsCount },
+              { label: 'Tools', value: timeline.metrics.toolCallsCount }
+            ]
+          }
+        }
+        case 'ChapterLowerThird': {
+          const idx = parseInt(opts.chapterIndex, 10)
+          const total = parseInt(opts.chapterTotal, 10)
+          if (!Number.isFinite(idx) || idx < 1) throw new Error(`--chapter-index must be ≥1`)
+          if (!Number.isFinite(total) || total < idx) throw new Error(`--chapter-total must be ≥ chapter-index`)
+          return { index: idx, total, label: opts.chapterLabel }
         }
         case 'CommitCard':
           return {
