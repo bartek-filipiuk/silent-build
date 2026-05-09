@@ -72,6 +72,9 @@ export const OverlayHost = () => {
   }
 
   if (overlay.scene === 'PhaseTransition') {
+    // Live mode is intentionally 4-phase (matches the live-server timeline.phases
+    // shape). Narrative mode (render-narrative.ts) is 6-phase via the wider
+    // PhaseNumber type — see packages/ui/src/compositions/PhaseTransition.tsx.
     const props = (overlay.props ?? {}) as { phase?: Phase; phaseNumber?: 1 | 2 | 3 | 4 }
     const n = props.phaseNumber ?? 2
     const phase = props.phase ?? timeline?.phases[n - 1]
