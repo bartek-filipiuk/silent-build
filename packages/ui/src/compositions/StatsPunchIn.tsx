@@ -1,4 +1,4 @@
-import type React from 'react'
+import React from 'react'
 import { AbsoluteFill, interpolate } from 'remotion'
 import { tokens } from '@silent-build/theme'
 import { useAnimation } from '../context.js'
@@ -267,9 +267,8 @@ export const StatsPunchIn: React.FC<StatsPunchInProps> = ({
           const deltaLabel =
             m.deltaText ?? `+${Math.round(m.value * 0.62)}`
           return (
-            <>
+            <React.Fragment key={i}>
               <div
-                key={`metric-${i}`}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -325,9 +324,9 @@ export const StatsPunchIn: React.FC<StatsPunchInProps> = ({
                 </div>
               </div>
               {i < visible.length - 1 ? (
-                <VerticalDivider key={`divider-${i}`} height={260} />
+                <VerticalDivider height={260} />
               ) : null}
-            </>
+            </React.Fragment>
           )
         })}
       </div>
