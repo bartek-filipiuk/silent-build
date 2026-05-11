@@ -103,7 +103,11 @@ export const SessionTimelineSchema = z.object({
      *  below the idle threshold (30 min). Excludes overnight breaks etc.
      *  Optional for backward compat with timelines built before this field
      *  was added. */
-    activeTimeMs: z.number().int().nonnegative().optional()
+    activeTimeMs: z.number().int().nonnegative().optional(),
+    /** Sum of `linesAdded` from `file_write` events (new files created). */
+    linesAdded: z.number().int().nonnegative().optional(),
+    /** Sum of `linesChanged` from `file_edit` events (existing files modified). */
+    linesChanged: z.number().int().nonnegative().optional()
   })
 })
 export type SessionTimeline = z.infer<typeof SessionTimelineSchema>

@@ -16,6 +16,9 @@ export interface OutroCardProps {
    *  Time" with "Active Time" since it's the more honest "I worked X hours"
    *  number. */
   activeTimeMs?: number
+  /** Optional — total lines of code touched (added + changed). When
+   *  provided, surfaces a "Lines of Code" row. */
+  linesOfCode?: number
   /** Estimated API cost in USD (Anthropic public rates). Labelled "API EST."
    *  on screen since Pro/Max subscribers don't pay per-token. Hidden if
    *  undefined. */
@@ -131,7 +134,7 @@ const fmtMoney = (n: number) => {
 }
 
 export const OutroCard: React.FC<OutroCardProps> = ({
-  projectName, metrics, durationMs, activeTimeMs, tokensCostUsd, repoUrl, durationInFrames: durProp
+  projectName, metrics, durationMs, activeTimeMs, linesOfCode, tokensCostUsd, repoUrl, durationInFrames: durProp
 }) => {
   const { currentMs, fps } = useAnimation()
   const frame = Math.floor(currentMs * fps / 1000)
@@ -260,13 +263,23 @@ export const OutroCard: React.FC<OutroCardProps> = ({
                  format={fmtInt}
                  frame={frame} startFrame={rowStart + stagger * 4}
                  rollFrames={rollFrames} />
+        {linesOfCode !== undefined ? (
+          <StatRow
+            label="Lines of Code"
+            finalValue={linesOfCode}
+            format={fmtInt}
+            frame={frame}
+            startFrame={rowStart + stagger * 5}
+            rollFrames={rollFrames}
+          />
+        ) : null}
         {tokensCostUsd !== undefined ? (
           <StatRow
             label="API EST."
             finalValue={tokensCostUsd}
             format={fmtMoney}
             frame={frame}
-            startFrame={rowStart + stagger * 5}
+            startFrame={rowStart + stagger * (linesOfCode !== undefined ? 6 : 5)}
             rollFrames={rollFrames}
             color={tokens.colors.greenOk}
           />
