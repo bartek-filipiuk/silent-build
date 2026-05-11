@@ -43,11 +43,20 @@ export function buildTimeline(args: BuildArgs): SessionTimeline {
     endTs
   })
 
+  // totalTokens includes cache reads + writes — they ARE billable tokens
+  // (cache read at $1.5/M, cache write at $18.75/M for Opus) and the
+  // dashboard widget (TokenCounter) already sums them. Without this the
+  // outro showed e.g. "1.5M tokens · API EST. $746" which looks like a
+  // mismatch — really it's 212M tokens of which 191M is cacheRead.
   const totalTokens = events
     .filter(e => e.type === 'tokens_delta')
     .reduce((sum, e) => {
       if (e.type !== 'tokens_delta') return sum
-      return sum + e.data.input + e.data.output
+      return sum
+        + e.data.input
+        + e.data.output
+        + (e.data.cacheRead ?? 0)
+        + (e.data.cacheWrite ?? 0)
     }, 0)
 
   const filesTouched = new Set(
