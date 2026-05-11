@@ -5,6 +5,7 @@ import { CurrentPrompt } from './widgets/CurrentPrompt.js'
 import { TokenCounter } from './widgets/TokenCounter.js'
 import { FileActivity } from './widgets/FileActivity.js'
 import { ActivityLog } from './widgets/ActivityLog.js'
+import { AssistantOutput } from './widgets/AssistantOutput.js'
 import { PhaseBar } from './widgets/PhaseBar.js'
 import { SecurityPanel } from './widgets/SecurityPanel.js'
 import { tokens } from '@silent-build/theme'
@@ -187,7 +188,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ timeline }) => {
         <CurrentPrompt timeline={timeline} currentMs={clampedMs} />
         <TokenCounter timeline={timeline} currentMs={clampedMs} />
         <FileActivity timeline={timeline} currentMs={clampedMs} />
-        <ActivityLog timeline={timeline} currentMs={clampedMs} />
+        <AssistantOutput timeline={timeline} currentMs={clampedMs} />
         <SecurityPanel timeline={timeline} currentMs={clampedMs} />
         <PhaseBar timeline={timeline} currentMs={clampedMs} />
       </div>

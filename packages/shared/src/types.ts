@@ -61,13 +61,28 @@ const SecurityFindingEventSchema = z.object({
   })
 })
 
+// Text content block from an assistant turn — what Claude Code prints to
+// the terminal between tool calls. Surfaced in the dashboard so the viewer
+// sees Claude's actual narration ("I'll look at the routes file…", "Done —
+// 5 commits, all green"), not just the silent tool churn.
+const AssistantTextEventSchema = z.object({
+  ts: z.number().int().nonnegative(),
+  type: z.literal('assistant_text'),
+  data: z.object({
+    text: z.string(),
+    /** Optional — model the assistant message came from (e.g. "claude-opus-4-7"). */
+    model: z.string().optional()
+  })
+})
+
 export const TimelineEventSchema = z.discriminatedUnion('type', [
   PromptEventSchema,
   ToolCallEventSchema,
   FileWriteEventSchema,
   FileEditEventSchema,
   TokensDeltaEventSchema,
-  SecurityFindingEventSchema
+  SecurityFindingEventSchema,
+  AssistantTextEventSchema
 ])
 export type TimelineEvent = z.infer<typeof TimelineEventSchema>
 

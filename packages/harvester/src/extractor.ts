@@ -68,6 +68,34 @@ function truncate(s: string, max: number): string {
   return s.slice(0, max) + '...'
 }
 
+const ASSISTANT_TEXT_MAX_LEN = 1200
+
+export function extractAssistantText(
+  events: ParsedEvent[]
+): Extract<TimelineEvent, { type: 'assistant_text' }>[] {
+  const out: Extract<TimelineEvent, { type: 'assistant_text' }>[] = []
+  for (const ev of events) {
+    if (ev.type !== 'assistant') continue
+    const parts = ev.message.content
+    const joined = parts
+      .filter((p) => p.type === 'text' && typeof p.text === 'string')
+      .map((p) => (p.text ?? '').trim())
+      .filter((t) => t.length > 0)
+      .join('\n\n')
+    if (!joined) continue
+    const data: Extract<TimelineEvent, { type: 'assistant_text' }>['data'] = {
+      text: truncate(joined, ASSISTANT_TEXT_MAX_LEN)
+    }
+    if (ev.message.model) data.model = ev.message.model
+    out.push({
+      ts: new Date(ev.timestamp).getTime(),
+      type: 'assistant_text',
+      data
+    })
+  }
+  return out
+}
+
 const FILE_TOOLS = new Set(['Write', 'Edit'])
 
 export function extractToolCalls(events: ParsedEvent[]): Extract<TimelineEvent, { type: 'tool_call' }>[] {
