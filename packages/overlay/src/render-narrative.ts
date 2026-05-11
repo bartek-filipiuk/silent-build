@@ -28,7 +28,9 @@ const FPS = 60
 
 const buildClipTimeline = (
   clip: NarrativeClip,
-  projectName: string
+  projectName: string,
+  narrative?: Narrative,
+  sceneIndex?: number
 ): SessionTimeline => {
   const full = buildTimeline({
     sessionJsonlPath: clip.sourceJsonl,
@@ -147,14 +149,53 @@ const buildClipTimeline = (
 
   const slicedEvents: TimelineEvent[] = [...baselineEvents, ...intraClipEvents]
 
-  const segMs = Math.round(targetMs / 4)
-  const phases: Phase[] = ([1, 2, 3, 4] as const).map((i) => ({
-    index: i,
-    label: clip.label,
-    startTs: fromMs + (i - 1) * segMs,
-    endTs: i === 4 ? fromMs + targetMs : fromMs + i * segMs,
-    source: 'heuristic'
-  }))
+  // Phases: narrative-aware when we have scene context. The PhaseBar widget
+  // reads timeline.phases to render the bottom progress strip — feeding it
+  // the 6 narrative scenes (current active, others as small completed/upcoming
+  // markers) makes "3/6 BUILD" surface naturally without dashboard code
+  // changes.
+  //
+  // Fallback: synthetic 4-quartile of clip duration (legacy live-mode shape)
+  // when narrative context isn't passed.
+  let phases: Phase[]
+  if (narrative && sceneIndex !== undefined && narrative.scenes.length > 0) {
+    const scenesCount = narrative.scenes.length
+    const past = sceneIndex
+    const future = scenesCount - sceneIndex - 1
+    // Active scene gets ~85% of the bar; non-active slots take small slivers
+    // so the user still sees how many scenes total exist + completion state.
+    const minSlice = Math.max(1, Math.floor(0.025 * targetMs))
+    const activeWindow = Math.max(
+      minSlice,
+      targetMs - (past + future) * minSlice
+    )
+    let cursor = fromMs
+    phases = narrative.scenes.map((s, i) => {
+      const isActive = i === sceneIndex
+      const width = isActive ? activeWindow : minSlice
+      const startTs = cursor
+      const endTs = cursor + width
+      cursor = endTs
+      return {
+        // Phase.index is constrained to 1|2|3|4 in shared schema (live mode
+        // legacy) — cycle indexes for 6-scene narrative.
+        index: (((i % 4) + 1)) as 1 | 2 | 3 | 4,
+        label: s.title,
+        startTs,
+        endTs,
+        source: 'heuristic'
+      }
+    })
+  } else {
+    const segMs = Math.round(targetMs / 4)
+    phases = ([1, 2, 3, 4] as const).map((i) => ({
+      index: i,
+      label: clip.label,
+      startTs: fromMs + (i - 1) * segMs,
+      endTs: i === 4 ? fromMs + targetMs : fromMs + i * segMs,
+      source: 'heuristic'
+    }))
+  }
 
   // Cumulative metrics = pre-clip baseline + intra-clip delta.
   const intraFiles = new Set<string>()
@@ -300,13 +341,14 @@ const renderDashboardForClip = async (
   clipIndex: number,
   bundleLocation: string,
   outDir: string,
-  projectName: string
+  projectName: string,
+  narrative: Narrative
 ): Promise<SegmentManifest> => {
   const stem = `scene-${String(sceneIndex + 1).padStart(2, '0')}-${scene.id}-clip-${String(clipIndex + 1).padStart(2, '0')}`
   const outPath = join(outDir, `${stem}.mov`)
   const timelinePath = join(outDir, `${stem}.timeline.json`)
 
-  const timeline = buildClipTimeline(clip, projectName)
+  const timeline = buildClipTimeline(clip, projectName, narrative, sceneIndex)
   writeFileSync(timelinePath, JSON.stringify(timeline, null, 2))
 
   const totalFrames = Math.max(FPS, clip.durationSec * FPS)
@@ -456,7 +498,8 @@ program
             cIdx,
             bundleLocation,
             outDir,
-            narrative.project
+            narrative.project,
+            narrative
           )
           segments.push(seg)
         }
