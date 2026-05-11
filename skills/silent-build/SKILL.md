@@ -71,6 +71,13 @@ To jest **główna LLM-driven praca**. Wczytaj:
 - Sample treści z jsonl — dla każdego candidate weź 3 pierwsze prompty + 2 ostatnie assistant_text events w tym range. Limituj do ~200 tokens per candidate, total ~10k tokens dla 50 candidates.
 - `docs/films/format/spec.md` sekcje 1-3 (timeline + cadence rules)
 - `docs/films/format/left-pane-storytelling.md` (storytelling beats catalog)
+- **Skill / plugin / MCP usage report** — uruchom:
+  ```bash
+  node skills/silent-build/bin/scan-skills.mjs <jsonl-dir>
+  ```
+  Output JSON ma `skills` (które `Skill` tool wywołał), `pluginDirs` (wykryte przez `Base directory for this skill`), `slashCommands` (np. `/security-audit`, `/coolify-deploy`), `mcpTools` (chrome-devtools, playwright itp.) oraz **`narrationHints`** — gotowe zdania do wstawienia w scenariusz.md.
+
+  Zobacz `references/skill-detection.md` po pełną interpretację każdej kategorii (design-thinking, planning, security, refactor, deploy, content, meta, browser-test).
 
 Następnie sam wygeneruj:
 
@@ -109,6 +116,17 @@ Następuj `docs/films/outdoorthings/scenariusz.md` jako template strukturalny. P
 - **Gadasz** — 1-2 zdania w naturalnym polskim, vulnerable + konkret + opinion. Co user może powiedzieć do face cam żeby było cinematic.
 - **Storytelling beats** — 2-3 typy z `left-pane-storytelling.md` catalog (DecisionCard, QuoteCard, MilestoneBeat, etc.) + concrete props
 - **Doświadczenie wstawka** (1-2 per scena) — "robię tak każdym projektem od X" / "mój ostatni projekt na Y kosztował Z" — credibility builders. Bazuj na user'a real prompts z jsonl (jeśli wspomniał o Vercel/Hetzner/Supabase/etc, wpleć).
+- **Tooling beats** — z `scan-skills.mjs` output (`narrationHints`) wybierz hints które pasują do danej sceny:
+  - `design-thinking` (brainstorming) → scena `start` lub `plan`
+  - `planning` (writing-plans, spec) → scena `plan`
+  - `security` (security-audit, /security-audit) → scena `audit`
+  - `refactor` (simplify, code-review) → scena `build` (post-MVP) lub `end`
+  - `deploy` (coolify-deploy, /deploy) → scena `end`
+  - `quality` (TDD) → scena `build`
+  - `browser-test` (playwright, chrome-devtools) → scena `design` lub `audit`
+  - `content` (humanize-text, blog-by-session) → scena `end` lub mention w outro
+  
+  Cel: pokazać że to **nie był freestyle prompt** tylko **prowadzony workflow** ze skill-driven decisions. To jest cinematic differentiator vs "another AI coding video".
 - **Cutaway** — który dashboard segment z narrative.json pasuje pod tę sekcję
 
 Plus na końcu: pełny **hook 5s** (`format/spec.md` sekcja 2.1) i **outro CTA** + cliffhanger.
