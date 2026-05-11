@@ -1,0 +1,125 @@
+{
+  "project": "tinypath",
+  "targetMinutes": 6,
+  "generatedAt": "2026-05-09T08:30:00.000Z",
+  "scenes": [
+    {
+      "id": "start",
+      "title": "Concept: lokalny URL shortener",
+      "durationSec": 56,
+      "overlay": { "kind": "Intro" },
+      "clips": [
+        {
+          "from": "2026-05-07T20:35:01.765Z",
+          "to": "2026-05-07T20:42:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-video-projects-test-video-project/4138f87b-1db4-41e5-a10f-3388d8edafb7.jsonl",
+          "label": "[START] hej zobacz @concept.md — lecimy z superpowers",
+          "score": 10,
+          "rationale": "Opening prompt of the session — references concept.md, sets the project frame, uses [START] inline tag",
+          "durationSec": 56,
+          "compressionRatio": 7.4
+        }
+      ]
+    },
+    {
+      "id": "plan",
+      "title": "Plan: spec + tech stack",
+      "durationSec": 45,
+      "overlay": { "kind": "PhaseTransition", "props": { "phaseNumber": 2 } },
+      "clips": [
+        {
+          "from": "2026-05-07T20:42:00.000Z",
+          "to": "2026-05-07T20:49:38.557Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-video-projects-test-video-project/4138f87b-1db4-41e5-a10f-3388d8edafb7.jsonl",
+          "label": "Brainstorm + writing-plans on concept.md",
+          "score": 9,
+          "rationale": "Pre-agent superpowers planning phase: brainstorming + spec drafting before triggering autonomous agent",
+          "durationSec": 45,
+          "compressionRatio": 10.2
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "title": "Build: SvelteKit + better-sqlite3 MVP",
+      "durationSec": 100,
+      "overlay": { "kind": "PhaseTransition", "props": { "phaseNumber": 3 } },
+      "clips": [
+        {
+          "from": "2026-05-07T20:49:38.557Z",
+          "to": "2026-05-07T21:30:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-video-projects-test-video-project/4138f87b-1db4-41e5-a10f-3388d8edafb7.jsonl",
+          "label": "Routes scaffolding: /[code] redirect + /[code]/stats",
+          "score": 9,
+          "rationale": "Core MVP impl — agent run starts here, SvelteKit routes + better-sqlite3 schema + nanoid handler",
+          "durationSec": 60,
+          "compressionRatio": 40.3
+        },
+        {
+          "from": "2026-05-07T21:30:00.000Z",
+          "to": "2026-05-07T21:50:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-video-projects-test-video-project/4138f87b-1db4-41e5-a10f-3388d8edafb7.jsonl",
+          "label": "Click counter + stats endpoint",
+          "score": 8,
+          "rationale": "Second build burst — analytics layer, stats page, completing user flow shorten → click → stats",
+          "durationSec": 40,
+          "compressionRatio": 30.0
+        }
+      ]
+    },
+    {
+      "id": "design",
+      "title": "Design: minimal SvelteKit layout",
+      "durationSec": 30,
+      "overlay": { "kind": "PhaseTransition", "props": { "phaseNumber": 4 } },
+      "clips": [
+        {
+          "from": "2026-05-07T21:50:00.000Z",
+          "to": "2026-05-07T22:00:00.000Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-video-projects-test-video-project/4138f87b-1db4-41e5-a10f-3388d8edafb7.jsonl",
+          "label": "Shared layout CSS + form styling",
+          "score": 6,
+          "rationale": "Brief styling pass — single-page app, minimal UI; not a heavy design phase but essential for demo screencast",
+          "durationSec": 30,
+          "compressionRatio": 20.0
+        }
+      ]
+    },
+    {
+      "id": "audit",
+      "title": "Audit: /security-audit findings",
+      "durationSec": 60,
+      "overlay": { "kind": "PhaseTransition", "props": { "phaseNumber": 5 } },
+      "clips": [
+        {
+          "from": "2026-05-07T22:30:00.000Z",
+          "to": "2026-05-07T23:03:34.779Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-video-projects-test-video-project/4138f87b-1db4-41e5-a10f-3388d8edafb7.jsonl",
+          "label": "Open redirect + rate limit + stats privacy + headers",
+          "score": 10,
+          "rationale": "Security audit caught 5 findings — scheme allow-list, in-memory rate limit, stats privacy, security headers; all fixed in single commit",
+          "durationSec": 60,
+          "compressionRatio": 33.6
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "title": "Release: pnpm build + git tag v0.1.0",
+      "durationSec": 60,
+      "overlay": { "kind": "Outro" },
+      "clips": [
+        {
+          "from": "2026-05-07T23:03:34.779Z",
+          "to": "2026-05-07T23:33:34.779Z",
+          "sourceJsonl": "/home/bartek/.claude/projects/-home-bartek-video-projects-test-video-project/4138f87b-1db4-41e5-a10f-3388d8edafb7.jsonl",
+          "label": "Refactor + simplify after audit, ready for v0.1.0",
+          "score": 8,
+          "rationale": "Post-audit refactor (simplify after review commit) + git tag — release moment, not deploy (project is local-only)",
+          "durationSec": 60,
+          "compressionRatio": 30.0
+        }
+      ]
+    }
+  ]
+}
