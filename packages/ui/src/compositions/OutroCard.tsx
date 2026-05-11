@@ -9,6 +9,10 @@ export interface OutroCardProps {
   projectName: string
   metrics: SessionTimeline['metrics']
   durationMs: number
+  /** Estimated API cost in USD (Anthropic public rates). Labelled "API EST."
+   *  on screen since Pro/Max subscribers don't pay per-token. Hidden if
+   *  undefined. */
+  tokensCostUsd?: number
   repoUrl?: string
   durationInFrames?: number
 }
@@ -113,8 +117,14 @@ const StatRow: React.FC<StatRowProps> = ({
 
 // ---------- main ----------
 
+const fmtMoney = (n: number) => {
+  if (n >= 1000) return `$${(n / 1000).toFixed(1)}k`
+  if (n >= 100) return `$${n.toFixed(0)}`
+  return `$${n.toFixed(2)}`
+}
+
 export const OutroCard: React.FC<OutroCardProps> = ({
-  projectName, metrics, durationMs, repoUrl, durationInFrames: durProp
+  projectName, metrics, durationMs, tokensCostUsd, repoUrl, durationInFrames: durProp
 }) => {
   const { currentMs, fps } = useAnimation()
   const frame = Math.floor(currentMs * fps / 1000)
@@ -241,6 +251,17 @@ export const OutroCard: React.FC<OutroCardProps> = ({
                  format={fmtInt}
                  frame={frame} startFrame={rowStart + stagger * 4}
                  rollFrames={rollFrames} />
+        {tokensCostUsd !== undefined ? (
+          <StatRow
+            label="API EST."
+            finalValue={tokensCostUsd}
+            format={fmtMoney}
+            frame={frame}
+            startFrame={rowStart + stagger * 5}
+            rollFrames={rollFrames}
+            color={tokens.colors.greenOk}
+          />
+        ) : null}
       </div>
 
       {/* Repo line */}

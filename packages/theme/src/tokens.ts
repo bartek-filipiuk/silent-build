@@ -1,44 +1,25 @@
 /**
  * Design tokens for silent-build overlay.
  *
- * V2 "Vintage NASA" palette — warm dark espresso/charcoal, Apollo mission-control
- * aesthetic. Replaces V1 "Deep Space" (#05070a cold black) with #1a1410 espresso —
- * easier on the eye, cinematic warmth, brand amber stays primary.
+ * V3 multi-theme system — 6 palettes selectable at render time via the
+ * `SILENT_BUILD_THEME` env var (or `--theme <key>` CLI flag).
  *
- * Source: Claude Design handoff `9isgQbiAFbgltCXxH2fnLA` (2026-05-09).
- * Brief: "mile dla oka, nie agresywne, nie za ciemne" + "trzymaj amber jako primary".
+ * Default: `terminal` (classic hacker phosphor green). Other options:
+ * graphite / midnight / ops / cobalt / espresso. See `themes.ts` for the
+ * full palette table + semantic key contract.
+ *
+ * Source: Claude Design handoff `0Leam7Sij7ffo6Tbh8X0uQ` (2026-05-11).
  */
+import { resolveTheme, type Theme } from './themes.js'
+
+const activeTheme: Theme = resolveTheme(
+  typeof process !== 'undefined' ? process.env['SILENT_BUILD_THEME'] : undefined
+)
+
+const c = activeTheme.colors
+
 export const tokens = {
-  colors: {
-    // Surfaces — warm espresso/charcoal, never pitch black
-    bg:           '#1a1410', // deepest background (was #05070a)
-    bgSoft:       '#211a13', // section backgrounds in design canvas
-    panel:        '#241c14', // raised widget surface (was #0d1117)
-    panelRaised:  '#2d241a', // hover / nested raise
-    grid:         '#3a2e21', // subtle grid & dividers (was #131a24)
-    gridStrong:   '#4a3b2a', // emphasized grid lines
-
-    // Text — warm cream ramp
-    textPrimary: '#ede4d3',
-    textDim:     '#b0a08a',
-    textMuted:   '#7a6b56',
-    textWhisper: '#5a4d3d',
-
-    // Amber ramp (primary brand) — warmed toward the espresso ground
-    amber:       '#f5a635', // primary accent (was #ffb347)
-    amberBright: '#ffd27d', // hover / pulse peak
-    amberDim:    '#9a6b2c', // subdued
-    amberDeep:   '#6e4a1d', // deepest amber (for outlines on inactive states)
-    amberGlow:   'rgba(245, 166, 53, 0.20)', // diffuse halo
-    amberHalo:   'rgba(245, 166, 53, 0.08)', // soft outer glow
-
-    // Status — warmed to match palette
-    greenOk:   '#9bc97a',
-    greenDim:  '#5a7a3f',
-    redAlert:  '#e07b5e',
-    amberWarn: '#f5a635',
-    cyanData:  '#8fb8b8'
-  },
+  colors: c,
 
   typography: {
     fontHeading: "'Space Grotesk', 'Inter', system-ui, sans-serif",
@@ -71,10 +52,11 @@ export const tokens = {
     md:   3
   },
 
+  // Derived borders so swapping theme keeps consistency.
   borders: {
-    hairline:      '1px solid #3a2e21',
-    hairlineAmber: '1px solid #9a6b2c',
-    hairlineAlert: '1px solid #e07b5e'
+    hairline:      `1px solid ${c.grid}`,
+    hairlineAmber: `1px solid ${c.amberDim}`,
+    hairlineAlert: `1px solid ${c.redAlert}`
   },
 
   effects: {
@@ -87,3 +69,4 @@ export const tokens = {
 } as const
 
 export type Tokens = typeof tokens
+export { activeTheme }

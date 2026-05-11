@@ -110,9 +110,23 @@ describe('NarrativeSchema', () => {
     expect(() => NarrativeSchema.parse(buildNarrative())).not.toThrow()
   })
 
-  it('rejects narrative with 5 scenes', () => {
+  it('accepts narrative with 3-5 scenes (single-session variant)', () => {
+    for (let n = 5; n >= 3; n--) {
+      const nar = buildNarrative()
+      nar.scenes.length = n
+      expect(() => NarrativeSchema.parse(nar), `${n} scenes`).not.toThrow()
+    }
+  })
+
+  it('rejects narrative with 2 scenes (below minimum)', () => {
     const n = buildNarrative()
-    n.scenes.pop()
+    n.scenes.length = 2
+    expect(() => NarrativeSchema.parse(n)).toThrow()
+  })
+
+  it('rejects narrative with 7 scenes (above maximum)', () => {
+    const n = buildNarrative()
+    n.scenes.push(n.scenes[0]!)
     expect(() => NarrativeSchema.parse(n)).toThrow()
   })
 

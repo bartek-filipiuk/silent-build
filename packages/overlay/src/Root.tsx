@@ -47,7 +47,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition
       id="Intro"
       component={wrap<IntroCardProps>(IntroCard)}
-      durationInFrames={4 * FPS}
+      durationInFrames={8 * FPS}
       fps={FPS}
       width={1920}
       height={1080}

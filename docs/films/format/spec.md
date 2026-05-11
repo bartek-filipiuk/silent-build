@@ -1,7 +1,7 @@
 # Specyfikacja formatu filmu silent-build
 
 **Status:** żywy dokument — aktualizuj po każdej publikacji
-**Data:** 2026-05-08 (utworzony) / 2026-05-09 (polonizacja)
+**Data:** 2026-05-08 (utworzony) / 2026-05-09 (polonizacja) / 2026-05-11 (V3 multi-theme + single-session variant)
 **Cel:** uniwersalny przepis na film "watch me build with AI". Co MUSI być, kiedy łamać format, dlaczego konkretne wybory.
 
 Ten dokument NIE jest ani specyfikacją pipeline'u (`docs/superpowers/specs/2026-05-06-viral-film-pipeline-design.md`), ani planem produkcji konkretnego filmu (`docs/films/<slug>/production-plan.md`). To **per-film checklista formatu** — bierzesz każdorazowo, walidujesz że masz wszystkie elementy, podejmujesz decyzje wg sekcji 7.
@@ -391,8 +391,53 @@ Dane retencji + benchmarków 2026:
 - Po publikacji każdego filmu: dopisz w changelog na końcu (PR + film + retention number)
 - Co 3 filmy: review sekcji 1–3, czy hipotezy z sekcji 8 się potwierdziły
 
+## 12. V3 multi-theme palette system
+
+Aktualnie pipeline obsługuje **6 palet**, wybierane na render-time przez `--theme <key>` flag w `pnpm render:narrative` lub przez env var `SILENT_BUILD_THEME`. Klucze tokenów (`amber`, `greenOk` itp.) są **semantyczne**, nie literalne — `amber` w `terminal` paleta to `#7fd187` (zielony fosfor), a w `cobalt` to `#5fa8ff` (niebieski).
+
+| Klucz | Domyślny? | Charakter | Primary hex |
+|---|---|---|---|
+| `terminal` | **TAK** | Classic hacker phosphor green, pitch base | `#7fd187` |
+| `graphite` | nie | NBA muted — slate base, royal blue primary, basketball red accent | `#5b8def` |
+| `midnight` | nie | Deep navy, cool indigo base, ice-cyan primary | `#7fc4e8` |
+| `ops` | nie | Industrial neutral graphite, amber primary, red+blue duo | `#e6a651` |
+| `cobalt` | nie | Tech-blue ops, onyx base, cobalt primary, ember red secondary | `#5fa8ff` |
+| `espresso` | nie | V2 Vintage NASA warm espresso (legacy, zachowane jako opcja) | `#f5a635` |
+
+**Source:** Claude Design handoff `0Leam7Sij7ffo6Tbh8X0uQ` (2026-05-11). Pełne specyfikacje per paleta w `packages/theme/src/themes.ts`.
+
+**Reguła wyboru per film:** `terminal` to default dla regular "watch me build with AI" content (hacker tech vlog positioning). Inne palety używasz świadomie: `cobalt` dla "tech-blue corporate" vibe (np. budowa enterprise dashboardu), `midnight` dla "long-form deep-dive" (deep navy ułatwia 12+ min retention), `espresso` jeśli chcesz cinematic warmth zamiast tech edge.
+
+## 13. Single-session variant (3-4 scen)
+
+Standardowy format zakłada 6 scen (concept → plan → build → design → audit → release). Dla projektów jednoosesyjnych — szybkie tools, prototypy, brak audit/release jako osobnej fazy — pipeline akceptuje **3-6 scen**.
+
+Typowy single-session shape (z `outdoorthings` jako exemplar — 1195 events, 1 jsonl, brak git, brak OBS):
+
+| Scena | Z curatora | Tag | Czas filmu |
+|---|---|---|---|
+| 1 | start | first 5 prompts (signal=9) | 45-60s |
+| 2 | build | edit bursts + implement keyword | 60-90s |
+| 3 | design | edit bursts na .svelte/.tsx | 30-45s |
+| 4 | end | last 3 prompts / git commit | 30-45s |
+
+**Total:** 165-240s = **2:45 - 4:00 min**. Krótszy niż flagship 6-min film, ale uczciwy dla single-session projektu.
+
+`narrative-schema` wymusza `scenes.min(3).max(6)`. PhaseBar w dashboard adaptuje się automatycznie do dowolnej liczby scen (active scene ~85% bara, non-active scenes jako małe slivers).
+
+**Kiedy NIE łamać do 4 scen:**
+- Mega-projekt (3+ tygodnie) — chcesz 6 scen + ewentualnie 12-min wariant
+- Cykl "silent build #N" — utrzymuj 6 scen dla brand consistency
+- Projekty z wyraźnym audit phase — `[SECURITY]` tag lub `superpowers:security-audit` skill w osobnej sesji → 5-6 scen
+
+**Kiedy łamać do 4 scen:**
+- Single-session prototype (1 day, 1 jsonl)
+- Brak `audit`/`plan` candidates w curator output
+- Format "speed-build challenge ≤5 min"
+
 ## Changelog
 
 - **2026-05-08** — initial spec, oparty na viral-film-pipeline-design + duels production-plan + research-synthesizer Q2 2026 trends (po angielsku)
 - **2026-05-09** — pełna polonizacja, przeniesienie do `docs/films/format/spec.md`
+- **2026-05-11** — V3 multi-theme palette (6 palet, terminal jako default), single-session 3-4 scene variant. Cost/duration accuracy fixes w pipeline (render-narrative correctness pass).
 - (next) **post tinypath publish** — first retention data point

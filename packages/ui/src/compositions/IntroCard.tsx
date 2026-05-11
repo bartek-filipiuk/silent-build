@@ -87,41 +87,112 @@ const StatusRow: React.FC<{
 
 // ---------- countdown ----------
 
+// 3 → 2 → 1 → LAUNCH, breathing pace. Each digit lives ~50 frames (~0.83s
+// @ 60fps), LAUNCH holds for another 70 frames (~1.17s). Total countdown
+// budget: 220 frames (~3.67s). Just the digit, no awkward "LAUNCH IN…"
+// scaffolding around it.
+const COUNTDOWN_FRAMES = 220
+const DIGIT_WINDOW = 50
 const Countdown: React.FC<{ frame: number; durationInFrames: number }> = ({
   frame, durationInFrames
 }) => {
-  // Last 1.5s at 60fps = 90 frames. Split into 4 windows of ~22 frames.
-  const start = durationInFrames - 90
+  const start = durationInFrames - COUNTDOWN_FRAMES
   const rel = frame - start
   if (rel < 0) return null
 
   let label = ''
-  if      (rel < 22) label = '3'
-  else if (rel < 44) label = '2'
-  else if (rel < 66) label = '1'
-  else               label = 'LAUNCH'
+  let phaseStart = 0
+  if (rel < DIGIT_WINDOW) {
+    label = '3'; phaseStart = 0
+  } else if (rel < DIGIT_WINDOW * 2) {
+    label = '2'; phaseStart = DIGIT_WINDOW
+  } else if (rel < DIGIT_WINDOW * 3) {
+    label = '1'; phaseStart = DIGIT_WINDOW * 2
+  } else {
+    label = 'LAUNCH'; phaseStart = DIGIT_WINDOW * 3
+  }
 
-  // Each step pops with a brief scale. Compute phase-local frame (0..22).
-  const phaseStart = rel < 22 ? 0 : rel < 44 ? 22 : rel < 66 ? 44 : 66
   const local = rel - phaseStart
-  const scale = interpolate(local, [0, 6, 18, 22], [0.85, 1.05, 1, 1], { extrapolateRight: 'clamp' })
-  const opacity = interpolate(local, [0, 4, 16, 22], [0, 1, 1, 0.9], { extrapolateRight: 'clamp' })
-
   const isLaunch = label === 'LAUNCH'
+
+  // Digit: punch-in (scale 0.78 → 1.08 → 1.0) over first 12f, then hold for
+  // ~28f, then fade out last 10f.
+  const digitScale = interpolate(local, [0, 8, 14, 40, 50], [0.78, 1.08, 1, 1, 0.98], {
+    extrapolateRight: 'clamp'
+  })
+  const digitOpacity = interpolate(local, [0, 8, 38, 50], [0, 1, 1, 0], {
+    extrapolateRight: 'clamp'
+  })
+
+  // LAUNCH: scale-in to 1.0 over 18f, then hold full opacity for the
+  // remainder. No fade-out — final composition cuts to dashboard.
+  const launchScale = interpolate(local, [0, 12, 22], [0.7, 1.08, 1], {
+    extrapolateRight: 'clamp'
+  })
+  const launchOpacity = interpolate(local, [0, 14], [0, 1], {
+    extrapolateRight: 'clamp'
+  })
+
+  // Pulsing ring around the digit during the hold window. Pulse period
+  // 18f, soft amber halo.
+  const ringPulse = interpolate(
+    ((local - 14) % 18) / 18,
+    [0, 0.5, 1],
+    [0.35, 0.75, 0.35],
+    { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }
+  )
+  const ringOpacity = isLaunch
+    ? 0
+    : (local > 14 && local < 40 ? ringPulse : 0)
+
   return (
     <div style={{
+      position: 'relative',
       marginTop: tokens.spacing.xxl * 2,
-      fontFamily: tokens.typography.fontHeading,
-      fontSize: isLaunch ? 88 : 120,
-      fontWeight: 700,
-      color: isLaunch ? tokens.colors.amberBright : tokens.colors.amber,
-      letterSpacing: isLaunch ? '0.22em' : '0em',
-      transform: `scale(${scale})`,
-      opacity,
-      textShadow: `0 0 40px ${tokens.colors.amberGlow}`,
-      lineHeight: 1
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center'
     }}>
-      {isLaunch ? 'LAUNCH' : `LAUNCH IN ${label}...`}
+      {/* Pulsing ring behind digit (hides on LAUNCH) */}
+      {!isLaunch && (
+        <div style={{
+          position: 'absolute',
+          width: 220, height: 220,
+          borderRadius: '50%',
+          border: `2px solid ${tokens.colors.amber}`,
+          boxShadow: `0 0 60px ${tokens.colors.amberGlow}, inset 0 0 30px ${tokens.colors.amberHalo}`,
+          opacity: ringOpacity,
+          pointerEvents: 'none'
+        }} />
+      )}
+      <div style={{
+        fontFamily: tokens.typography.fontHeading,
+        fontSize: isLaunch ? 132 : 156,
+        fontWeight: 700,
+        color: isLaunch ? tokens.colors.amberBright : tokens.colors.amber,
+        letterSpacing: isLaunch ? '0.28em' : '0em',
+        transform: isLaunch ? `scale(${launchScale})` : `scale(${digitScale})`,
+        opacity: isLaunch ? launchOpacity : digitOpacity,
+        textShadow: `0 0 50px ${tokens.colors.amberGlow}`,
+        lineHeight: 1
+      }}>
+        {label}
+      </div>
+      {/* T-MINUS micro-label below the digit (hides on LAUNCH) */}
+      {!isLaunch && (
+        <div style={{
+          marginTop: tokens.spacing.lg,
+          fontFamily: tokens.typography.fontMono,
+          fontSize: 14,
+          color: tokens.colors.textDim,
+          letterSpacing: '0.36em',
+          textTransform: 'uppercase',
+          opacity: digitOpacity * 0.7
+        }}>
+          T-Minus
+        </div>
+      )}
     </div>
   )
 }
@@ -133,7 +204,10 @@ export const IntroCard: React.FC<IntroCardProps> = ({
 }) => {
   const { currentMs, fps } = useAnimation()
   const frame = Math.floor(currentMs * fps / 1000)
-  const durationInFrames = durProp ?? fps * 4
+  // 8s default (was 4s) — gives the eye time to land on project name + data
+  // rows + status sequence before countdown begins. Countdown itself is
+  // ~3.67s (220 frames) within this budget.
+  const durationInFrames = durProp ?? fps * 8
 
   const startDate = startingAt ?? new Date()
   const inset = 32
@@ -147,12 +221,13 @@ export const IntroCard: React.FC<IntroCardProps> = ({
   const titleTranslate = interpolate(titleY, [0, 1], [24, 0])
   const titleOpacity   = interpolate(frame, [6, 24], [0, 1], { extrapolateRight: 'clamp' })
 
-  // Status thresholds: first at 0.5s (30f @ 60fps), next +0.5s, next +0.5s.
-  const t1 = Math.round(fps * 0.5)
-  const t2 = Math.round(fps * 1.0)
-  const t3 = Math.round(fps * 1.5)
+  // Status thresholds: more breathing room with 8s budget. First at 1.0s,
+  // second at 1.6s, third at 2.2s — each gets ~600ms to read before next.
+  const t1 = Math.round(fps * 1.0)
+  const t2 = Math.round(fps * 1.6)
+  const t3 = Math.round(fps * 2.2)
 
-  const countdownStart = Math.max(0, durationInFrames - 90)
+  const countdownStart = Math.max(0, durationInFrames - COUNTDOWN_FRAMES)
 
   return (
     <div style={{

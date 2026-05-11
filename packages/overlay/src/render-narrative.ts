@@ -10,6 +10,7 @@ import {
 } from 'node:fs'
 import { isAbsolute, join, resolve, dirname } from 'node:path'
 import { buildTimeline } from '@silent-build/harvester/builder'
+import { computeCostUpTo } from '@silent-build/ui'
 import {
   NarrativeSchema,
   type Narrative,
@@ -27,7 +28,9 @@ const FPS = 60
 
 const buildClipTimeline = (
   clip: NarrativeClip,
-  projectName: string
+  projectName: string,
+  narrative?: Narrative,
+  sceneIndex?: number
 ): SessionTimeline => {
   const full = buildTimeline({
     sessionJsonlPath: clip.sourceJsonl,
@@ -64,13 +67,19 @@ const buildClipTimeline = (
   // Aggregate cumulative state from events BEFORE clip start. Without this,
   // every clip dashboard ticks from TOKENS=0 / "awaiting first prompt", which
   // looks like a fresh session even when this is e.g. the audit clip 5h in.
+  //
+  // Input/output are tracked SEPARATELY because eventCost charges different
+  // rates ($15/M input vs $75/M output for Opus). Previously we lumped them
+  // together and charged everything at input rate — 5× cost under-report.
   const preClipFiles = new Set<string>()
-  let preClipTokens = 0
+  let preClipInputTokens = 0
+  let preClipOutputTokens = 0
   let preClipCacheRead = 0
   let preClipCacheWrite = 0
   let preClipPrompts = 0
   let preClipToolCalls = 0
   let lastPromptText: string | null = null
+  let lastModel: string | undefined = undefined
   for (const ev of full.events) {
     if (ev.ts >= fromMs) break
     if (ev.type === 'prompt') {
@@ -81,28 +90,38 @@ const buildClipTimeline = (
     }
     if (ev.type === 'tool_call') preClipToolCalls++
     if (ev.type === 'tokens_delta') {
-      preClipTokens += ev.data.input + ev.data.output
+      preClipInputTokens += ev.data.input
+      preClipOutputTokens += ev.data.output
       preClipCacheRead += ev.data.cacheRead ?? 0
       preClipCacheWrite += ev.data.cacheWrite ?? 0
+      if (ev.data.model) lastModel = ev.data.model
     }
     if (ev.type === 'file_write') preClipFiles.add(ev.data.path)
     if (ev.type === 'file_edit') preClipFiles.add(ev.data.path)
   }
+  const preClipTokens =
+    preClipInputTokens + preClipOutputTokens + preClipCacheRead + preClipCacheWrite
 
   // Synthetic baseline events injected just before fromMs so widgets that
   // sum events up to currentMs (TokenCounter, ActivityLog, FileActivity,
   // CurrentPrompt) see the cumulative pre-clip state.
   const baselineTs = fromMs - 1
   const baselineEvents: TimelineEvent[] = []
-  if (preClipTokens > 0 || preClipCacheRead > 0 || preClipCacheWrite > 0) {
+  if (
+    preClipInputTokens > 0 ||
+    preClipOutputTokens > 0 ||
+    preClipCacheRead > 0 ||
+    preClipCacheWrite > 0
+  ) {
     baselineEvents.push({
       ts: baselineTs,
       type: 'tokens_delta',
       data: {
-        input: preClipTokens,
-        output: 0,
+        input: preClipInputTokens,
+        output: preClipOutputTokens,
         ...(preClipCacheRead > 0 ? { cacheRead: preClipCacheRead } : {}),
-        ...(preClipCacheWrite > 0 ? { cacheWrite: preClipCacheWrite } : {})
+        ...(preClipCacheWrite > 0 ? { cacheWrite: preClipCacheWrite } : {}),
+        ...(lastModel ? { model: lastModel } : {})
       }
     })
   }
@@ -130,14 +149,39 @@ const buildClipTimeline = (
 
   const slicedEvents: TimelineEvent[] = [...baselineEvents, ...intraClipEvents]
 
-  const segMs = Math.round(targetMs / 4)
-  const phases: Phase[] = ([1, 2, 3, 4] as const).map((i) => ({
-    index: i,
-    label: clip.label,
-    startTs: fromMs + (i - 1) * segMs,
-    endTs: i === 4 ? fromMs + targetMs : fromMs + i * segMs,
-    source: 'heuristic'
-  }))
+  // Phases: in narrative-render mode, the bottom PhaseBar shows ONE block
+  // representing the current scene (full clip width, scene.title as label).
+  // Cleaner than packing 6 narrative scenes into PhaseBar's width-based
+  // layout (whose findIndex math doesn't sit on top of arbitrary windows
+  // well). Result: "Phase 1/1 — AUDIT: /SECURITY-AUDIT FINDINGS" — small,
+  // honest, doesn't compete with the dashboard widgets for attention.
+  //
+  // Fallback: synthetic 4-quartile of clip duration (legacy live-mode shape)
+  // when narrative context isn't passed.
+  let phases: Phase[]
+  if (narrative && sceneIndex !== undefined && narrative.scenes.length > 0) {
+    const currentScene = narrative.scenes[sceneIndex]
+    phases = currentScene
+      ? [
+          {
+            index: 1,
+            label: currentScene.title,
+            startTs: fromMs,
+            endTs: fromMs + targetMs,
+            source: 'heuristic'
+          }
+        ]
+      : []
+  } else {
+    const segMs = Math.round(targetMs / 4)
+    phases = ([1, 2, 3, 4] as const).map((i) => ({
+      index: i,
+      label: clip.label,
+      startTs: fromMs + (i - 1) * segMs,
+      endTs: i === 4 ? fromMs + targetMs : fromMs + i * segMs,
+      source: 'heuristic'
+    }))
+  }
 
   // Cumulative metrics = pre-clip baseline + intra-clip delta.
   const intraFiles = new Set<string>()
@@ -164,7 +208,7 @@ const buildClipTimeline = (
     phases,
     events: slicedEvents,
     metrics: {
-      totalTokens: preClipTokens + preClipCacheRead + preClipCacheWrite + intraTokens,
+      totalTokens: preClipTokens + intraTokens,
       filesTouched: allFiles.size,
       promptsCount: preClipPrompts + intraPrompts,
       toolCallsCount: preClipToolCalls + intraToolCalls
@@ -193,7 +237,8 @@ const renderOverlayForScene = async (
   bundleLocation: string,
   outDir: string,
   fullTimeline: SessionTimeline | null,
-  narrative: Narrative
+  narrative: Narrative,
+  themeKey: string
 ): Promise<SegmentManifest> => {
   const stem = `scene-${String(sceneIndex + 1).padStart(2, '0')}-${scene.id}-overlay`
   const outPath = join(outDir, `${stem}.mov`)
@@ -202,12 +247,21 @@ const renderOverlayForScene = async (
   if (scene.overlay.kind === 'Intro') {
     inputProps = {
       projectName: narrative.project,
-      targetDescription: `Best-of · ${narrative.targetMinutes} min · 6 scenes`,
+      targetDescription: `Best-of · ${narrative.targetMinutes} min · ${narrative.scenes.length} scenes`,
       startingAt: fullTimeline
         ? new Date(fullTimeline.project.startTs)
         : new Date()
     }
   } else if (scene.overlay.kind === 'Outro') {
+    // Real session duration (wallclock from first to last event), NOT the
+    // 7-min target film length. Was previously showing "06m 00s" for what
+    // was actually a 7h session.
+    const realDurationMs = fullTimeline
+      ? fullTimeline.project.endTs - fullTimeline.project.startTs
+      : narrative.targetMinutes * 60 * 1000
+    const costUsd = fullTimeline
+      ? computeCostUpTo(fullTimeline.events, fullTimeline.project.endTs)
+      : undefined
     inputProps = {
       projectName: narrative.project,
       metrics: fullTimeline?.metrics ?? {
@@ -216,8 +270,9 @@ const renderOverlayForScene = async (
         promptsCount: 0,
         toolCallsCount: 0
       },
-      durationMs: narrative.targetMinutes * 60 * 1000,
-      repoUrl: 'github.com/bartek-filipiuk'
+      durationMs: realDurationMs,
+      repoUrl: 'github.com/bartek-filipiuk',
+      ...(costUsd !== undefined ? { tokensCostUsd: costUsd } : {})
     }
   } else {
     const props = scene.overlay.props
@@ -251,7 +306,8 @@ const renderOverlayForScene = async (
     outputLocation: outPath,
     inputProps,
     pixelFormat: 'yuva444p10le',
-    imageFormat: 'png'
+    imageFormat: 'png',
+    envVariables: { SILENT_BUILD_THEME: themeKey }
   })
 
   return {
@@ -273,13 +329,15 @@ const renderDashboardForClip = async (
   clipIndex: number,
   bundleLocation: string,
   outDir: string,
-  projectName: string
+  projectName: string,
+  narrative: Narrative,
+  themeKey: string
 ): Promise<SegmentManifest> => {
   const stem = `scene-${String(sceneIndex + 1).padStart(2, '0')}-${scene.id}-clip-${String(clipIndex + 1).padStart(2, '0')}`
   const outPath = join(outDir, `${stem}.mov`)
   const timelinePath = join(outDir, `${stem}.timeline.json`)
 
-  const timeline = buildClipTimeline(clip, projectName)
+  const timeline = buildClipTimeline(clip, projectName, narrative, sceneIndex)
   writeFileSync(timelinePath, JSON.stringify(timeline, null, 2))
 
   const totalFrames = Math.max(FPS, clip.durationSec * FPS)
@@ -307,7 +365,8 @@ const renderDashboardForClip = async (
     outputLocation: outPath,
     inputProps: { timeline },
     pixelFormat: 'yuva444p10le',
-    imageFormat: 'png'
+    imageFormat: 'png',
+    envVariables: { SILENT_BUILD_THEME: themeKey }
   })
 
   return {
@@ -344,13 +403,29 @@ program
     'skip overlay (Intro/PhaseTransition/Outro) renders, dashboards only',
     false
   )
+  .option(
+    '--with-concat',
+    'after rendering segments, run ffmpeg to produce dashboards.mov and overlays.mov preview reels (~5-6 GB)',
+    false
+  )
+  .option(
+    '--theme <key>',
+    'palette: terminal | graphite | midnight | ops | cobalt | espresso (default: terminal)'
+  )
   .action(
     async (opts: {
       input: string
       out: string
       scenes?: string
       skipOverlays: boolean
+      withConcat: boolean
+      theme?: string
     }) => {
+      // SILENT_BUILD_THEME is consumed by widgets running inside the
+      // Remotion Chromium bundle, not by this Node process. Resolved theme
+      // key is forwarded explicitly via renderMedia({ envVariables }) per
+      // composition call below.
+      const themeKey = opts.theme ?? 'terminal'
       const inputPath = isAbsolute(opts.input)
         ? opts.input
         : resolve(USER_CWD, opts.input)
@@ -415,7 +490,8 @@ program
             bundleLocation,
             outDir,
             aggregateTimeline,
-            narrative
+            narrative,
+            themeKey
           )
           segments.push(ov)
         }
@@ -429,7 +505,9 @@ program
             cIdx,
             bundleLocation,
             outDir,
-            narrative.project
+            narrative.project,
+            narrative,
+            themeKey
           )
           segments.push(seg)
         }
@@ -454,21 +532,47 @@ program
 
       console.log(`\n✓ rendered ${segments.length} segments to ${outDir}`)
       console.log(`  manifest:           ${manifestPath}`)
-      console.log(`  ffmpeg concat list: ${join(outDir, 'concat-dashboards.txt')}`)
-      console.log(`  ffmpeg concat list: ${join(outDir, 'concat-overlays.txt')}`)
-      console.log('')
-      console.log(
-        '  Quick concat (dashboards 576×1080):'
-      )
-      console.log(
-        `    ffmpeg -f concat -safe 0 -i ${join(outDir, 'concat-dashboards.txt')} -c copy ${join(outDir, 'dashboards.mov')}`
-      )
-      console.log(
-        '  Quick concat (overlays 1920×1080):'
-      )
-      console.log(
-        `    ffmpeg -f concat -safe 0 -i ${join(outDir, 'concat-overlays.txt')} -c copy ${join(outDir, 'overlays.mov')}`
-      )
+      console.log(`  ffmpeg concat lists written (dashboards + overlays)`)
+
+      if (opts.withConcat) {
+        console.log('\nConcat preview reels enabled — running ffmpeg…')
+        const { execFileSync } = await import('node:child_process')
+        try {
+          execFileSync(
+            'ffmpeg',
+            [
+              '-y',
+              '-f', 'concat',
+              '-safe', '0',
+              '-i', join(outDir, 'concat-dashboards.txt'),
+              '-c', 'copy',
+              join(outDir, 'dashboards-all.mov')
+            ],
+            { stdio: ['ignore', 'inherit', 'inherit'] }
+          )
+          execFileSync(
+            'ffmpeg',
+            [
+              '-y',
+              '-f', 'concat',
+              '-safe', '0',
+              '-i', join(outDir, 'concat-overlays.txt'),
+              '-c', 'copy',
+              join(outDir, 'overlays-all.mov')
+            ],
+            { stdio: ['ignore', 'inherit', 'inherit'] }
+          )
+          console.log(`✓ dashboards-all.mov + overlays-all.mov in ${outDir}`)
+        } catch (e) {
+          console.warn(
+            `[warn] ffmpeg concat failed (${e instanceof Error ? e.message : e}); concat lists still available for manual run`
+          )
+        }
+      } else {
+        console.log(
+          `  (preview reels skipped — pass --with-concat to produce dashboards-all.mov + overlays-all.mov)`
+        )
+      }
     }
   )
 
