@@ -44,5 +44,15 @@
     "typescript": "^5.5.4",
     "vitest": "^2.1.1",
     "@types/node": "^22.5.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "remotion": "4.0.451",
+      "@remotion/bundler": "4.0.451",
+      "@remotion/renderer": "4.0.451",
+      "@remotion/cli": "4.0.451",
+      "@remotion/google-fonts": "4.0.451",
+      "@remotion/studio": "4.0.451"
+    }
   }
 }
