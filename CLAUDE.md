@@ -92,8 +92,9 @@ Before any commit: `pnpm test && pnpm typecheck`. Both must be green. The full s
 
 ## Skills installation
 
-`pnpm skill:install` symlinks all 3 in-repo skills to `~/.claude/skills/`:
-- `curate-narrative` (build narrative.json from candidates)
+`pnpm skill:install` symlinks all 4 in-repo skills to `~/.claude/skills/`:
+- `silent-build` (end-to-end: jsonl → narrative + scenariusz + publish + render, natural-language feedback)
+- `curate-narrative` (build narrative.json from candidates — interactive variant, single phase)
 - `generate-voiceover-script` (write hook + outro lines)
 - `start-silent-build-project` (per-stage workflow guide)
 
