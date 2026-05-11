@@ -63,6 +63,38 @@ export function computeTimerBounds(events: ParsedEvent[]): { startTs: number; en
   return { startTs: min, endTs: max }
 }
 
+/** Default idle-cutoff for active-time calculation. Gaps ≥ this are treated
+ *  as "user walked away" and excluded from active time. 30 min matches the
+ *  curator's LONG_PAUSE threshold so the two reads are consistent. */
+export const ACTIVE_GAP_MS = 30 * 60 * 1000
+
+/**
+ * Active time = sum of intervals between consecutive events where the gap
+ * is below `gapMs`. Gaps above the threshold (e.g. overnight breaks) are
+ * excluded so a 25h calendar-span session that was actually 6h of work
+ * shows ~6h instead of 25h.
+ *
+ * For a single event or empty input, returns 0.
+ */
+export function computeActiveTimeMs(
+  events: ParsedEvent[],
+  gapMs = ACTIVE_GAP_MS
+): number {
+  if (events.length < 2) return 0
+  const ts = events
+    .map((e) => new Date(e.timestamp).getTime())
+    .filter((t) => Number.isFinite(t))
+    .sort((a, b) => a - b)
+  let active = 0
+  for (let i = 1; i < ts.length; i++) {
+    const a = ts[i - 1]!
+    const b = ts[i]!
+    const gap = b - a
+    if (gap < gapMs) active += gap
+  }
+  return active
+}
+
 function truncate(s: string, max: number): string {
   if (s.length <= max) return s
   return s.slice(0, max) + '...'

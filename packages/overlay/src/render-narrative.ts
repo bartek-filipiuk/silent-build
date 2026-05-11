@@ -288,7 +288,10 @@ const renderOverlayForScene = async (
       },
       durationMs: realDurationMs,
       repoUrl: 'github.com/bartek-filipiuk',
-      ...(costUsd !== undefined ? { tokensCostUsd: costUsd } : {})
+      ...(costUsd !== undefined ? { tokensCostUsd: costUsd } : {}),
+      ...(fullTimeline?.metrics.activeTimeMs !== undefined
+        ? { activeTimeMs: fullTimeline.metrics.activeTimeMs }
+        : {})
     }
   } else {
     const props = scene.overlay.props

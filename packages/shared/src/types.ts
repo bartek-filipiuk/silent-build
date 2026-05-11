@@ -98,7 +98,12 @@ export const SessionTimelineSchema = z.object({
     totalTokens: z.number().int().nonnegative(),
     filesTouched: z.number().int().nonnegative(),
     promptsCount: z.number().int().nonnegative(),
-    toolCallsCount: z.number().int().nonnegative()
+    toolCallsCount: z.number().int().nonnegative(),
+    /** Active wallclock — sum of intervals between events where the gap is
+     *  below the idle threshold (30 min). Excludes overnight breaks etc.
+     *  Optional for backward compat with timelines built before this field
+     *  was added. */
+    activeTimeMs: z.number().int().nonnegative().optional()
   })
 })
 export type SessionTimeline = z.infer<typeof SessionTimelineSchema>
