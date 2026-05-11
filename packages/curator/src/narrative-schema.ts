@@ -53,7 +53,10 @@ export const NarrativeSchema = z.object({
   project: z.string().min(1),
   targetMinutes: z.number().int().positive(),
   generatedAt: z.string().datetime(),
-  scenes: z.array(NarrativeSceneSchema).length(6)
+  // 3-6 scenes. 6 is the full silent-build convention (concept → plan →
+  // build → design → audit → release). Single-session projects (e.g. quick
+  // tools, no audit/release phase) can ship a 3-4 scene narrative.
+  scenes: z.array(NarrativeSceneSchema).min(3).max(6)
 })
 
 export type NarrativeClip = z.infer<typeof NarrativeClipSchema>
