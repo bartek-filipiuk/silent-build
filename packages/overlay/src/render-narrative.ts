@@ -237,7 +237,8 @@ const renderOverlayForScene = async (
   bundleLocation: string,
   outDir: string,
   fullTimeline: SessionTimeline | null,
-  narrative: Narrative
+  narrative: Narrative,
+  themeKey: string
 ): Promise<SegmentManifest> => {
   const stem = `scene-${String(sceneIndex + 1).padStart(2, '0')}-${scene.id}-overlay`
   const outPath = join(outDir, `${stem}.mov`)
@@ -246,7 +247,7 @@ const renderOverlayForScene = async (
   if (scene.overlay.kind === 'Intro') {
     inputProps = {
       projectName: narrative.project,
-      targetDescription: `Best-of · ${narrative.targetMinutes} min · 6 scenes`,
+      targetDescription: `Best-of · ${narrative.targetMinutes} min · ${narrative.scenes.length} scenes`,
       startingAt: fullTimeline
         ? new Date(fullTimeline.project.startTs)
         : new Date()
@@ -305,7 +306,8 @@ const renderOverlayForScene = async (
     outputLocation: outPath,
     inputProps,
     pixelFormat: 'yuva444p10le',
-    imageFormat: 'png'
+    imageFormat: 'png',
+    envVariables: { SILENT_BUILD_THEME: themeKey }
   })
 
   return {
@@ -328,7 +330,8 @@ const renderDashboardForClip = async (
   bundleLocation: string,
   outDir: string,
   projectName: string,
-  narrative: Narrative
+  narrative: Narrative,
+  themeKey: string
 ): Promise<SegmentManifest> => {
   const stem = `scene-${String(sceneIndex + 1).padStart(2, '0')}-${scene.id}-clip-${String(clipIndex + 1).padStart(2, '0')}`
   const outPath = join(outDir, `${stem}.mov`)
@@ -362,7 +365,8 @@ const renderDashboardForClip = async (
     outputLocation: outPath,
     inputProps: { timeline },
     pixelFormat: 'yuva444p10le',
-    imageFormat: 'png'
+    imageFormat: 'png',
+    envVariables: { SILENT_BUILD_THEME: themeKey }
   })
 
   return {
@@ -417,9 +421,11 @@ program
       withConcat: boolean
       theme?: string
     }) => {
-      if (opts.theme) {
-        process.env['SILENT_BUILD_THEME'] = opts.theme
-      }
+      // SILENT_BUILD_THEME is consumed by widgets running inside the
+      // Remotion Chromium bundle, not by this Node process. Resolved theme
+      // key is forwarded explicitly via renderMedia({ envVariables }) per
+      // composition call below.
+      const themeKey = opts.theme ?? 'terminal'
       const inputPath = isAbsolute(opts.input)
         ? opts.input
         : resolve(USER_CWD, opts.input)
@@ -484,7 +490,8 @@ program
             bundleLocation,
             outDir,
             aggregateTimeline,
-            narrative
+            narrative,
+            themeKey
           )
           segments.push(ov)
         }
@@ -499,7 +506,8 @@ program
             bundleLocation,
             outDir,
             narrative.project,
-            narrative
+            narrative,
+            themeKey
           )
           segments.push(seg)
         }
