@@ -413,13 +413,27 @@ program
     'skip overlay (Intro/PhaseTransition/Outro) renders, dashboards only',
     false
   )
+  .option(
+    '--with-concat',
+    'after rendering segments, run ffmpeg to produce dashboards.mov and overlays.mov preview reels (~5-6 GB)',
+    false
+  )
+  .option(
+    '--theme <key>',
+    'palette: terminal | graphite | midnight | ops | cobalt | espresso (default: terminal)'
+  )
   .action(
     async (opts: {
       input: string
       out: string
       scenes?: string
       skipOverlays: boolean
+      withConcat: boolean
+      theme?: string
     }) => {
+      if (opts.theme) {
+        process.env['SILENT_BUILD_THEME'] = opts.theme
+      }
       const inputPath = isAbsolute(opts.input)
         ? opts.input
         : resolve(USER_CWD, opts.input)
@@ -524,21 +538,47 @@ program
 
       console.log(`\n✓ rendered ${segments.length} segments to ${outDir}`)
       console.log(`  manifest:           ${manifestPath}`)
-      console.log(`  ffmpeg concat list: ${join(outDir, 'concat-dashboards.txt')}`)
-      console.log(`  ffmpeg concat list: ${join(outDir, 'concat-overlays.txt')}`)
-      console.log('')
-      console.log(
-        '  Quick concat (dashboards 576×1080):'
-      )
-      console.log(
-        `    ffmpeg -f concat -safe 0 -i ${join(outDir, 'concat-dashboards.txt')} -c copy ${join(outDir, 'dashboards.mov')}`
-      )
-      console.log(
-        '  Quick concat (overlays 1920×1080):'
-      )
-      console.log(
-        `    ffmpeg -f concat -safe 0 -i ${join(outDir, 'concat-overlays.txt')} -c copy ${join(outDir, 'overlays.mov')}`
-      )
+      console.log(`  ffmpeg concat lists written (dashboards + overlays)`)
+
+      if (opts.withConcat) {
+        console.log('\nConcat preview reels enabled — running ffmpeg…')
+        const { execFileSync } = await import('node:child_process')
+        try {
+          execFileSync(
+            'ffmpeg',
+            [
+              '-y',
+              '-f', 'concat',
+              '-safe', '0',
+              '-i', join(outDir, 'concat-dashboards.txt'),
+              '-c', 'copy',
+              join(outDir, 'dashboards-all.mov')
+            ],
+            { stdio: ['ignore', 'inherit', 'inherit'] }
+          )
+          execFileSync(
+            'ffmpeg',
+            [
+              '-y',
+              '-f', 'concat',
+              '-safe', '0',
+              '-i', join(outDir, 'concat-overlays.txt'),
+              '-c', 'copy',
+              join(outDir, 'overlays-all.mov')
+            ],
+            { stdio: ['ignore', 'inherit', 'inherit'] }
+          )
+          console.log(`✓ dashboards-all.mov + overlays-all.mov in ${outDir}`)
+        } catch (e) {
+          console.warn(
+            `[warn] ffmpeg concat failed (${e instanceof Error ? e.message : e}); concat lists still available for manual run`
+          )
+        }
+      } else {
+        console.log(
+          `  (preview reels skipped — pass --with-concat to produce dashboards-all.mov + overlays-all.mov)`
+        )
+      }
     }
   )
 
