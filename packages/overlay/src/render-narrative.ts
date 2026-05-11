@@ -79,6 +79,8 @@ const buildClipTimeline = (
   let preClipPrompts = 0
   let preClipToolCalls = 0
   let lastPromptText: string | null = null
+  let lastAssistantText: string | null = null
+  let lastAssistantModel: string | undefined = undefined
   let lastModel: string | undefined = undefined
   for (const ev of full.events) {
     if (ev.ts >= fromMs) break
@@ -95,6 +97,10 @@ const buildClipTimeline = (
       preClipCacheRead += ev.data.cacheRead ?? 0
       preClipCacheWrite += ev.data.cacheWrite ?? 0
       if (ev.data.model) lastModel = ev.data.model
+    }
+    if (ev.type === 'assistant_text') {
+      lastAssistantText = ev.data.text
+      if (ev.data.model) lastAssistantModel = ev.data.model
     }
     if (ev.type === 'file_write') preClipFiles.add(ev.data.path)
     if (ev.type === 'file_edit') preClipFiles.add(ev.data.path)
@@ -130,6 +136,16 @@ const buildClipTimeline = (
       ts: baselineTs,
       type: 'prompt',
       data: { text: lastPromptText, tokensIn: 0 }
+    })
+  }
+  if (lastAssistantText) {
+    baselineEvents.push({
+      ts: baselineTs,
+      type: 'assistant_text',
+      data: {
+        text: lastAssistantText,
+        ...(lastAssistantModel ? { model: lastAssistantModel } : {})
+      }
     })
   }
   for (const f of preClipFiles) {

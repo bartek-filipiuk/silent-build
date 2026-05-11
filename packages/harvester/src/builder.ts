@@ -1,5 +1,6 @@
 import { parseJsonl } from './parser.js'
 import {
+  extractAssistantText,
   extractPrompts,
   extractTokens,
   extractToolCalls,
@@ -25,7 +26,8 @@ export function buildTimeline(args: BuildArgs): SessionTimeline {
     ...extractPrompts(parsed),
     ...extractTokens(parsed),
     ...extractFileOps(parsed),
-    ...extractToolCalls(parsed)
+    ...extractToolCalls(parsed),
+    ...extractAssistantText(parsed)
   ]
 
   if (args.subagentsDir) {

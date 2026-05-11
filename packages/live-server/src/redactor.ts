@@ -83,6 +83,11 @@ export function createRedactor(config: RedactorConfig): Redactor {
           ...event,
           data: { ...event.data, args: scanUnknown(event.data.args) }
         }
+      case 'assistant_text':
+        return {
+          ...event,
+          data: { ...event.data, text: scanString(event.data.text) }
+        }
       case 'file_write':
       case 'file_edit':
       case 'tokens_delta':
