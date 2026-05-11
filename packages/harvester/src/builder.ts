@@ -1,5 +1,6 @@
 import { parseJsonl } from './parser.js'
 import {
+  computeActiveTimeMs,
   extractAssistantText,
   extractPrompts,
   extractTokens,
@@ -58,10 +59,18 @@ export function buildTimeline(args: BuildArgs): SessionTimeline {
   const promptsCount = events.filter(e => e.type === 'prompt').length
   const toolCallsCount = events.filter(e => e.type === 'tool_call').length
 
+  const activeTimeMs = computeActiveTimeMs(parsed)
+
   return {
     project: { name: args.projectName, startTs, endTs },
     phases,
     events,
-    metrics: { totalTokens, filesTouched, promptsCount, toolCallsCount }
+    metrics: {
+      totalTokens,
+      filesTouched,
+      promptsCount,
+      toolCallsCount,
+      activeTimeMs
+    }
   }
 }

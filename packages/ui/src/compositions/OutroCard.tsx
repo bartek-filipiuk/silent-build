@@ -8,7 +8,14 @@ import { useAnimation } from '../context.js'
 export interface OutroCardProps {
   projectName: string
   metrics: SessionTimeline['metrics']
+  /** Calendar wallclock duration (first event → last event). Includes any
+   *  overnight breaks. Labelled "Calendar Time" on screen. */
   durationMs: number
+  /** Optional active time — sum of intervals between events excluding gaps
+   *  ≥30 min (e.g. overnight breaks). When provided, replaces "Calendar
+   *  Time" with "Active Time" since it's the more honest "I worked X hours"
+   *  number. */
+  activeTimeMs?: number
   /** Estimated API cost in USD (Anthropic public rates). Labelled "API EST."
    *  on screen since Pro/Max subscribers don't pay per-token. Hidden if
    *  undefined. */
@@ -124,7 +131,7 @@ const fmtMoney = (n: number) => {
 }
 
 export const OutroCard: React.FC<OutroCardProps> = ({
-  projectName, metrics, durationMs, tokensCostUsd, repoUrl, durationInFrames: durProp
+  projectName, metrics, durationMs, activeTimeMs, tokensCostUsd, repoUrl, durationInFrames: durProp
 }) => {
   const { currentMs, fps } = useAnimation()
   const frame = Math.floor(currentMs * fps / 1000)
@@ -225,13 +232,15 @@ export const OutroCard: React.FC<OutroCardProps> = ({
         }}>{projectName}</div>
       </div>
 
-      {/* Stat rows */}
+      {/* Stat rows — top + gap tuned so 6 rows (incl. optional API EST.)
+          don't collide with Repo line below. */}
       <div style={{
-        position: 'absolute', top: 480, left: 0, right: 0,
-        display: 'flex', flexDirection: 'column', gap: tokens.spacing.md,
+        position: 'absolute', top: 420, left: 0, right: 0,
+        display: 'flex', flexDirection: 'column', gap: tokens.spacing.sm,
         alignItems: 'center'
       }}>
-        <StatRow label="Total Time"    finalValue={durationMs}
+        <StatRow label={activeTimeMs !== undefined ? 'Active Time' : 'Calendar Time'}
+                 finalValue={activeTimeMs ?? durationMs}
                  format={formatDuration}
                  frame={frame} startFrame={rowStart + stagger * 0}
                  rollFrames={rollFrames} color={tokens.colors.amberBright} />
@@ -264,9 +273,9 @@ export const OutroCard: React.FC<OutroCardProps> = ({
         ) : null}
       </div>
 
-      {/* Repo line */}
+      {/* Repo line — clear of 6-row stats stack (top 420 + ~6×64 = ~804) */}
       <div style={{
-        position: 'absolute', top: 860, left: 0, right: 0,
+        position: 'absolute', top: 880, left: 0, right: 0,
         display: 'flex', justifyContent: 'center', alignItems: 'baseline',
         gap: tokens.spacing.md, opacity: repoOpacity,
         fontFamily: tokens.typography.fontMono, fontSize: 20
