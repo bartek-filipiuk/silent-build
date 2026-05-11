@@ -10,6 +10,7 @@ import {
 } from 'node:fs'
 import { isAbsolute, join, resolve, dirname } from 'node:path'
 import { buildTimeline } from '@silent-build/harvester/builder'
+import { computeCostUpTo } from '@silent-build/ui'
 import {
   NarrativeSchema,
   type Narrative,
@@ -224,6 +225,15 @@ const renderOverlayForScene = async (
         : new Date()
     }
   } else if (scene.overlay.kind === 'Outro') {
+    // Real session duration (wallclock from first to last event), NOT the
+    // 7-min target film length. Was previously showing "06m 00s" for what
+    // was actually a 7h session.
+    const realDurationMs = fullTimeline
+      ? fullTimeline.project.endTs - fullTimeline.project.startTs
+      : narrative.targetMinutes * 60 * 1000
+    const costUsd = fullTimeline
+      ? computeCostUpTo(fullTimeline.events, fullTimeline.project.endTs)
+      : undefined
     inputProps = {
       projectName: narrative.project,
       metrics: fullTimeline?.metrics ?? {
@@ -232,8 +242,9 @@ const renderOverlayForScene = async (
         promptsCount: 0,
         toolCallsCount: 0
       },
-      durationMs: narrative.targetMinutes * 60 * 1000,
-      repoUrl: 'github.com/bartek-filipiuk'
+      durationMs: realDurationMs,
+      repoUrl: 'github.com/bartek-filipiuk',
+      ...(costUsd !== undefined ? { tokensCostUsd: costUsd } : {})
     }
   } else {
     const props = scene.overlay.props

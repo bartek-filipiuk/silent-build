@@ -37,5 +37,16 @@ export {
   type ChapterLowerThirdProps
 } from './compositions/ChapterLowerThird.js'
 export * from './primitives/index.js'
+export {
+  computeCostUpTo,
+  currentModelLabel,
+  detectFamily,
+  eventCost,
+  formatCost,
+  formatModelLabel,
+  RATES,
+  type ModelFamily,
+  type ModelRates
+} from './lib/cost.js'
 export * from './brand/Logo.js'
 export * from './brand/Wordmark.js'
