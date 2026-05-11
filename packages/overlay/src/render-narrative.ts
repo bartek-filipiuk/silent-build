@@ -64,13 +64,19 @@ const buildClipTimeline = (
   // Aggregate cumulative state from events BEFORE clip start. Without this,
   // every clip dashboard ticks from TOKENS=0 / "awaiting first prompt", which
   // looks like a fresh session even when this is e.g. the audit clip 5h in.
+  //
+  // Input/output are tracked SEPARATELY because eventCost charges different
+  // rates ($15/M input vs $75/M output for Opus). Previously we lumped them
+  // together and charged everything at input rate — 5× cost under-report.
   const preClipFiles = new Set<string>()
-  let preClipTokens = 0
+  let preClipInputTokens = 0
+  let preClipOutputTokens = 0
   let preClipCacheRead = 0
   let preClipCacheWrite = 0
   let preClipPrompts = 0
   let preClipToolCalls = 0
   let lastPromptText: string | null = null
+  let lastModel: string | undefined = undefined
   for (const ev of full.events) {
     if (ev.ts >= fromMs) break
     if (ev.type === 'prompt') {
@@ -81,28 +87,38 @@ const buildClipTimeline = (
     }
     if (ev.type === 'tool_call') preClipToolCalls++
     if (ev.type === 'tokens_delta') {
-      preClipTokens += ev.data.input + ev.data.output
+      preClipInputTokens += ev.data.input
+      preClipOutputTokens += ev.data.output
       preClipCacheRead += ev.data.cacheRead ?? 0
       preClipCacheWrite += ev.data.cacheWrite ?? 0
+      if (ev.data.model) lastModel = ev.data.model
     }
     if (ev.type === 'file_write') preClipFiles.add(ev.data.path)
     if (ev.type === 'file_edit') preClipFiles.add(ev.data.path)
   }
+  const preClipTokens =
+    preClipInputTokens + preClipOutputTokens + preClipCacheRead + preClipCacheWrite
 
   // Synthetic baseline events injected just before fromMs so widgets that
   // sum events up to currentMs (TokenCounter, ActivityLog, FileActivity,
   // CurrentPrompt) see the cumulative pre-clip state.
   const baselineTs = fromMs - 1
   const baselineEvents: TimelineEvent[] = []
-  if (preClipTokens > 0 || preClipCacheRead > 0 || preClipCacheWrite > 0) {
+  if (
+    preClipInputTokens > 0 ||
+    preClipOutputTokens > 0 ||
+    preClipCacheRead > 0 ||
+    preClipCacheWrite > 0
+  ) {
     baselineEvents.push({
       ts: baselineTs,
       type: 'tokens_delta',
       data: {
-        input: preClipTokens,
-        output: 0,
+        input: preClipInputTokens,
+        output: preClipOutputTokens,
         ...(preClipCacheRead > 0 ? { cacheRead: preClipCacheRead } : {}),
-        ...(preClipCacheWrite > 0 ? { cacheWrite: preClipCacheWrite } : {})
+        ...(preClipCacheWrite > 0 ? { cacheWrite: preClipCacheWrite } : {}),
+        ...(lastModel ? { model: lastModel } : {})
       }
     })
   }
@@ -164,7 +180,7 @@ const buildClipTimeline = (
     phases,
     events: slicedEvents,
     metrics: {
-      totalTokens: preClipTokens + preClipCacheRead + preClipCacheWrite + intraTokens,
+      totalTokens: preClipTokens + intraTokens,
       filesTouched: allFiles.size,
       promptsCount: preClipPrompts + intraPrompts,
       toolCallsCount: preClipToolCalls + intraToolCalls
