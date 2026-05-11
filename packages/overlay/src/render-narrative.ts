@@ -291,6 +291,14 @@ const renderOverlayForScene = async (
       ...(costUsd !== undefined ? { tokensCostUsd: costUsd } : {}),
       ...(fullTimeline?.metrics.activeTimeMs !== undefined
         ? { activeTimeMs: fullTimeline.metrics.activeTimeMs }
+        : {}),
+      ...(fullTimeline?.metrics.linesAdded !== undefined ||
+      fullTimeline?.metrics.linesChanged !== undefined
+        ? {
+            linesOfCode:
+              (fullTimeline.metrics.linesAdded ?? 0) +
+              (fullTimeline.metrics.linesChanged ?? 0)
+          }
         : {})
     }
   } else {

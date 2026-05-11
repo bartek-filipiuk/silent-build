@@ -70,6 +70,13 @@ export function buildTimeline(args: BuildArgs): SessionTimeline {
 
   const activeTimeMs = computeActiveTimeMs(parsed)
 
+  let linesAdded = 0
+  let linesChanged = 0
+  for (const e of events) {
+    if (e.type === 'file_write') linesAdded += e.data.linesAdded
+    if (e.type === 'file_edit') linesChanged += e.data.linesChanged
+  }
+
   return {
     project: { name: args.projectName, startTs, endTs },
     phases,
@@ -79,7 +86,9 @@ export function buildTimeline(args: BuildArgs): SessionTimeline {
       filesTouched,
       promptsCount,
       toolCallsCount,
-      activeTimeMs
+      activeTimeMs,
+      linesAdded,
+      linesChanged
     }
   }
 }
